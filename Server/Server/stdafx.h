@@ -1,5 +1,7 @@
 #pragma once
 
+#define NOT !
+
 #pragma comment(lib, "spdlog")
 #pragma comment(lib, "fmt")
 #pragma comment(lib, "ws2_32")
@@ -19,3 +21,9 @@ using namespace DirectX::SimpleMath;
 #include <Winsock2.h>
 #include <WS2tcpip.h>
 #include <MSWSock.h>
+
+#include <memory>
+#include <vector>
+#include <array>
+
+#include "Log.h"
