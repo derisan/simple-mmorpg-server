@@ -27,3 +27,5 @@ using namespace DirectX::SimpleMath;
 #include <array>
 
 #include "Log.h"
+
+constexpr int32_t INVALID_VALUE = -1;

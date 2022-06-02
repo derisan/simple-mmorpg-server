@@ -24,12 +24,13 @@ namespace mk
 	private:
 		void doWorker();
 
-		void disconnect(int32_t id);
+		void disconnect(const int32_t id);
 
 	private:
 		SOCKET mListenSocket = INVALID_SOCKET;
 		HANDLE mIocp = INVALID_HANDLE_VALUE;
 
 		std::vector<std::thread> mWorkerThreads;
+		std::thread mTimerThread;
 	};
 }

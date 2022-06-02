@@ -5,7 +5,6 @@
 namespace mk
 {
 	constexpr uint32_t SEND_BUFFER_SIZE = 200;
-	constexpr int32_t INVALID_VALUE = -1;
 
 	enum class OperationType
 	{
@@ -13,6 +12,7 @@ namespace mk
 		OP_ACCEPT,
 		OP_RECV,
 		OP_SEND,
+		TIMER_BIND_ACCEPT,
 	};
 
 	struct OVERLAPPEDEX

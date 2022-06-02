@@ -2,6 +2,7 @@
 #include "IocpBase.h"
 
 #include "NetDefine.h"
+#include "Timer.h"
 
 namespace mk
 {
@@ -72,13 +73,17 @@ namespace mk
 			mWorkerThreads.emplace_back([this]() { doWorker(); });
 		}
 
-		for (auto idx = 0; idx < MAX_USER_NUM; ++idx)
+		for (int32_t idx = 0; idx < MAX_USER_NUM; ++idx)
 		{
 			auto session = new Session;
 			session->SetID(idx);
 			session->BindAccept(mListenSocket);
 			gClients[idx] = session;
 		}
+
+		Timer::Init(mIocp);
+
+		mTimerThread = std::thread{ []() { Timer::Run(); } };
 
 		MK_INFO("Server initialization success");
 		return true;
@@ -91,6 +96,11 @@ namespace mk
 
 	void IocpBase::Run()
 	{
+		if (mTimerThread.joinable())
+		{
+			mTimerThread.join();
+		}
+
 		for (auto& th : mWorkerThreads)
 		{
 			if (th.joinable())
@@ -125,8 +135,8 @@ namespace mk
 					{
 						static_cast<Session*>(gClients[id])->Push(overEx);
 					}
-					continue;
 				}
+				continue;
 			}
 
 			switch (overEx->OpType)
@@ -166,6 +176,14 @@ namespace mk
 			}
 				break;
 
+			case OperationType::TIMER_BIND_ACCEPT:
+			{
+				auto session = static_cast<Session*>(gClients[id]);
+				session->BindAccept(mListenSocket);
+				Timer::PushOverEx(overEx);
+			}
+			break;
+
 			default:
 				MK_ASSERT(false);
 				break;
@@ -173,7 +191,7 @@ namespace mk
 		}
 	}
 
-	void IocpBase::disconnect(int32_t id)
+	void IocpBase::disconnect(const int32_t id)
 	{
 		MK_INFO("Client[{0}] disconnected.", id);
 		static_cast<Session*>(gClients[id])->Disconnect(mListenSocket);

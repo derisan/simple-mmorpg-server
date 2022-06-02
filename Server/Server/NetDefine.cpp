@@ -1,8 +1,12 @@
 #include "stdafx.h"
 #include "NetDefine.h"
 
+#include "Timer.h"
+
 namespace mk
 {
+	using namespace std::chrono;
+
 	constexpr uint32_t MAX_OVEREX_NUM = 100;
 
 	OverlappedPool::OverlappedPool()
@@ -122,13 +126,13 @@ namespace mk
 		closesocket(mSocket);
 		mSocket = INVALID_SOCKET;
 		SetConnect(false);
-		BindAccept(listenSocket);
+		Timer::AddEvent(TimerEventType::EV_BIND_ACCEPT, GetID(), system_clock::now() + 3s);
 	}
 
 	void Session::EchoTest(const char* msg, int32_t msgSize)
 	{
 		OVERLAPPEDEX* overEx = mPool->Pop();
-		ZeroMemory(overEx, sizeof(overEx));
+		ZeroMemory(overEx, sizeof(OVERLAPPEDEX));
 		overEx->ID = GetID();
 		overEx->OpType = OperationType::OP_SEND;
 		CopyMemory(overEx->SendBuffer, msg, msgSize);
