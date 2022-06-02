@@ -19,3 +19,4 @@ namespace mk
 #define MK_INFO(...) mk::Log::GetLogger()->info(__VA_ARGS__)
 #define MK_WARN(...) mk::Log::GetLogger()->warn(__VA_ARGS__)
 #define MK_ERROR(...) mk::Log::GetLogger()->error(__VA_ARGS__)
+#define MK_ASSERT(x) {if(!(x)) { __debugbreak();}}

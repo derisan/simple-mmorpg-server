@@ -1,9 +1,14 @@
 #include "stdafx.h"
 #include "IocpBase.h"
 
+#include "NetDefine.h"
+
 namespace mk
 {
-	constexpr uint16_t SERVER_PORT = 18354;
+	constexpr uint16_t SERVER_PORT = 9999;
+	constexpr int32_t WORKER_THREAD_NUM = 6;
+
+	std::array<Actor*, MAX_USER_NUM + MAX_NPC_NUM> gClients;
 
 	bool IocpBase::Init()
 	{
@@ -62,6 +67,19 @@ namespace mk
 			return false;
 		}
 
+		for (auto i = 0; i < WORKER_THREAD_NUM; ++i)
+		{
+			mWorkerThreads.emplace_back([this]() { doWorker(); });
+		}
+
+		for (auto idx = 0; idx < MAX_USER_NUM; ++idx)
+		{
+			auto session = new Session;
+			session->SetID(idx);
+			session->BindAccept(mListenSocket);
+			gClients[idx] = session;
+		}
+
 		MK_INFO("Server initialization success");
 		return true;
 	}
@@ -73,6 +91,91 @@ namespace mk
 
 	void IocpBase::Run()
 	{
+		for (auto& th : mWorkerThreads)
+		{
+			if (th.joinable())
+			{
+				th.join();
+			}
+		}
+	}
 
+	void IocpBase::doWorker()
+	{
+		while (true)
+		{
+			DWORD numBytes = 0;
+			ULONG_PTR key = 0;
+			OVERLAPPEDEX* overEx = nullptr;
+
+			BOOL ret = GetQueuedCompletionStatus(mIocp, &numBytes, &key, (LPOVERLAPPED*)&overEx, INFINITE);
+			int32_t id = static_cast<int32_t>(key);
+
+			if (FALSE == ret)
+			{
+				if (OperationType::OP_ACCEPT == overEx->OpType)
+				{
+					MK_ERROR("Accept error.");
+				}
+				else
+				{
+					MK_ERROR("GQCS error on client: {0}", id);
+					disconnect(id);
+					if (OperationType::OP_SEND == overEx->OpType)
+					{
+						static_cast<Session*>(gClients[id])->Push(overEx);
+					}
+					continue;
+				}
+			}
+
+			switch (overEx->OpType)
+			{
+			case OperationType::OP_ACCEPT:
+			{
+				MK_INFO("Client[{0}] connected.", overEx->ID);
+				auto session = static_cast<Session*>(gClients[overEx->ID]);
+				session->DoAccept(mIocp);
+			}
+				break;
+
+			case OperationType::OP_RECV:
+			{
+				if (0 == numBytes)
+				{
+					disconnect(id);
+				}
+				else
+				{
+					overEx->SendBuffer[numBytes] = '\0';
+					MK_INFO("Client[{0}] sent: {1}", id, overEx->SendBuffer);
+					auto session = static_cast<Session*>(gClients[id]);
+					session->EchoTest(overEx->SendBuffer, numBytes);
+					session->BindRecv();
+				}
+			}
+				break;
+
+			case OperationType::OP_SEND:
+			{
+				if (0 == numBytes)
+				{
+					disconnect(id);
+				}
+				static_cast<Session*>(gClients[id])->Push(overEx);
+			}
+				break;
+
+			default:
+				MK_ASSERT(false);
+				break;
+			}
+		}
+	}
+
+	void IocpBase::disconnect(int32_t id)
+	{
+		MK_INFO("Client[{0}] disconnected.", id);
+		static_cast<Session*>(gClients[id])->Disconnect(mListenSocket);
 	}
 }
