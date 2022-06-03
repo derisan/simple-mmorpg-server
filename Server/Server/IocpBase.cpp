@@ -3,10 +3,10 @@
 
 #include "NetDefine.h"
 #include "Timer.h"
+#include "Protocol.h"
 
 namespace mk
 {
-	constexpr uint16_t SERVER_PORT = 9999;
 	constexpr int32_t WORKER_THREAD_NUM = 6;
 
 	std::array<Actor*, MAX_USER_NUM + MAX_NPC_NUM> gClients;

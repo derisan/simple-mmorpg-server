@@ -54,5 +54,8 @@
     <ClInclude Include="Lock.h">
       <Filter>Source Files\Core</Filter>
     </ClInclude>
+    <ClInclude Include="Protocol.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
