@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "IocpBase.h"
 
-#include "NetDefine.h"
+#include "Session.h"
 #include "Timer.h"
 #include "Protocol.h"
 
