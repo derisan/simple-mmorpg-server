@@ -26,6 +26,8 @@ namespace mk
 
 		void disconnect(const int32_t id);
 
+		void processPacket(const int32_t id, char* packet);
+
 	private:
 		SOCKET mListenSocket = INVALID_SOCKET;
 		HANDLE mIocp = INVALID_HANDLE_VALUE;

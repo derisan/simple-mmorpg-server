@@ -158,6 +158,7 @@
     <ClCompile Include="Timer.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="CommonDefine.h" />
     <ClInclude Include="IocpBase.h" />
     <ClInclude Include="Lock.h" />
     <ClInclude Include="Log.h" />

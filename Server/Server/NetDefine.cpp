@@ -2,6 +2,7 @@
 #include "NetDefine.h"
 
 #include "Timer.h"
+#include "Protocol.h"
 
 namespace mk
 {
@@ -51,7 +52,7 @@ namespace mk
 
 	void Session::BindAccept(SOCKET listenSocket)
 	{
-		MK_INFO("Client[{0}] BindAccept()", GetID());
+		MK_INFO("Client[{0}] BindAccept", GetID());
 
 		mSocket = WSASocket(AF_INET, SOCK_STREAM, IPPROTO_TCP, NULL, 0, WSA_FLAG_OVERLAPPED);
 
@@ -98,12 +99,45 @@ namespace mk
 		BindRecv();
 	}
 
+	std::vector<char*> Session::DoRecv(const int32_t dataSize)
+	{
+		std::vector<char*> packets;
+
+		mWritePos += dataSize;
+		auto remain = mWritePos - mReadPos;
+		while (remain > 0)
+		{
+			int32_t packetSize = mRecvBuffer[mReadPos];
+			if (remain >= packetSize) 
+			{
+				packets.push_back(&mRecvBuffer[mReadPos]);
+				remain -= packetSize;
+				mReadPos += packetSize;
+			}
+			else
+			{
+				break;
+			}
+		}
+
+		if (mWritePos >= RECV_BUFFER_HALF_SIZE)
+		{
+			CopyMemory(&mRecvBuffer[0], &mRecvBuffer[mReadPos], remain);
+			mReadPos = 0;
+			mWritePos = remain;
+		}
+
+		BindRecv();
+
+		return packets;
+	}
+
 	void Session::BindRecv()
 	{
-		ZeroMemory(&mRecvContext, sizeof(mRecvContext));
+		ZeroMemory(&mRecvContext.Overlapped, sizeof(mRecvContext.Overlapped));
 		mRecvContext.OpType = OperationType::OP_RECV;
-		mRecvContext.WsaBuf.buf = mRecvContext.SendBuffer;
-		mRecvContext.WsaBuf.len = SEND_BUFFER_SIZE;
+		mRecvContext.WsaBuf.buf = mRecvBuffer + mWritePos;
+		mRecvContext.WsaBuf.len = RECV_BUFFER_HALF_SIZE;
 
 		DWORD flags = 0;
 		int32_t ret = WSARecv(mSocket,
@@ -123,21 +157,59 @@ namespace mk
 
 	void Session::Disconnect(SOCKET listenSocket)
 	{
+		Actor::Disconnect();
+
 		closesocket(mSocket);
 		mSocket = INVALID_SOCKET;
+		mWritePos = 0;
+		mReadPos = 0;
 		SetConnect(false);
 		Timer::AddEvent(TimerEventType::EV_BIND_ACCEPT, GetID(), system_clock::now() + 3s);
 	}
 
-	void Session::EchoTest(const char* msg, int32_t msgSize)
+	OVERLAPPEDEX* Session::pop()
+	{
+		return mPool->Pop();
+	}
+
+	void Session::Push(OVERLAPPEDEX* overEX)
+	{
+		mPool->Push(overEX);
+	}
+
+	void Session::SendLoginInfoPacket()
+	{
+		SC_LOGIN_INFO_PACKET packet = {};
+		packet.size = sizeof(packet);
+		packet.type = SC_LOGIN_INFO;
+		packet.id = GetID();
+		packet.x = GetX();
+		packet.y = GetY();
+		sendPacket(&packet, packet.size);
+	}
+
+	void Session::SendMovePacket(const int32_t id, const int32_t x, const int32_t y,
+		const uint32_t time)
+	{
+		SC_MOVE_PLAYER_PACKET packet = {};
+		packet.size = sizeof(packet);
+		packet.type = SC_MOVE_PLAYER;
+		packet.id = id;
+		packet.x = x;
+		packet.y = y;
+		packet.client_time = time;
+		sendPacket(&packet, packet.size);
+	}
+
+	void Session::sendPacket(void* packet, const int32_t packetSize)
 	{
 		OVERLAPPEDEX* overEx = mPool->Pop();
 		ZeroMemory(overEx, sizeof(OVERLAPPEDEX));
 		overEx->ID = GetID();
 		overEx->OpType = OperationType::OP_SEND;
-		CopyMemory(overEx->SendBuffer, msg, msgSize);
+		CopyMemory(overEx->SendBuffer, reinterpret_cast<char*>(packet), packetSize);
 		overEx->WsaBuf.buf = overEx->SendBuffer;
-		overEx->WsaBuf.len = msgSize;
+		overEx->WsaBuf.len = packetSize;
 
 		int32_t ret = WSASend(mSocket,
 			&overEx->WsaBuf,
@@ -155,13 +227,10 @@ namespace mk
 		}
 	}
 
-	OVERLAPPEDEX* Session::Pop()
+	void Actor::Disconnect()
 	{
-		return mPool->Pop();
+		mPosX = 0;
+		mPosY = 0;
 	}
 
-	void Session::Push(OVERLAPPEDEX* overEX)
-	{
-		mPool->Push(overEX);
-	}
 }

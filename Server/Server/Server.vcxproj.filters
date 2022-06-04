@@ -57,5 +57,8 @@
     <ClInclude Include="Protocol.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="CommonDefine.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

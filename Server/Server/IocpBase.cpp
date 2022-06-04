@@ -11,6 +11,11 @@ namespace mk
 
 	std::array<Actor*, MAX_USER_NUM + MAX_NPC_NUM> gClients;
 
+	inline Session* GetSession(const int32_t id)
+	{
+		return static_cast<Session*>(gClients[id]);
+	}
+
 	bool IocpBase::Init()
 	{
 		WSADATA wsaData = {};
@@ -53,7 +58,7 @@ namespace mk
 			MK_ERROR("Failed to listen: {0}", WSAGetLastError());
 			return false;
 		}
-		
+
 		mIocp = CreateIoCompletionPort(INVALID_HANDLE_VALUE, NULL, NULL, 0);
 		if (NULL == mIocp)
 		{
@@ -133,7 +138,8 @@ namespace mk
 					disconnect(id);
 					if (OperationType::OP_SEND == overEx->OpType)
 					{
-						static_cast<Session*>(gClients[id])->Push(overEx);
+						auto session = GetSession(id);
+						session->Push(overEx);
 					}
 				}
 				continue;
@@ -144,10 +150,10 @@ namespace mk
 			case OperationType::OP_ACCEPT:
 			{
 				MK_INFO("Client[{0}] connected.", overEx->ID);
-				auto session = static_cast<Session*>(gClients[overEx->ID]);
+				auto session = GetSession(overEx->ID);
 				session->DoAccept(mIocp);
-			}
 				break;
+			}
 
 			case OperationType::OP_RECV:
 			{
@@ -157,14 +163,15 @@ namespace mk
 				}
 				else
 				{
-					overEx->SendBuffer[numBytes] = '\0';
-					MK_INFO("Client[{0}] sent: {1}", id, overEx->SendBuffer);
-					auto session = static_cast<Session*>(gClients[id]);
-					session->EchoTest(overEx->SendBuffer, numBytes);
-					session->BindRecv();
+					auto session = GetSession(id);
+					std::vector<char*> packets = session->DoRecv(numBytes);
+					for (auto p : packets)
+					{
+						processPacket(id, p);
+					}
 				}
-			}
 				break;
+			}
 
 			case OperationType::OP_SEND:
 			{
@@ -172,17 +179,18 @@ namespace mk
 				{
 					disconnect(id);
 				}
-				static_cast<Session*>(gClients[id])->Push(overEx);
-			}
+				auto session = GetSession(id);
+				session->Push(overEx);
 				break;
+			}
 
 			case OperationType::TIMER_BIND_ACCEPT:
 			{
-				auto session = static_cast<Session*>(gClients[id]);
+				auto session = GetSession(id);
 				session->BindAccept(mListenSocket);
 				Timer::PushOverEx(overEx);
+				break;
 			}
-			break;
 
 			default:
 				MK_ASSERT(false);
@@ -194,6 +202,46 @@ namespace mk
 	void IocpBase::disconnect(const int32_t id)
 	{
 		MK_INFO("Client[{0}] disconnected.", id);
-		static_cast<Session*>(gClients[id])->Disconnect(mListenSocket);
+		auto session = GetSession(id);
+		session->Disconnect(mListenSocket);
+	}
+
+	void IocpBase::processPacket(const int32_t id, char* packet)
+	{
+		char packetType = packet[1];
+
+		switch (packetType)
+		{
+		case CS_LOGIN:
+		{
+			CS_LOGIN_PACKET* loginPacket = reinterpret_cast<CS_LOGIN_PACKET*>(packet);
+			auto session = GetSession(id);
+			session->SetName(loginPacket->name);
+			session->SendLoginInfoPacket();
+			break;
+		}
+
+		case CS_MOVE:
+		{
+			CS_MOVE_PACKET* movePacket = reinterpret_cast<CS_MOVE_PACKET*>(packet);
+			auto session = GetSession(id);
+			auto [x, y] = session->GetPos();
+
+			switch (movePacket->direction)
+			{
+			case MoveDirection::UP: if (y > 0) y--; break;
+			case MoveDirection::DOWN: y++; break;
+			case MoveDirection::LEFT: if (x > 0) x--; break;
+			case MoveDirection::RIGHT: x++; break;
+			default: MK_ASSERT(false); break;
+			}
+			session->SetPos({ x, y });
+			session->SendMovePacket(id, x, y, movePacket->client_time);
+			break;
+		}
+
+		default:
+			break;
+		}
 	}
 }
