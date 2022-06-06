@@ -329,3 +329,18 @@ ASALocalRun/
 
 # MFractors (Xamarin productivity tool) working folder 
 .mfractor/
+
+## Siv3D
+Dependencies/*/
+Siv3D/lib/*/Siv3D_d.lib
+Siv3D/lib/*/Siv3D.lib
+libSiv3D.a
+siv3d.a
+*.exe
+*.html
+*.jppmdl
+Screenshot/
+AS_DEBUG/
+
+include/
+lib/
