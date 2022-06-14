@@ -1,0 +1,23 @@
+﻿#pragma once
+
+class BaseScene;
+
+class Game
+{
+public:
+	Game();
+	~Game();
+
+	void Init();
+	void Shutdown();
+	void Run();
+	void ChangeScene(BaseScene* newScene);
+
+private:
+	void processInput();
+	void update();
+	void render();
+
+private:
+	std::unique_ptr<BaseScene> mActiveScene = nullptr;
+};
