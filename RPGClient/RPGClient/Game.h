@@ -4,7 +4,6 @@ class Game;
 class BaseScene;
 
 extern std::unique_ptr<Game> gGame;
-extern TCPClient gTCPClient;
 
 class Game
 {

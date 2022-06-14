@@ -5,7 +5,6 @@
 #include "PacketManager.h"
 
 std::unique_ptr<Game> gGame;
-TCPClient gTCPClient;
 
 Game::Game()
 {
@@ -31,10 +30,7 @@ void Game::Shutdown()
 		mActiveScene = nullptr;
 	}
 
-	if (gTCPClient.isConnected())
-	{
-		gTCPClient.disconnect();
-	}
+	PacketManager::Shutdown();
 }
 
 void Game::Run()

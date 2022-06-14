@@ -68,15 +68,18 @@ void LoginScene::doLogin(const String& loginID)
 {
 	// TODO : ip, port 매직 넘버 수정
 	const IPv4Address ip = IPv4Address::Localhost();
-	gTCPClient.connect(ip, 4000);
+	bool bConnect = PacketManager::Connect(ip, 4000);
 
-	while (not gTCPClient.isConnected());
-
+	if (not bConnect)
+	{
+		System::Exit();
+	}
+	
 	std::string userID = loginID.narrow();
 
 	CS_LOGIN_PACKET packet = {};
 	packet.size = sizeof(packet);
 	packet.type = CS_LOGIN;
 	CopyMemory(packet.name, userID.data(), userID.size());
-	gTCPClient.send(&packet, packet.size);
+	PacketManager::SendPacket(&packet, packet.size);
 }

@@ -5,17 +5,26 @@
 
 s3d::int32 PacketManager::mWritePos = 0;
 s3d::int32 PacketManager::mReadPos = 0;
+s3d::TCPClient PacketManager::mTCPContext = {};
 std::unordered_map<char, std::function<void(char*)>> PacketManager::mPacketFuncDict;
 char PacketManager::mRecvBuffer[RECV_BUFFER_SIZE] = {};
 char PacketManager::mPacketBuffer[PACKET_BUFFER_SIZE] = {};
 
+void PacketManager::Shutdown()
+{
+	if (mTCPContext.isConnected())
+	{
+		mTCPContext.disconnect();
+	}
+}
+
 void PacketManager::Recv()
 {
-	int32 numBytes = static_cast<int32>(gTCPClient.available());
+	int32 numBytes = static_cast<int32>(mTCPContext.available());
 
 	if (numBytes > 0)
 	{
-		gTCPClient.read(mRecvBuffer, numBytes);
+		mTCPContext.read(mRecvBuffer, numBytes);
 
 		if (mWritePos + numBytes >= PACKET_BUFFER_SIZE)
 		{
@@ -56,6 +65,24 @@ void PacketManager::Recv()
 	}
 }
 
+bool PacketManager::Connect(const IPv4Address& ip, uint16 port)
+{
+	using namespace std::chrono;
+
+	mTCPContext.connect(ip, port);
+	if (not mTCPContext.isConnected())
+	{
+		std::this_thread::sleep_for(3s);
+	}
+
+	if (not mTCPContext.isConnected())
+	{
+		return false;
+	}
+
+	return true;
+}
+
 void PacketManager::RegisterPacketFunc(char packetType, std::function<void(char*)> func)
 {
 	if (auto iter = mPacketFuncDict.find(packetType); iter == mPacketFuncDict.end())
@@ -78,5 +105,10 @@ void PacketManager::RemovePacketFunc(char packetType)
 	{
 		Print << U"Packet type: " << packetType << U" not exists!";
 	}
+}
+
+void PacketManager::SendPacket(void* packet, const int32 packetSize)
+{
+	mTCPContext.send(packet, packetSize);
 }
 
