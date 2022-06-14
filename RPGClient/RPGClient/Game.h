@@ -1,6 +1,10 @@
 ﻿#pragma once
 
+class Game;
 class BaseScene;
+
+extern std::unique_ptr<Game> gGame;
+extern TCPClient gTCPClient;
 
 class Game
 {
@@ -21,3 +25,5 @@ private:
 private:
 	std::unique_ptr<BaseScene> mActiveScene = nullptr;
 };
+
+

@@ -2,8 +2,6 @@
 
 #include "Game.h"
 
-std::unique_ptr<Game> gGame = nullptr;
-
 void Main()
 {
 	System::SetTerminationTriggers(UserAction::CloseButtonClicked);

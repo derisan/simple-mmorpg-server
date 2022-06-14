@@ -117,6 +117,8 @@
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="LoginScene.cpp" />
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="MainScene.cpp" />
+    <ClCompile Include="PacketManager.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
@@ -317,9 +319,10 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BaseScene.h" />
-    <ClInclude Include="Define.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="LoginScene.h" />
+    <ClInclude Include="MainScene.h" />
+    <ClInclude Include="PacketManager.h" />
     <ClInclude Include="stdafx.h" />
   </ItemGroup>
   <ItemGroup>

@@ -153,6 +153,12 @@
     <ClCompile Include="LoginScene.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="MainScene.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PacketManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Image Include="App\icon.ico">
@@ -794,7 +800,10 @@
     <ClInclude Include="LoginScene.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Define.h">
+    <ClInclude Include="MainScene.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PacketManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

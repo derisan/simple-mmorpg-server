@@ -7,12 +7,13 @@ class LoginScene :
 {
 public:
 	virtual void Enter() override;
-	virtual void Update(const float deltaTime) override;
+	virtual void Exit() override;
 	virtual void Render() override;
 
 private:
 	void renderBackground();
 	void renderUI();
+	void doLogin(const String& loginID);
 
 private:
 	TextEditState mUserInput = {};
