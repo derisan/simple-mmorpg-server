@@ -1,6 +1,7 @@
 ﻿#include "stdafx.h"
 #include "Game.h"
 
+#include "ActorManager.h"
 #include "LoginScene.h"
 #include "PacketManager.h"
 #include "TileMap.h"
@@ -67,4 +68,5 @@ void Game::update()
 void Game::render()
 {
 	mActiveScene->Render();
+	ActorManager::RenderActors();
 }

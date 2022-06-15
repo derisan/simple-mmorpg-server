@@ -3,59 +3,59 @@
 
 #include "Game.h"
 
-s3d::int32 PacketManager::mWritePos = 0;
-s3d::int32 PacketManager::mReadPos = 0;
-s3d::TCPClient PacketManager::mTCPContext = {};
-std::unordered_map<char, std::function<void(char*)>> PacketManager::mPacketFuncDict;
-char PacketManager::mRecvBuffer[RECV_BUFFER_SIZE] = {};
-char PacketManager::mPacketBuffer[PACKET_BUFFER_SIZE] = {};
+s3d::int32 PacketManager::sWritePos = 0;
+s3d::int32 PacketManager::sReadPos = 0;
+s3d::TCPClient PacketManager::sTCPContext = {};
+std::unordered_map<char, std::function<void(char*)>> PacketManager::sPacketFuncDict;
+char PacketManager::sRecvBuffer[RECV_BUFFER_SIZE] = {};
+char PacketManager::sPacketBuffer[PACKET_BUFFER_SIZE] = {};
 
 void PacketManager::Shutdown()
 {
-	if (mTCPContext.isConnected())
+	if (sTCPContext.isConnected())
 	{
-		mTCPContext.disconnect();
+		sTCPContext.disconnect();
 	}
 }
 
 void PacketManager::Recv()
 {
-	int32 numBytes = static_cast<int32>(mTCPContext.available());
+	int32 numBytes = static_cast<int32>(sTCPContext.available());
 
 	if (numBytes > 0)
 	{
-		mTCPContext.read(mRecvBuffer, numBytes);
+		sTCPContext.read(sRecvBuffer, numBytes);
 
-		if (mWritePos + numBytes >= PACKET_BUFFER_SIZE)
+		if (sWritePos + numBytes >= PACKET_BUFFER_SIZE)
 		{
-			auto remain = mWritePos - mReadPos;
+			auto remain = sWritePos - sReadPos;
 
 			if (remain > 0)
 			{
-				CopyMemory(&mPacketBuffer[0], &mPacketBuffer[mReadPos], remain);
+				CopyMemory(&sPacketBuffer[0], &sPacketBuffer[sReadPos], remain);
 			}
 
-			mWritePos = remain;
-			mReadPos = 0;
+			sWritePos = remain;
+			sReadPos = 0;
 		}
 
-		CopyMemory(&mPacketBuffer[mWritePos], mRecvBuffer, numBytes);
-		mWritePos += numBytes;
+		CopyMemory(&sPacketBuffer[sWritePos], sRecvBuffer, numBytes);
+		sWritePos += numBytes;
 
-		auto remain = mWritePos - mReadPos;
+		auto remain = sWritePos - sReadPos;
 		while (remain > 0)
 		{
-			auto packetSize = mPacketBuffer[mReadPos];
+			auto packetSize = sPacketBuffer[sReadPos];
 
 			if (remain >= packetSize)
 			{
-				if (auto iter = mPacketFuncDict.find(mPacketBuffer[mReadPos + 1]); iter != mPacketFuncDict.end())
+				if (auto iter = sPacketFuncDict.find(sPacketBuffer[sReadPos + 1]); iter != sPacketFuncDict.end())
 				{
-					(iter->second)(&mPacketBuffer[mReadPos]);
+					(iter->second)(&sPacketBuffer[sReadPos]);
 				}
 
 				remain -= packetSize;
-				mReadPos += packetSize;
+				sReadPos += packetSize;
 			}
 			else
 			{
@@ -69,13 +69,13 @@ bool PacketManager::Connect(const IPv4Address& ip, uint16 port)
 {
 	using namespace std::chrono;
 
-	mTCPContext.connect(ip, port);
-	if (not mTCPContext.isConnected())
+	sTCPContext.connect(ip, port);
+	if (not sTCPContext.isConnected())
 	{
 		std::this_thread::sleep_for(2s);
 	}
 
-	if (not mTCPContext.isConnected())
+	if (not sTCPContext.isConnected())
 	{
 		return false;
 	}
@@ -85,9 +85,9 @@ bool PacketManager::Connect(const IPv4Address& ip, uint16 port)
 
 void PacketManager::RegisterPacketFunc(char packetType, std::function<void(char*)> func)
 {
-	if (auto iter = mPacketFuncDict.find(packetType); iter == mPacketFuncDict.end())
+	if (auto iter = sPacketFuncDict.find(packetType); iter == sPacketFuncDict.end())
 	{
-		mPacketFuncDict.emplace(packetType, func);
+		sPacketFuncDict.emplace(packetType, func);
 	}
 	else
 	{
@@ -97,9 +97,9 @@ void PacketManager::RegisterPacketFunc(char packetType, std::function<void(char*
 
 void PacketManager::RemovePacketFunc(char packetType)
 {
-	if (auto iter = mPacketFuncDict.find(packetType); iter != mPacketFuncDict.end())
+	if (auto iter = sPacketFuncDict.find(packetType); iter != sPacketFuncDict.end())
 	{
-		mPacketFuncDict.erase(iter);
+		sPacketFuncDict.erase(iter);
 	}
 	else
 	{
@@ -109,6 +109,6 @@ void PacketManager::RemovePacketFunc(char packetType)
 
 void PacketManager::SendPacket(void* packet, const int32 packetSize)
 {
-	mTCPContext.send(packet, packetSize);
+	sTCPContext.send(packet, packetSize);
 }
 

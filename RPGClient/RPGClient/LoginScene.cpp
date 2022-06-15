@@ -1,6 +1,7 @@
 ﻿#include "stdafx.h"
 #include "LoginScene.h"
 
+#include "ActorManager.h"
 #include "Game.h"
 #include "MainScene.h"
 #include "PacketManager.h"
@@ -13,8 +14,12 @@ void LoginScene::Enter()
 	PacketManager::RegisterPacketFunc(SC_LOGIN_INFO, [this](char* p) {
 		SC_LOGIN_INFO_PACKET* packet = reinterpret_cast<SC_LOGIN_INFO_PACKET*>(p);
 		// TODO : 로그인 성공 여부 따져서 메인 씬으로 전환
-		//		: 로그인 패킷의 정보 MainScene에 전달 필요(client_id, x, y...등)
-		gGame->ChangeScene(new MainScene);
+		auto& actor = ActorManager::RegisterActor(packet->id, packet->x, packet->y);
+
+		auto mainScene = new MainScene;
+		mainScene->SetActor(&actor);
+
+		gGame->ChangeScene(mainScene);
 		});
 }
 

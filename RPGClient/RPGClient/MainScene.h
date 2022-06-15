@@ -2,6 +2,8 @@
 
 #include "BaseScene.h"
 
+class Actor;
+
 class MainScene :
     public BaseScene
 {
@@ -12,7 +14,10 @@ public:
 	virtual void Update(const float deltaTime) override;
 	virtual void Render() override;
 
+public:
+	void SetActor(Actor* actor) { mActor = actor; }
+
 private:
-	Point mTempPos = { 0,0 };
+	Actor* mActor = nullptr;
 };
 

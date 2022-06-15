@@ -16,13 +16,13 @@ private:
 	constexpr static int32 RECV_BUFFER_SIZE = 200;
 	constexpr static int32 PACKET_BUFFER_SIZE = 2048;
 
-	static char mRecvBuffer[RECV_BUFFER_SIZE];
-	static char mPacketBuffer[PACKET_BUFFER_SIZE];
-	static int32 mWritePos;
-	static int32 mReadPos;
+	static char sRecvBuffer[RECV_BUFFER_SIZE];
+	static char sPacketBuffer[PACKET_BUFFER_SIZE];
+	static int32 sWritePos;
+	static int32 sReadPos;
 
-	static TCPClient mTCPContext;
+	static TCPClient sTCPContext;
 
-	static std::unordered_map<char, std::function<void(char*)>> mPacketFuncDict;
+	static std::unordered_map<char, std::function<void(char*)>> sPacketFuncDict;
 };
 
