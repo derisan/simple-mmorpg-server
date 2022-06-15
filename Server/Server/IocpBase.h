@@ -3,14 +3,13 @@
 #include <thread>
 #include <array>
 
+#include "Protocol.h"
+
 namespace mk
 {
 	class Actor;
 
-	constexpr int MAX_USER_NUM = 100;
-	constexpr int MAX_NPC_NUM = 100;
-
-	extern std::array<Actor*, MAX_USER_NUM + MAX_NPC_NUM> gClients;
+	extern std::array<Actor*, MAX_USER + NUM_NPC> gClients;
 
 	class IocpBase
 	{

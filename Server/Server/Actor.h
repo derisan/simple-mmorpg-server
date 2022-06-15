@@ -19,6 +19,7 @@ namespace mk
 		void SetX(const short value) { mPosX = value; }
 		void SetY(const short value) { mPosY = value; }
 		void SetPos(const std::pair<short, short>& value) { mPosX = value.first; mPosY = value.second; }
+		void SetPos(const short x, const short y) { mPosX = x; mPosY = y; }
 
 	private:
 		int mID = INVALID_VALUE;

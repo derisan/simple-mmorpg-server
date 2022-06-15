@@ -15,8 +15,6 @@ namespace mk
 
 	void Session::BindAccept(SOCKET listenSocket)
 	{
-		MK_INFO("Client[{0}] BindAccept", GetID());
-
 		mSocket = WSASocket(AF_INET, SOCK_STREAM, IPPROTO_TCP, NULL, 0, WSA_FLAG_OVERLAPPED);
 
 		if (INVALID_SOCKET == mSocket)

@@ -3,21 +3,13 @@
 
 #include "Session.h"
 #include "Timer.h"
-#include "Protocol.h"
+#include "SectorManager.h"
 
 namespace mk
 {
 	constexpr int WORKER_THREAD_NUM = 6;
 
-	std::array<Actor*, MAX_USER_NUM + MAX_NPC_NUM> gClients;
-
-	enum 
-	{
-		UP,
-		DOWN,
-		LEFT,
-		RIGHT
-	};
+	std::array<Actor*, MAX_USER + NUM_NPC> gClients;
 
 	inline Session* GetSession(const int id)
 	{
@@ -86,7 +78,7 @@ namespace mk
 			mWorkerThreads.emplace_back([this]() { doWorker(); });
 		}
 
-		for (int idx = 0; idx < MAX_USER_NUM; ++idx)
+		for (int idx = 0; idx < MAX_USER; ++idx)
 		{
 			auto session = new Session;
 			session->SetID(idx);
@@ -97,6 +89,8 @@ namespace mk
 		Timer::Init(mIocp);
 
 		mTimerThread = std::thread{ []() { Timer::Run(); } };
+
+		SectorManager::Init();
 
 		MK_INFO("Server initialization success");
 		return true;
@@ -226,6 +220,7 @@ namespace mk
 			auto session = GetSession(id);
 			session->SetName(loginPacket->name);
 			session->SendLoginInfoPacket();
+			SectorManager::AddActor(session);
 			break;
 		}
 
@@ -233,18 +228,8 @@ namespace mk
 		{
 			CS_MOVE_PACKET* movePacket = reinterpret_cast<CS_MOVE_PACKET*>(packet);
 			auto session = GetSession(id);
-			auto [x, y] = session->GetPos();
-
-			switch (movePacket->direction)
-			{
-			case UP: if (y > 0) y--; break;
-			case DOWN: y++; break;
-			case LEFT: if (x > 0) x--; break;
-			case RIGHT: x++; break;
-			default: MK_ASSERT(false); break;
-			}
-			session->SetPos({ x, y });
-			session->SendMovePacket(id, x, y, movePacket->client_time);
+			SectorManager::MoveActor(session, movePacket->direction,
+				movePacket->client_time);
 			break;
 		}
 
