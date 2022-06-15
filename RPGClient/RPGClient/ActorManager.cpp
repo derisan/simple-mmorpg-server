@@ -12,11 +12,8 @@ Actor& ActorManager::RegisterActor(const int32 id, const int16 x, const int16 y,
 	actor.SetID(id);
 	actor.SetX(x);
 	actor.SetY(y);
+	actor.SetRace(0);
 	actor.SetName(name);
-
-	// TODO : 종족에 따라 텍스쳐 변경
-	auto actorTexture = ResourceManager::GetTexture(0);
-	actor.SetTexture(actorTexture);
 
 	if (auto iter = sActors.find(id); iter == sActors.end())
 	{

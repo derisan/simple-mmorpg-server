@@ -5,14 +5,15 @@ std::unordered_map<ResourceManager::race_type, s3d::Texture> ResourceManager::sT
 
 void ResourceManager::LoadAssets()
 {
-	sTextures[0] = Texture{ ASSET_PATH(Character.png) };
+	TextureAsset::Register(U"Tex_Character", ASSET_PATH(Character.png));
+	TextureAsset::Load(U"Tex_Character");
 }
 
-const Texture* ResourceManager::GetTexture(race_type race)
+String ResourceManager::GetTexName(race_type race)
 {
 	switch (race)
 	{
-	case 0: return &sTextures[0];
-	default: return nullptr;
+	case 0: return U"Tex_Character";
+	default: return U"Null";
 	}
 }
