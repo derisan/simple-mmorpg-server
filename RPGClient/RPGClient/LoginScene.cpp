@@ -11,7 +11,7 @@ void LoginScene::Enter()
 	mBackground = Texture{ ASSET_PATH(Login_Background.png) };
 	mTitle = Texture{ ASSET_PATH(Login_Title.png) };
 
-	PacketManager::RegisterPacketFunc(SC_LOGIN_INFO, [this](char* p) {
+	PacketManager::RegisterPacketFunc(SC_LOGIN_INFO, [](char* p) {
 		SC_LOGIN_INFO_PACKET* packet = reinterpret_cast<SC_LOGIN_INFO_PACKET*>(p);
 		// TODO : 로그인 성공 여부 따져서 메인 씬으로 전환
 		auto& actor = ActorManager::RegisterActor(packet->id, packet->x, packet->y);

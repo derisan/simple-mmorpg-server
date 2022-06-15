@@ -18,6 +18,9 @@ public:
 	void SetActor(Actor* actor) { mActor = actor; }
 
 private:
+	void pollKeyDown();
+
+private:
 	Actor* mActor = nullptr;
 };
 

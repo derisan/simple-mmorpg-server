@@ -20,6 +20,7 @@ Actor& ActorManager::RegisterActor(const int32 id, const int16 x, const int16 y)
 	else
 	{
 		Print << U"Actor id: " << id << U" already exists!";
+		MK_ASSERT(false);
 	}
 
 	return sActors[id];
@@ -33,7 +34,22 @@ void ActorManager::RemoveActor(const int32 id)
 	}
 	else
 	{
-		Print << U"Actor id : " << id << U" does not exist!";
+		Print << U"Actor id : " << id << U" does not exist!(RemoveActor())";
+		MK_ASSERT(false);
+	}
+}
+
+void ActorManager::MoveActor(const int32 id, const int16 x, const int16 y)
+{
+	if (auto iter = sActors.find(id); iter != sActors.end())
+	{
+		(iter->second).SetX(x);
+		(iter->second).SetY(y);
+	}
+	else
+	{
+		Print << U"Actor id : " << id << U" does not exist!(MoveActor())";
+		MK_ASSERT(false);
 	}
 }
 
