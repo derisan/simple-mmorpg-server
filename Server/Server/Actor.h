@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Lock.h"
+
 namespace mk
 {
 	class Actor
@@ -20,6 +22,9 @@ namespace mk
 		void SetY(const short value) { mPosY = value; }
 		void SetPos(const std::pair<short, short>& value) { mPosX = value.first; mPosY = value.second; }
 		void SetPos(const short x, const short y) { mPosX = x; mPosY = y; }
+
+	public:
+		SpinLock ActorLock = {};
 
 	private:
 		int mID = INVALID_VALUE;

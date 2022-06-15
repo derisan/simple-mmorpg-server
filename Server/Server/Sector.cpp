@@ -29,7 +29,7 @@ namespace mk
 
 	void Sector::RemoveActor(const id_type id)
 	{
-		mActors.erase(id);
+		mActors.unsafe_erase(id);
 	}
 
 	void Sector::MoveActor(const id_type id, const char direction,

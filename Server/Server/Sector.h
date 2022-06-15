@@ -1,6 +1,6 @@
 #pragma once
 
-#include <unordered_set>
+#include <concurrent_unordered_set.h>
 
 #include "TileMap.h"
 
@@ -27,7 +27,7 @@ namespace mk
 			const unsigned int clientTime);
 
 	private:
-		std::unordered_set<id_type> mActors;
+		concurrency::concurrent_unordered_set<id_type> mActors;
 		const std::vector<std::vector<Tile>>& mTileMap;
 		int mSectorNum = INVALID_VALUE;
 	};
