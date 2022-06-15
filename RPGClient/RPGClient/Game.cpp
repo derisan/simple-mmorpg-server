@@ -22,7 +22,9 @@ Game::~Game()
 void Game::Init()
 {
 	TileMap::LoadMapAsync(ASSET_PATH(WorldMap.txt));
-	ResourceManager::LoadTextures();
+	ResourceManager::LoadAssets();
+
+	mFont = Font{ 16, ASSET_PATH(Consolas.ttf), FontStyle::Bold};
 
 	mActiveScene = std::make_unique<LoginScene>();
 	mActiveScene->Enter();
@@ -70,5 +72,5 @@ void Game::update()
 void Game::render()
 {
 	mActiveScene->Render();
-	ActorManager::RenderActors();
+	ActorManager::RenderActors(mFont);
 }

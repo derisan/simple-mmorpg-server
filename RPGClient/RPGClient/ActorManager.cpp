@@ -5,12 +5,14 @@
 
 std::unordered_map<s3d::int32, Actor> ActorManager::sActors;
 
-Actor& ActorManager::RegisterActor(const int32 id, const int16 x, const int16 y)
+Actor& ActorManager::RegisterActor(const int32 id, const int16 x, const int16 y,
+	const String& name)
 {
 	Actor actor = {};
 	actor.SetID(id);
 	actor.SetX(x);
 	actor.SetY(y);
+	actor.SetName(name);
 
 	// TODO : 종족에 따라 텍스쳐 변경
 	auto actorTexture = ResourceManager::GetTexture(0);
@@ -56,10 +58,10 @@ void ActorManager::MoveActor(const int32 id, const int16 x, const int16 y)
 	}
 }
 
-void ActorManager::RenderActors()
+void ActorManager::RenderActors(const Font& font)
 {
 	for (auto& [id, actor] : sActors)
 	{
-		actor.Render();
+		actor.Render(font);
 	}
 }

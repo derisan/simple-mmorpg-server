@@ -23,6 +23,7 @@ private:
 
 private:
 	std::unique_ptr<BaseScene> mActiveScene = nullptr;
+	Font mFont = {};
 };
 
 

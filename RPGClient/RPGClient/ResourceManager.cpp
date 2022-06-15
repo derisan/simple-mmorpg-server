@@ -3,7 +3,7 @@
 
 std::unordered_map<ResourceManager::race_type, s3d::Texture> ResourceManager::sTextures;
 
-void ResourceManager::LoadTextures()
+void ResourceManager::LoadAssets()
 {
 	sTextures[0] = Texture{ ASSET_PATH(Character.png) };
 }
