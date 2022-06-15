@@ -5,7 +5,7 @@
 
 void MainScene::Enter()
 {
-
+	TileMap::WaitMapLoading();
 }
 
 void MainScene::Exit()

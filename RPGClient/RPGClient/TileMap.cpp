@@ -6,6 +6,22 @@
 std::vector<std::vector<Tile>> TileMap::mTileMap;
 s3d::int32 TileMap::mMapWidth;
 s3d::int32 TileMap::mMapHeight;
+std::future<void> TileMap::mTask;
+
+void TileMap::LoadMapAsync(const String& mapFile)
+{
+	mTask = std::async(std::launch::async, TileMap::LoadMap, mapFile);
+}
+
+void TileMap::WaitMapLoading()
+{
+	if (not mTask.valid())
+	{
+		return;
+	}
+
+	mTask.wait();
+}
 
 void TileMap::LoadMap(const String& mapFile)
 {
