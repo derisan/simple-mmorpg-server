@@ -1,10 +1,9 @@
 #pragma once
 
-#include "Sector.h"
-
 namespace mk
 {
 	class Actor;
+	class Sector;
 
 	class SectorManager
 	{

@@ -23,6 +23,8 @@ namespace mk
 	private:
 		bool isSolid(const short row, const short col);
 
+		bool isOutOfBound(const short x, const short y);
+
 		void sendMovePacket(const id_type id, const short x, const short y,
 			const unsigned int clientTime);
 

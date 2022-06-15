@@ -4,10 +4,11 @@
 #include "Actor.h"
 #include "TileMap.h"
 #include "Protocol.h"
+#include "Sector.h"
 
 namespace mk
 {
-	constexpr int SECTOR_UNIT = 40;
+	constexpr int TILE_PER_SECTOR = 40;
 
 	std::vector<std::vector<std::unique_ptr<Sector>>> SectorManager::sSectors;
 
@@ -16,22 +17,20 @@ namespace mk
 		TileMap::LoadTileMap("../../Assets/WorldMap.txt");
 		const auto& tileMap = TileMap::GetTileMap();
 
-		auto numlines = W_WIDTH / SECTOR_UNIT;
-		sSectors.resize(numlines);
+		auto sectorsPerLine = W_WIDTH / TILE_PER_SECTOR;
+		sSectors.resize(sectorsPerLine);
 
-		for (int row = 0; row < numlines; ++row)
+		for (int row = 0; row < sectorsPerLine; ++row)
 		{
-			for (int col = 0; col < numlines; ++col)
+			for (int col = 0; col < sectorsPerLine; ++col)
 			{
-				sSectors[row].push_back(std::make_unique<Sector>(tileMap, row + col));
+				sSectors[row].push_back(std::make_unique<Sector>(tileMap, (row * 50) + col));
 			}
 		}
 	}
 
 	void SectorManager::AddActor(Actor* actor)
 	{
-		// TODO :
-		// 해당 섹터는 기존의 액터들에게 ADD_OBJECT
 		auto [x, y] = actor->GetPos();
 		auto& sector = getSector(x, y);
 		auto id = actor->GetID();

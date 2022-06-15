@@ -4,6 +4,7 @@
 #include "IocpBase.h"
 #include "Protocol.h"
 #include "Session.h"
+#include "SectorManager.h"
 
 namespace mk
 {
@@ -25,11 +26,17 @@ namespace mk
 	void Sector::AddActor(const id_type id)
 	{
 		mActors.insert(id);
+
+		// TODO :
+		// 시야 내 액터들에게 ADD_OBJECT
 	}
 
 	void Sector::RemoveActor(const id_type id)
 	{
 		mActors.unsafe_erase(id);
+
+		// TODO :
+		// 시야 내 액터들에게 REMOVE_OBJECT
 	}
 
 	void Sector::MoveActor(const id_type id, const char direction,
@@ -60,6 +67,16 @@ namespace mk
 			}
 
 			actor->SetPos(x, y);
+
+			bool bOut = isOutOfBound(x, y);
+			if (bOut)
+			{
+				static_cast<Session*>(actor)->SendMovePacket(id, x, y, clientTime);
+				RemoveActor(id);
+				SectorManager::AddActor(actor);
+				return;
+			}
+
 			sendMovePacket(id, x, y, clientTime);
 		}
 		else
@@ -70,7 +87,34 @@ namespace mk
 
 	bool Sector::isSolid(const short row, const short col)
 	{
-		return mTileMap[row][col].Solidity == 1;
+		return mTileMap[row % 40][col % 40].Solidity == 1;
+	}
+
+	bool Sector::isOutOfBound(const short x, const short y)
+	{
+		const POINT leftTop = { (mSectorNum % 50) * 40, (mSectorNum / 50) * 40 };
+
+		if (x < leftTop.x)
+		{
+			return true;
+		}
+		
+		if (x > leftTop.x + 39)
+		{
+			return true;
+		}
+
+		if (y < leftTop.y)
+		{
+			return true;
+		}
+
+		if (y > leftTop.y + 39)
+		{
+			return true;
+		}
+
+		return false;
 	}
 
 	void Sector::sendMovePacket(const id_type id, const short x, const short y,
@@ -85,5 +129,4 @@ namespace mk
 			}
 		}
 	}
-
 }
