@@ -11,8 +11,8 @@ void MainScene::Enter()
 {
 	TileMap::WaitMapLoading();
 
-	PacketManager::RegisterPacketFunc(SC_MOVE_PLAYER, [](char* p) {
-		SC_MOVE_PLAYER_PACKET* packet = reinterpret_cast<SC_MOVE_PLAYER_PACKET*>(p);
+	PacketManager::RegisterPacketFunc(SC_MOVE_OBJECT, [](char* p) {
+		SC_MOVE_OBJECT_PACKET* packet = reinterpret_cast<SC_MOVE_OBJECT_PACKET*>(p);
 		ActorManager::MoveActor(packet->id,
 			packet->x,
 			packet->y);
@@ -21,7 +21,7 @@ void MainScene::Enter()
 
 void MainScene::Exit()
 {
-	PacketManager::RemovePacketFunc(SC_MOVE_PLAYER);
+	PacketManager::RemovePacketFunc(SC_MOVE_OBJECT);
 }
 
 void MainScene::ProcessInput()

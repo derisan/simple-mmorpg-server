@@ -161,7 +161,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Actor.h" />
-    <ClInclude Include="CommonDefine.h" />
     <ClInclude Include="IocpBase.h" />
     <ClInclude Include="Lock.h" />
     <ClInclude Include="Log.h" />

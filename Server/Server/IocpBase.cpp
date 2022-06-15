@@ -11,6 +11,14 @@ namespace mk
 
 	std::array<Actor*, MAX_USER_NUM + MAX_NPC_NUM> gClients;
 
+	enum 
+	{
+		UP,
+		DOWN,
+		LEFT,
+		RIGHT
+	};
+
 	inline Session* GetSession(const int id)
 	{
 		return static_cast<Session*>(gClients[id]);
@@ -43,7 +51,7 @@ namespace mk
 
 		SOCKADDR_IN serverAddr = {};
 		serverAddr.sin_family = AF_INET;
-		serverAddr.sin_port = htons(SERVER_PORT);
+		serverAddr.sin_port = htons(PORT_NUM);
 		serverAddr.sin_addr.s_addr = htonl(INADDR_ANY);
 		ret = bind(mListenSocket, reinterpret_cast<sockaddr*>(&serverAddr), sizeof(serverAddr));
 		if (SOCKET_ERROR == ret)
@@ -229,10 +237,10 @@ namespace mk
 
 			switch (movePacket->direction)
 			{
-			case MoveDirection::UP: if (y > 0) y--; break;
-			case MoveDirection::DOWN: y++; break;
-			case MoveDirection::LEFT: if (x > 0) x--; break;
-			case MoveDirection::RIGHT: x++; break;
+			case UP: if (y > 0) y--; break;
+			case DOWN: y++; break;
+			case LEFT: if (x > 0) x--; break;
+			case RIGHT: x++; break;
 			default: MK_ASSERT(false); break;
 			}
 			session->SetPos({ x, y });

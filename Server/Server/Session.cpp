@@ -142,9 +142,9 @@ namespace mk
 
 	void Session::SendLoginInfoPacket()
 	{
-		SC_LOGIN_INFO_PACKET packet = {};
+		SC_LOGIN_OK_PACKET packet = {};
 		packet.size = sizeof(packet);
-		packet.type = SC_LOGIN_INFO;
+		packet.type = SC_LOGIN_OK;
 		packet.id = GetID();
 		packet.x = GetX();
 		packet.y = GetY();
@@ -154,9 +154,9 @@ namespace mk
 	void Session::SendMovePacket(const int id, const int x, const int y,
 		const unsigned int time)
 	{
-		SC_MOVE_PLAYER_PACKET packet = {};
+		SC_MOVE_OBJECT_PACKET packet = {};
 		packet.size = sizeof(packet);
-		packet.type = SC_MOVE_PLAYER;
+		packet.type = SC_MOVE_OBJECT;
 		packet.id = id;
 		packet.x = x;
 		packet.y = y;

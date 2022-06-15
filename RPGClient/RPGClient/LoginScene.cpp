@@ -11,8 +11,8 @@ void LoginScene::Enter()
 	mBackground = Texture{ ASSET_PATH(Login_Background.png) };
 	mTitle = Texture{ ASSET_PATH(Login_Title.png) };
 
-	PacketManager::RegisterPacketFunc(SC_LOGIN_INFO, [this](char* p) {
-		SC_LOGIN_INFO_PACKET* packet = reinterpret_cast<SC_LOGIN_INFO_PACKET*>(p);
+	PacketManager::RegisterPacketFunc(SC_LOGIN_OK, [this](char* p) {
+		SC_LOGIN_OK_PACKET* packet = reinterpret_cast<SC_LOGIN_OK_PACKET*>(p);
 		// TODO : 로그인 성공 여부 따져서 메인 씬으로 전환
 		auto& actor = ActorManager::RegisterActor(packet->id, packet->x,
 			packet->y, mUserInput.text);
@@ -26,7 +26,7 @@ void LoginScene::Enter()
 
 void LoginScene::Exit()
 {
-	PacketManager::RemovePacketFunc(SC_LOGIN_INFO);
+	PacketManager::RemovePacketFunc(SC_LOGIN_OK);
 }
 
 void LoginScene::Render()
@@ -46,7 +46,6 @@ void LoginScene::renderUI()
 {
 	constexpr static float textBoxWidth = 300.0f;
 	constexpr static float buttonWidth = 100.0f;
-	constexpr static int32 maxChars = 19;
 
 	const auto ScreenSize = Scene::Size();
 	float xPos = (ScreenSize.x - textBoxWidth) / 2.0f;
@@ -59,7 +58,7 @@ void LoginScene::renderUI()
 		mUserInput,
 		Vec2{ xPos, ScreenSize.y - 125.0f },
 		textBoxWidth,
-		maxChars);
+		NAME_SIZE);
 
 	xPos = (ScreenSize.x - buttonWidth) / 2.0f;
 
