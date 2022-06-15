@@ -3,31 +3,43 @@
 
 #include <fstream>
 
-std::vector<std::vector<Tile>> TileMap::mTileMap;
-s3d::int32 TileMap::mMapWidth;
-s3d::int32 TileMap::mMapHeight;
-std::future<void> TileMap::mTask;
+std::vector<std::vector<Tile>> TileMap::sTileMap;
+s3d::int32 TileMap::sMapWidth;
+s3d::int32 TileMap::sMapHeight;
+std::future<void> TileMap::sTask;
+
+std::unordered_map<int32, TextureRegion> gTileRegions;
+
+void TileMap::Init()
+{
+	const Texture tileset{ ASSET_PATH(TileSet.png) };
+
+	for (int32 i = 0; i < 30; ++i)
+	{
+		gTileRegions[i] = tileset(i % 10 * 16, static_cast<int32>(i / 10) * 16,
+			16, 16).scaled(2.0);
+	}
+}
 
 void TileMap::LoadMapAsync(const String& mapFile)
 {
-	mTask = std::async(std::launch::async, TileMap::LoadMap, mapFile);
+	sTask = std::async(std::launch::async, TileMap::LoadMap, mapFile);
 }
 
 void TileMap::WaitMapLoading()
 {
-	if (not mTask.valid())
+	if (not sTask.valid())
 	{
 		return;
 	}
 
-	mTask.wait();
+	sTask.wait();
 }
 
 void TileMap::LoadMap(const String& mapFile)
 {
-	// TODO : width, height protocol.h에 있는 전역 변수로 교체
-	mMapWidth = 2000;
-	mMapHeight = 2000;
+	sMapWidth = 2000;
+	sMapHeight = 2000;
 
 	std::ifstream file(mapFile.narrow());
 
@@ -42,27 +54,26 @@ void TileMap::LoadMap(const String& mapFile)
 
 	std::vector<std::vector<Tile>> tilemap;
 	tilemap.resize(height);
-	const Texture tileset{ ASSET_PATH(TileSet.png) };
 	
 	for (int32 row = 0; row < height; ++row)
 	{
 		for (int32 col = 0; col < width; ++col)
 		{
-			int32 tileOffset = 0;
+			int32 tileNumber = 0;
 			int32 solidity = 0;
 
-			file >> tileOffset >> solidity;
+			file >> tileNumber >> solidity;
 
-			tilemap[row].emplace_back(tileset(tileOffset % 10 * 16, tileOffset / 10 * 16, 16, 16).scaled(2.0));
+			tilemap[row].emplace_back(gTileRegions[tileNumber]);
 		}
 	}
 
-	mTileMap.resize(mMapWidth);
-	for (int32 row = 0; row < mMapHeight; ++row)
+	sTileMap.resize(sMapWidth);
+	for (int32 row = 0; row < sMapHeight; ++row)
 	{
-		for (int32 col = 0; col < mMapWidth; ++col)
+		for (int32 col = 0; col < sMapWidth; ++col)
 		{
-			mTileMap[row].push_back(tilemap[row % 40][col % 40]);
+			sTileMap[row].push_back(tilemap[row % 40][col % 40]);
 		}
 	}
 }
@@ -86,7 +97,7 @@ void TileMap::RenderMap(const Point& playerPos)
 	{
 		for (int32 col = left; col < left + 20; ++col)
 		{
-			mTileMap[row][col].TileTex.draw((col % 20) * 32, (row % 20) * 32);
+			sTileMap[row][col].TileTex.draw((col % 20) * 32, (row % 20) * 32);
 		}
 	}
 }

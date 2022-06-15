@@ -2,12 +2,13 @@
 
 struct Tile
 {
-	TextureRegion TileTex = {};
+	const TextureRegion& TileTex;
 };
 
 class TileMap
 {
 public:
+	static void Init();
 	static void LoadMapAsync(const String& mapFile);
 	static void WaitMapLoading();
 	static void LoadMap(const String& mapFile);
@@ -15,9 +16,9 @@ public:
 	static void RenderMap(const Point& playerPos);
 
 private:
-	static std::vector<std::vector<Tile>> mTileMap;
-	static int32 mMapWidth;
-	static int32 mMapHeight;
-	static std::future<void> mTask;
+	static std::vector<std::vector<Tile>> sTileMap;
+	static int32 sMapWidth;
+	static int32 sMapHeight;
+	static std::future<void> sTask;
 };
 

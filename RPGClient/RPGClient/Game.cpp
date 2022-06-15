@@ -21,6 +21,7 @@ Game::~Game()
 
 void Game::Init()
 {
+	TileMap::Init();
 	TileMap::LoadMapAsync(ASSET_PATH(WorldMap.txt));
 	ResourceManager::LoadAssets();
 

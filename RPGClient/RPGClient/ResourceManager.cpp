@@ -1,8 +1,6 @@
 ﻿#include "stdafx.h"
 #include "ResourceManager.h"
 
-std::unordered_map<ResourceManager::race_type, s3d::Texture> ResourceManager::sTextures;
-
 void ResourceManager::LoadAssets()
 {
 	TextureAsset::Register(U"Tex_Character", ASSET_PATH(Character.png));

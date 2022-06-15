@@ -7,8 +7,5 @@ public:
 
 	static void LoadAssets();
 	static String GetTexName(race_type race);
-
-private:
-	static std::unordered_map<race_type, Texture> sTextures;
 };
 
