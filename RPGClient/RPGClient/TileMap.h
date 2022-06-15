@@ -3,7 +3,6 @@
 struct Tile
 {
 	TextureRegion TileTex = {};
-	bool IsSolid = false;
 };
 
 class TileMap
@@ -11,7 +10,7 @@ class TileMap
 public:
 	static void LoadMap(const String& mapFile);
 
-	static void RenderMap(const Point& position);
+	static void RenderMap(const Point& playerPos);
 
 private:
 	static std::vector<std::vector<Tile>> mTileMap;

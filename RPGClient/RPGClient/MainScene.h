@@ -13,5 +13,6 @@ public:
 	virtual void Render() override;
 
 private:
+	Point mTempPos = { 0,0 };
 };
 

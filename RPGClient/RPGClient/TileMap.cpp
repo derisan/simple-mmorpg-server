@@ -9,6 +9,10 @@ s3d::int32 TileMap::mMapHeight;
 
 void TileMap::LoadMap(const String& mapFile)
 {
+	// TODO : width, height protocol.h에 있는 전역 변수로 교체
+	mMapWidth = 2000;
+	mMapHeight = 2000;
+
 	std::ifstream file(mapFile.narrow());
 
 	if (not file.is_open())
@@ -18,36 +22,55 @@ void TileMap::LoadMap(const String& mapFile)
 
 	int32 width = 0;
 	int32 height = 0;
-	file >> width >> height;
+	file >> width >> height; // (width, height) = (40, 40)
 
-	mMapWidth = width;
-	mMapHeight = height;
-
-	mTileMap.resize(height);
-
+	std::vector<std::vector<Tile>> tilemap;
+	tilemap.resize(height);
 	const Texture tileset{ ASSET_PATH(TileSet.png) };
-
-	int32 tileOffset = 0;
-	int32 solidity = 0;
+	
 	for (int32 row = 0; row < height; ++row)
 	{
 		for (int32 col = 0; col < width; ++col)
 		{
+			int32 tileOffset = 0;
+			int32 solidity = 0;
+
 			file >> tileOffset >> solidity;
 
-			mTileMap[row].emplace_back(tileset(tileOffset % 10 * 16, tileOffset / 10 * 16, 16, 16).scaled(2.0),
-				solidity == 1 ? true : false);
+			tilemap[row].emplace_back(tileset(tileOffset % 10 * 16, tileOffset / 10 * 16, 16, 16).scaled(2.0));
+		}
+	}
+
+	mTileMap.resize(mMapWidth);
+	for (int32 row = 0; row < mMapHeight; ++row)
+	{
+		for (int32 col = 0; col < mMapWidth; ++col)
+		{
+			mTileMap[row].push_back(tilemap[row % 40][col % 40]);
 		}
 	}
 }
 
-void TileMap::RenderMap(const Point& position)
+void TileMap::RenderMap(const Point& playerPos)
 {
-	for (int32 row = 0; row < 20; ++row)
+	int32 left = 0;
+	if (playerPos.x > 19)
 	{
-		for (int32 col = 0; col < 20; ++col)
+		left = (playerPos.x / 20) * 20;
+	}
+
+	int32 top = 0;
+	if (playerPos.y > 19)
+	{
+		top = (playerPos.y / 20) * 20;
+	}
+
+
+	for (int32 row = top; row < top + 20; ++row)
+	{
+		for (int32 col = left; col < left + 20; ++col)
 		{
-			mTileMap[row][col].TileTex.draw(col * 32, row * 32);
+			mTileMap[row][col].TileTex.draw((col % 20) * 32, (row % 20) * 32);
 		}
 	}
 }

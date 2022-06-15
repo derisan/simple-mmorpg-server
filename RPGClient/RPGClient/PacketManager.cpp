@@ -72,7 +72,7 @@ bool PacketManager::Connect(const IPv4Address& ip, uint16 port)
 	mTCPContext.connect(ip, port);
 	if (not mTCPContext.isConnected())
 	{
-		std::this_thread::sleep_for(3s);
+		std::this_thread::sleep_for(2s);
 	}
 
 	if (not mTCPContext.isConnected())
