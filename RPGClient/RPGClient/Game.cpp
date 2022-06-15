@@ -1,10 +1,11 @@
 ﻿#include "stdafx.h"
 #include "Game.h"
 
-#include "ActorManager.h"
 #include "LoginScene.h"
-#include "PacketManager.h"
 #include "TileMap.h"
+#include "ActorManager.h"
+#include "PacketManager.h"
+#include "ResourceManager.h"
 
 std::unique_ptr<Game> gGame;
 
@@ -21,6 +22,7 @@ Game::~Game()
 void Game::Init()
 {
 	TileMap::LoadMapAsync(ASSET_PATH(WorldMap.txt));
+	ResourceManager::LoadTextures();
 
 	mActiveScene = std::make_unique<LoginScene>();
 	mActiveScene->Enter();

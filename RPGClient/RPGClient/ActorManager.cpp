@@ -1,6 +1,8 @@
 ﻿#include "stdafx.h"
 #include "ActorManager.h"
 
+#include "ResourceManager.h"
+
 std::unordered_map<s3d::int32, Actor> ActorManager::sActors;
 
 Actor& ActorManager::RegisterActor(const int32 id, const int16 x, const int16 y)
@@ -11,7 +13,8 @@ Actor& ActorManager::RegisterActor(const int32 id, const int16 x, const int16 y)
 	actor.SetY(y);
 
 	// TODO : 종족에 따라 텍스쳐 변경
-	actor.SetTexture(Texture{ ASSET_PATH(Character.png) });
+	auto actorTexture = ResourceManager::GetTexture(0);
+	actor.SetTexture(actorTexture);
 
 	if (auto iter = sActors.find(id); iter == sActors.end())
 	{
