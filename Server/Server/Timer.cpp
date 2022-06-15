@@ -24,7 +24,7 @@ namespace mk
 		mTimerQueue.push(ev);
 	}
 
-	void Timer::AddEvent(const TimerEventType eventType, const int32_t id, 
+	void Timer::AddEvent(const TimerEventType eventType, const int id, 
 		const std::chrono::system_clock::time_point actTime)
 	{
 		std::lock_guard guard{ mLock };

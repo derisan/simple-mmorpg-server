@@ -7,11 +7,11 @@
 
 namespace mk
 {
-	constexpr int32_t WORKER_THREAD_NUM = 6;
+	constexpr int WORKER_THREAD_NUM = 6;
 
 	std::array<Actor*, MAX_USER_NUM + MAX_NPC_NUM> gClients;
 
-	inline Session* GetSession(const int32_t id)
+	inline Session* GetSession(const int id)
 	{
 		return static_cast<Session*>(gClients[id]);
 	}
@@ -19,7 +19,7 @@ namespace mk
 	bool IocpBase::Init()
 	{
 		WSADATA wsaData = {};
-		int32_t ret = WSAStartup(MAKEWORD(2, 2), &wsaData);
+		int ret = WSAStartup(MAKEWORD(2, 2), &wsaData);
 		if (0 != ret)
 		{
 			MK_ERROR("WSAStartup failed");
@@ -78,7 +78,7 @@ namespace mk
 			mWorkerThreads.emplace_back([this]() { doWorker(); });
 		}
 
-		for (int32_t idx = 0; idx < MAX_USER_NUM; ++idx)
+		for (int idx = 0; idx < MAX_USER_NUM; ++idx)
 		{
 			auto session = new Session;
 			session->SetID(idx);
@@ -124,7 +124,7 @@ namespace mk
 			OVERLAPPEDEX* overEx = nullptr;
 
 			BOOL ret = GetQueuedCompletionStatus(mIocp, &numBytes, &key, (LPOVERLAPPED*)&overEx, INFINITE);
-			int32_t id = static_cast<int32_t>(key);
+			int id = static_cast<int>(key);
 
 			if (FALSE == ret)
 			{
@@ -199,14 +199,14 @@ namespace mk
 		}
 	}
 
-	void IocpBase::disconnect(const int32_t id)
+	void IocpBase::disconnect(const int id)
 	{
 		MK_INFO("Client[{0}] disconnected.", id);
 		auto session = GetSession(id);
 		session->Disconnect(mListenSocket);
 	}
 
-	void IocpBase::processPacket(const int32_t id, char* packet)
+	void IocpBase::processPacket(const int id, char* packet)
 	{
 		char packetType = packet[1];
 

@@ -62,7 +62,7 @@ namespace mk
 		BindRecv();
 	}
 
-	std::vector<char*> Session::DoRecv(const int32_t dataSize)
+	std::vector<char*> Session::DoRecv(const int dataSize)
 	{
 		std::vector<char*> packets;
 
@@ -70,7 +70,7 @@ namespace mk
 		auto remain = mWritePos - mReadPos;
 		while (remain > 0)
 		{
-			int32_t packetSize = mRecvBuffer[mReadPos];
+			int packetSize = mRecvBuffer[mReadPos];
 			if (remain >= packetSize)
 			{
 				packets.push_back(&mRecvBuffer[mReadPos]);
@@ -103,7 +103,7 @@ namespace mk
 		mRecvContext.WsaBuf.len = RECV_BUFFER_HALF_SIZE;
 
 		DWORD flags = 0;
-		int32_t ret = WSARecv(mSocket,
+		int ret = WSARecv(mSocket,
 			&mRecvContext.WsaBuf,
 			1,
 			NULL,
@@ -151,8 +151,8 @@ namespace mk
 		sendPacket(&packet, packet.size);
 	}
 
-	void Session::SendMovePacket(const int32_t id, const int32_t x, const int32_t y,
-		const uint32_t time)
+	void Session::SendMovePacket(const int id, const int x, const int y,
+		const unsigned int time)
 	{
 		SC_MOVE_PLAYER_PACKET packet = {};
 		packet.size = sizeof(packet);
@@ -164,7 +164,7 @@ namespace mk
 		sendPacket(&packet, packet.size);
 	}
 
-	void Session::sendPacket(void* packet, const int32_t packetSize)
+	void Session::sendPacket(void* packet, const int packetSize)
 	{
 		OVERLAPPEDEX* overEx = mPool->Pop();
 		ZeroMemory(overEx, sizeof(OVERLAPPEDEX));
@@ -174,7 +174,7 @@ namespace mk
 		overEx->WsaBuf.buf = overEx->SendBuffer;
 		overEx->WsaBuf.len = packetSize;
 
-		int32_t ret = WSASend(mSocket,
+		int ret = WSASend(mSocket,
 			&overEx->WsaBuf,
 			1,
 			NULL,

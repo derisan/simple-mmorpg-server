@@ -4,7 +4,7 @@
 
 namespace mk
 {
-	constexpr uint32_t SEND_BUFFER_SIZE = 200;
+	constexpr int SEND_BUFFER_SIZE = 200;
 	
 	enum class OperationType
 	{
@@ -20,7 +20,7 @@ namespace mk
 		WSAOVERLAPPED Overlapped = {};
 		WSABUF WsaBuf = {};
 		OperationType OpType = OperationType::OP_NONE;
-		int32_t ID = INVALID_VALUE;
+		int ID = INVALID_VALUE;
 		char SendBuffer[SEND_BUFFER_SIZE] = {};
 	};
 

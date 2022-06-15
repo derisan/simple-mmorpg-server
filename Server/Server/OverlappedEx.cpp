@@ -3,11 +3,11 @@
 
 namespace mk
 {
-	constexpr uint32_t MAX_OVEREX_NUM = 100;
+	constexpr int MAX_OVEREX_NUM = 100;
 
 	OverlappedPool::OverlappedPool()
 	{
-		for (uint32_t i = 0; i < MAX_OVEREX_NUM; ++i)
+		for (int i = 0; i < MAX_OVEREX_NUM; ++i)
 		{
 			auto overEX = new OVERLAPPEDEX{};
 			mPool.push(overEX);

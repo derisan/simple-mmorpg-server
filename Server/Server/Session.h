@@ -5,8 +5,8 @@
 
 namespace mk
 {
-	constexpr uint32_t RECV_BUFFER_SIZE = 1024;
-	constexpr uint32_t RECV_BUFFER_HALF_SIZE = RECV_BUFFER_SIZE / 2;
+	constexpr int RECV_BUFFER_SIZE = 1024;
+	constexpr int RECV_BUFFER_HALF_SIZE = RECV_BUFFER_SIZE / 2;
 
 	class Session : public Actor
 	{
@@ -16,14 +16,14 @@ namespace mk
 		void BindAccept(SOCKET listenSocket);
 		void BindRecv();
 		void DoAccept(HANDLE iocp);
-		std::vector<char*> DoRecv(const int32_t dataSize);
+		std::vector<char*> DoRecv(const int dataSize);
 		void Push(OVERLAPPEDEX* overEX);
 		void Disconnect(SOCKET listenSocket);
 
 	public:
 		void SendLoginInfoPacket();
-		void SendMovePacket(const int32_t id, const int32_t x,
-			const int32_t y, const uint32_t time);
+		void SendMovePacket(const int id, const int x,
+			const int y, const unsigned int time);
 
 	public:
 		bool IsConnected() const { return mbConnected; }
@@ -31,7 +31,7 @@ namespace mk
 
 	private:
 		OVERLAPPEDEX* pop();
-		void sendPacket(void* packet, const int32_t packetSize);
+		void sendPacket(void* packet, const int packetSize);
 
 	private:
 		std::unique_ptr<OverlappedPool> mPool = nullptr;
@@ -42,8 +42,8 @@ namespace mk
 
 		OVERLAPPEDEX mRecvContext = {};
 		char mRecvBuffer[RECV_BUFFER_SIZE] = {};
-		int32_t mWritePos = 0;
-		int32_t mReadPos = 0;
+		int mWritePos = 0;
+		int mReadPos = 0;
 
 		bool mbConnected = false;
 	};

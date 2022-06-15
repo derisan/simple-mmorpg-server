@@ -7,8 +7,8 @@ namespace mk
 {
 	class Actor;
 
-	constexpr int32_t MAX_USER_NUM = 100;
-	constexpr int32_t MAX_NPC_NUM = 100;
+	constexpr int MAX_USER_NUM = 100;
+	constexpr int MAX_NPC_NUM = 100;
 
 	extern std::array<Actor*, MAX_USER_NUM + MAX_NPC_NUM> gClients;
 
@@ -24,9 +24,9 @@ namespace mk
 	private:
 		void doWorker();
 
-		void disconnect(const int32_t id);
+		void disconnect(const int id);
 
-		void processPacket(const int32_t id, char* packet);
+		void processPacket(const int id, char* packet);
 
 	private:
 		SOCKET mListenSocket = INVALID_SOCKET;
