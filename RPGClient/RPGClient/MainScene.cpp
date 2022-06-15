@@ -1,6 +1,8 @@
 ﻿#include "stdafx.h"
 #include "MainScene.h"
 
+#include "TileMap.h"
+
 void MainScene::Enter()
 {
 
@@ -25,4 +27,6 @@ void MainScene::Render()
 {
 	ClearPrint();
 	Print << U"MainScene";
+
+	TileMap::RenderMap({ 0, 0 });
 }

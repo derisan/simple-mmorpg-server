@@ -7,3 +7,5 @@
 
 #define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
+
+#define ASSET_PATH(x) U"../../../Assets/"#x

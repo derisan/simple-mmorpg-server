@@ -5,14 +5,10 @@
 #include "MainScene.h"
 #include "PacketManager.h"
 
-constexpr float textBoxWidth = 300.0f;
-constexpr float buttonWidth = 100.0f;
-constexpr int32 maxChars = 19;
-
 void LoginScene::Enter()
 {
-	mBackground = Texture{ U"Assets/Login_Background.png" };
-	mTitle = Texture{ U"Assets/Login_Title.png" };
+	mBackground = Texture{ ASSET_PATH(Login_Background.png) };
+	mTitle = Texture{ ASSET_PATH(Login_Title.png) };
 
 	PacketManager::RegisterPacketFunc(SC_LOGIN_INFO, [this](char* p) {
 		SC_LOGIN_INFO_PACKET* packet = reinterpret_cast<SC_LOGIN_INFO_PACKET*>(p);
@@ -37,11 +33,15 @@ void LoginScene::renderBackground()
 {
 	const auto ScreenSize = Scene::Size();
 	Rect{ 0, 0, ScreenSize.x, ScreenSize.y }(mBackground).draw();
-	Rect{ 20, 150, 760, 67 }(mTitle).draw();
+	Rect{ 20, 150, ScreenSize.x - 40, 67 }(mTitle).draw();
 }
 
 void LoginScene::renderUI()
 {
+	constexpr static float textBoxWidth = 300.0f;
+	constexpr static float buttonWidth = 100.0f;
+	constexpr static int32 maxChars = 19;
+
 	const auto ScreenSize = Scene::Size();
 	float xPos = (ScreenSize.x - textBoxWidth) / 2.0f;
 

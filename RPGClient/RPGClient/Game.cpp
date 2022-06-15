@@ -3,6 +3,7 @@
 
 #include "LoginScene.h"
 #include "PacketManager.h"
+#include "TileMap.h"
 
 std::unique_ptr<Game> gGame;
 
@@ -18,6 +19,8 @@ Game::~Game()
 
 void Game::Init()
 {
+	TileMap::LoadMap(ASSET_PATH(WorldMap.txt));
+
 	mActiveScene = std::make_unique<LoginScene>();
 	mActiveScene->Enter();
 }

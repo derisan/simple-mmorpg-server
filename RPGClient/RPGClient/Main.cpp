@@ -5,6 +5,7 @@
 void Main()
 {
 	System::SetTerminationTriggers(UserAction::CloseButtonClicked);
+	Window::Resize(640, 640);
 
 	gGame = std::make_unique<Game>();
 	gGame->Init();
