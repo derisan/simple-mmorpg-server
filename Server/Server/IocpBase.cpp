@@ -205,6 +205,7 @@ namespace mk
 	{
 		MK_INFO("Client[{0}] disconnected.", id);
 		auto session = GetSession(id);
+		SectorManager::RemoveActor(session);
 		session->Disconnect(mListenSocket);
 	}
 

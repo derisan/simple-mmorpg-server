@@ -33,16 +33,21 @@ namespace mk
 	{
 		auto [x, y] = actor->GetPos();
 		auto& sector = getSector(x, y);
-		auto id = actor->GetID();
-		sector->AddActor(id);
+		sector->AddActor(actor);
+	}
+
+	void SectorManager::RemoveActor(Actor* actor)
+	{
+		auto [x, y] = actor->GetPos();
+		auto& sector = getSector(x, y);
+		sector->RemoveActor(actor);
 	}
 
 	void SectorManager::MoveActor(Actor* actor, const char direction, const unsigned int clientTime /*= 0*/)
 	{
 		auto [x, y] = actor->GetPos();
 		auto& sector = getSector(x, y);
-		auto id = actor->GetID();
-		sector->MoveActor(id, direction, clientTime);
+		sector->MoveActor(actor, direction, clientTime);
 	}
 
 	std::unique_ptr<Sector>& SectorManager::getSector(const short x, const short y)

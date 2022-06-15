@@ -23,29 +23,59 @@ namespace mk
 
 	}
 
-	void Sector::AddActor(const id_type id)
+	void Sector::AddActor(Actor* target)
 	{
-		mActors.insert(id);
+		auto targetID = target->GetID();
+		auto [targetX, targetY] = target->GetPos();
+		const auto& targetName = target->GetName();
 
 		// TODO :
 		// 시야 내 액터들에게 ADD_OBJECT
+		// USER 및 NPC Viewlist 갱신
+		for (auto actor : mActors)
+		{
+			if (actor < MAX_USER)
+			{
+				Session* oldbie = static_cast<Session*>(gClients[actor]);
+
+				oldbie->SendAddObjectPacket(targetID, targetX, targetY, targetName);
+
+				auto [obX, obY] = oldbie->GetPos();
+				const auto& obName = oldbie->GetName();
+
+				static_cast<Session*>(target)->SendAddObjectPacket(actor,
+					obX, obY, obName);
+			}
+		}
+
+		mActors.insert(targetID);
 	}
 
-	void Sector::RemoveActor(const id_type id)
+	void Sector::RemoveActor(Actor* target)
 	{
-		mActors.unsafe_erase(id);
+		// TODO : target 유효성 검사
+		auto targetID = target->GetID();
+		mActors.unsafe_erase(targetID);
 
 		// TODO :
 		// 시야 내 액터들에게 REMOVE_OBJECT
+		for (auto actor : mActors)
+		{
+			if (actor < MAX_USER)
+			{
+				static_cast<Session*>(gClients[actor])->SendRemoveObjectPacket(targetID);
+			}
+		}
 	}
 
-	void Sector::MoveActor(const id_type id, const char direction,
+	void Sector::MoveActor(Actor* target, const char direction,
 		const unsigned int clientTime)
 	{
-		if (auto iter = mActors.find(id); iter != mActors.end())
+		auto targetID = target->GetID();
+
+		if (auto iter = mActors.find(targetID); iter != mActors.end())
 		{
-			auto actor = gClients[id];
-			auto [x, y] = actor->GetPos();
+			auto [x, y] = target->GetPos();
 
 			switch (direction)
 			{
@@ -66,22 +96,22 @@ namespace mk
 				break;
 			}
 
-			actor->SetPos(x, y);
+			target->SetPos(x, y);
 
 			bool bOut = isOutOfBound(x, y);
 			if (bOut)
 			{
-				static_cast<Session*>(actor)->SendMovePacket(id, x, y, clientTime);
-				RemoveActor(id);
-				SectorManager::AddActor(actor);
+				static_cast<Session*>(target)->SendMovePacket(targetID, x, y, clientTime);
+				RemoveActor(target);
+				SectorManager::AddActor(target);
 				return;
 			}
 
-			sendMovePacket(id, x, y, clientTime);
+			sendMovePacket(targetID, x, y, clientTime);
 		}
 		else
 		{
-			MK_INFO("Actor id[{0}]: is not in sector[{1}]", id, mSectorNum);
+			MK_INFO("Actor id[{0}]: is not in sector[{1}]", targetID, mSectorNum);
 		}
 	}
 

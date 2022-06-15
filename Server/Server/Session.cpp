@@ -149,7 +149,7 @@ namespace mk
 		sendPacket(&packet, packet.size);
 	}
 
-	void Session::SendMovePacket(const int id, const int x, const int y,
+	void Session::SendMovePacket(const int id, const short x, const short y,
 		const unsigned int time)
 	{
 		SC_MOVE_OBJECT_PACKET packet = {};
@@ -159,6 +159,28 @@ namespace mk
 		packet.x = x;
 		packet.y = y;
 		packet.client_time = time;
+		sendPacket(&packet, packet.size);
+	}
+
+	void Session::SendAddObjectPacket(const int id, const short x, const short y, 
+		const std::string& name)
+	{
+		SC_ADD_OBJECT_PACKET packet = {};
+		packet.size = sizeof(packet);
+		packet.type = SC_ADD_OBJECT;
+		packet.id = id;
+		packet.x = x;
+		packet.y = y;
+		CopyMemory(packet.name, name.data(), name.length());
+		sendPacket(&packet, packet.size);
+	}
+
+	void Session::SendRemoveObjectPacket(const int id)
+	{
+		SC_REMOVE_OBJECT_PACKET packet = {};
+		packet.size = sizeof(packet);
+		packet.type = SC_REMOVE_OBJECT;
+		packet.id = id;
 		sendPacket(&packet, packet.size);
 	}
 

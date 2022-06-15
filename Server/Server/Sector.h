@@ -6,6 +6,8 @@
 
 namespace mk
 {
+	class Actor;
+
 	class Sector
 	{
 	public:
@@ -13,11 +15,11 @@ namespace mk
 
 		Sector(const std::vector<std::vector<Tile>>& tileMap, int sectorNum);
 
-		void AddActor(const id_type id);
+		void AddActor(Actor* target);
 
-		void RemoveActor(const id_type id);
+		void RemoveActor(Actor* target);
 
-		void MoveActor(const id_type id, const char direction,
+		void MoveActor(Actor* target, const char direction,
 			const unsigned int clientTime);
 		
 	private:

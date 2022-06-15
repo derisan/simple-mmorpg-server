@@ -13,6 +13,7 @@ namespace mk
 		int GetID() const { return mID; }
 		void SetID(const int value) { mID = value; }
 		std::string GetName() const { return mName; }
+		const std::string& GetName() { return mName; }
 		void SetName(std::string_view value) { mName = value; }
 
 		short GetX() const { return mPosX; }

@@ -11,6 +11,8 @@ namespace mk
 		static void Init();
 
 		static void AddActor(Actor* actor);
+
+		static void RemoveActor(Actor* actor);
 		
 		static void MoveActor(Actor* actor, const char direction, 
 			const unsigned int clientTime = 0);

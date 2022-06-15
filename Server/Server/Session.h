@@ -22,8 +22,11 @@ namespace mk
 
 	public:
 		void SendLoginInfoPacket();
-		void SendMovePacket(const int id, const int x,
-			const int y, const unsigned int time);
+		void SendMovePacket(const int id, const short x,
+			const short y, const unsigned int time);
+		void SendAddObjectPacket(const int id, const short x, const short y, 
+			const std::string& name);
+		void SendRemoveObjectPacket(const int id);
 
 	public:
 		bool IsConnected() const { return mbConnected; }

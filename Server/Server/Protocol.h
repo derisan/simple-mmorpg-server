@@ -50,6 +50,33 @@ struct SC_LOGIN_OK_PACKET
 	short y;
 };
 
+struct SC_LOGIN_FAIL_PACKET {
+	unsigned char size;
+	char	type;
+	int		reason;				// 0 : Invalid Name  (특수문자, 공백 제외)
+								// 1 : Name Already Playing
+								// 2 : Server Full
+};
+
+struct SC_ADD_OBJECT_PACKET {
+	unsigned char size;
+	char	type;
+	int		id;
+	short	x, y;
+	//short	race;			// 종족 : 인간, 엘프, 드워프, 오크, 드래곤
+							// 클라이언트에서 종족별로 별도의 그래픽 표현
+							// 추가적으로 성별이나, 직업을 추가할 수 있다.
+	char	name[NAME_SIZE];
+	//short	level;
+	//int		hp, hpmax;
+};
+
+struct SC_REMOVE_OBJECT_PACKET {
+	unsigned char size;
+	char	type;
+	int	id;
+};
+
 struct SC_MOVE_OBJECT_PACKET
 {
 	unsigned char size;

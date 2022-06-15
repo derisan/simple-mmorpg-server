@@ -17,6 +17,22 @@ void MainScene::Enter()
 			packet->x,
 			packet->y);
 	});
+
+	PacketManager::RegisterPacketFunc(SC_ADD_OBJECT, [](char* p) {
+		SC_ADD_OBJECT_PACKET* packet = reinterpret_cast<SC_ADD_OBJECT_PACKET*>(p);
+
+		std::string_view name = packet->name;
+
+		ActorManager::RegisterActor(packet->id,
+			packet->x,
+			packet->y,
+			Unicode::Widen(name));
+	});
+
+	PacketManager::RegisterPacketFunc(SC_REMOVE_OBJECT, [](char* p) {
+		SC_REMOVE_OBJECT_PACKET* packet = reinterpret_cast<SC_REMOVE_OBJECT_PACKET*>(p);
+		ActorManager::RemoveActor(packet->id);
+	});
 }
 
 void MainScene::Exit()
@@ -38,9 +54,9 @@ void MainScene::Update(const float deltaTime)
 
 void MainScene::Render()
 {
-	ClearPrint();
+	//ClearPrint();
 	Point myPos = mActor->GetPos();
-	Print << myPos;
+	//Print << myPos;
 
 	TileMap::RenderMap(myPos);
 }
