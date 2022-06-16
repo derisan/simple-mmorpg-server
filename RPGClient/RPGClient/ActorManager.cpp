@@ -55,10 +55,10 @@ void ActorManager::MoveActor(const int32 id, const int16 x, const int16 y)
 	}
 }
 
-void ActorManager::RenderActors(const Font& font)
+void ActorManager::RenderActors()
 {
 	for (auto& [id, actor] : sActors)
 	{
-		actor.Render(font);
+		actor.Render();
 	}
 }

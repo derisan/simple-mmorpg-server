@@ -12,7 +12,7 @@ public:
 
 	static void MoveActor(const int32 id, const int16 x, const int16 y);
 
-	static void RenderActors(const Font& font);
+	static void RenderActors();
 
 private:
 	static std::unordered_map<int32, Actor> sActors;

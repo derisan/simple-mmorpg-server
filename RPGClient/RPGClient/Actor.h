@@ -3,7 +3,7 @@
 class Actor
 {
 public:
-	void Render(const Font& font);
+	void Render();
 
 public:
 	int16 GetX() const { return mX; }
