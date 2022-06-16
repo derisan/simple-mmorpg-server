@@ -17,6 +17,7 @@ Actor& ActorManager::RegisterActor(const int32 id, const int16 x, const int16 y,
 
 	if (auto iter = sActors.find(id); iter == sActors.end())
 	{
+		Console << U"Actor id : " << id << U" added!(RegisterActor())";
 		sActors.emplace(id, std::move(actor));
 	}
 	else
@@ -33,6 +34,7 @@ void ActorManager::RemoveActor(const int32 id)
 {
 	if (auto iter = sActors.find(id); iter != sActors.end())
 	{
+		Console << U"Actor id : " << id << U" removed!(RemoveActor())";
 		sActors.erase(iter);
 	}
 	else

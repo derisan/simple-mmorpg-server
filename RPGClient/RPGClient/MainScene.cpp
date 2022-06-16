@@ -64,6 +64,7 @@ void MainScene::Render()
 	}
 
 	PutText(Format(myPos), Vec2{ 580, 10 });
+	PutText(Format(mActor->GetID()), Vec2{ 580, 30 });
 
 	ActorManager::RenderActors(myPos);
 }
