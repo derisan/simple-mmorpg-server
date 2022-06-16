@@ -63,8 +63,8 @@ void MainScene::Render()
 		ChatManager::TakeUserChat();
 	}
 
-	PutText(Format(myPos), Vec2{ 580, 10 });
-	PutText(Format(mActor->GetID()), Vec2{ 580, 30 });
+	PutText(U"POS: " + Format(myPos), Vec2{320, 10});
+	PutText(U"ID: " + Format(mActor->GetID()), Vec2{320, 30});
 
 	ActorManager::RenderActors(myPos);
 }

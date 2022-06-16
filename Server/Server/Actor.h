@@ -1,5 +1,7 @@
 #pragma once
 
+#include <unordered_set>
+
 #include "Lock.h"
 
 namespace mk
@@ -26,6 +28,7 @@ namespace mk
 
 	public:
 		SpinLock ActorLock = {};
+		std::unordered_set<int> ViewList;
 
 	private:
 		int mID = INVALID_VALUE;

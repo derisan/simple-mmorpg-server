@@ -1,8 +1,9 @@
 #pragma once
 
-#include <concurrent_unordered_set.h>
+#include <unordered_set>
 
 #include "TileMap.h"
+#include "Lock.h"
 
 namespace mk
 {
@@ -12,6 +13,7 @@ namespace mk
 	{
 	public:
 		using id_type = int;
+		using pos_type = std::pair<short, short>;
 
 		Sector(const std::vector<std::vector<Tile>>& tileMap, int sectorNum);
 
@@ -27,12 +29,13 @@ namespace mk
 
 		bool isOutOfBound(const short x, const short y);
 
-		void sendMovePacket(const id_type id, const short x, const short y,
-			const unsigned int clientTime);
+		bool isInRange(const pos_type& aPos, const pos_type& bPos);
 
 	private:
-		concurrency::concurrent_unordered_set<id_type> mActors;
+		std::unordered_set<id_type> mActors;
 		const std::vector<std::vector<Tile>>& mTileMap;
 		int mSectorNum = INVALID_VALUE;
+
+		SpinLock mLock = {};
 	};
 }
