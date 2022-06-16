@@ -62,6 +62,8 @@ void MainScene::Render()
 	{
 		ChatManager::TakeUserChat();
 	}
+
+	PutText(Format(myPos), Vec2{ 580, 10 });
 }
 
 void MainScene::pollKeyDown()
