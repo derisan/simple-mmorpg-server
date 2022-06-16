@@ -8,23 +8,22 @@
 
 namespace mk
 {
-	constexpr int TILE_PER_SECTOR = 40;
-
 	std::vector<std::vector<std::unique_ptr<Sector>>> SectorManager::sSectors;
+	int gSectorsPerLine = 0;
 
 	void SectorManager::Init()
 	{
 		TileMap::LoadTileMap("../../Assets/WorldMap.txt");
 		const auto& tileMap = TileMap::GetTileMap();
 
-		auto sectorsPerLine = W_WIDTH / TILE_PER_SECTOR;
-		sSectors.resize(sectorsPerLine);
+		gSectorsPerLine = W_WIDTH / TILE_PER_SECTOR;
+		sSectors.resize(gSectorsPerLine);
 
-		for (int row = 0; row < sectorsPerLine; ++row)
+		for (int row = 0; row < gSectorsPerLine; ++row)
 		{
-			for (int col = 0; col < sectorsPerLine; ++col)
+			for (int col = 0; col < gSectorsPerLine; ++col)
 			{
-				sSectors[row].push_back(std::make_unique<Sector>(tileMap, (row * 50) + col));
+				sSectors[row].push_back(std::make_unique<Sector>(tileMap, (row * gSectorsPerLine) + col));
 			}
 		}
 	}
@@ -52,8 +51,8 @@ namespace mk
 
 	std::unique_ptr<Sector>& SectorManager::getSector(const short x, const short y)
 	{
-		short row = (y / 40);
-		short col = (x / 40);
+		short row = (y / TILE_PER_SECTOR);
+		short col = (x / TILE_PER_SECTOR);
 
 		return sSectors[row][col];
 	}

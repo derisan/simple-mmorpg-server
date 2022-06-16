@@ -2,6 +2,9 @@
 
 namespace mk
 {
+	constexpr int TILE_PER_SECTOR = 40;
+	extern int gSectorsPerLine;
+
 	class Actor;
 	class Sector;
 

@@ -92,7 +92,6 @@ void TileMap::RenderMap(const Point& playerPos)
 		top = (playerPos.y / 20) * 20;
 	}
 
-
 	for (int32 row = top; row < top + 20; ++row)
 	{
 		for (int32 col = left; col < left + 20; ++col)

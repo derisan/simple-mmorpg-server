@@ -117,19 +117,20 @@ namespace mk
 
 	bool Sector::isSolid(const short row, const short col)
 	{
-		return mTileMap[row % 40][col % 40].Solidity == 1;
+		return mTileMap[row % TILE_PER_SECTOR][col % TILE_PER_SECTOR].Solidity == 1;
 	}
 
 	bool Sector::isOutOfBound(const short x, const short y)
 	{
-		const POINT leftTop = { (mSectorNum % 50) * 40, (mSectorNum / 50) * 40 };
+		const POINT leftTop = { (mSectorNum % gSectorsPerLine) * TILE_PER_SECTOR, 
+			(mSectorNum / gSectorsPerLine) * TILE_PER_SECTOR };
 
 		if (x < leftTop.x)
 		{
 			return true;
 		}
 		
-		if (x > leftTop.x + 39)
+		if (x > leftTop.x + (TILE_PER_SECTOR - 1))
 		{
 			return true;
 		}
@@ -139,7 +140,7 @@ namespace mk
 			return true;
 		}
 
-		if (y > leftTop.y + 39)
+		if (y > leftTop.y + (TILE_PER_SECTOR - 1))
 		{
 			return true;
 		}
