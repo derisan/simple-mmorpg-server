@@ -91,8 +91,7 @@ void PacketManager::RegisterPacketFunc(char packetType, std::function<void(char*
 	}
 	else
 	{
-		Console << U"Packet type: " << packetType << U" is already registered!";
-		MK_ASSERT(false);
+		MK_ERROR(false, U"PacketType is already registered!");
 	}
 }
 
@@ -104,8 +103,7 @@ void PacketManager::RemovePacketFunc(char packetType)
 	}
 	else
 	{
-		Console << U"Packet type: " << packetType << U" not exists!";
-		MK_ASSERT(false);
+		MK_ERROR(false, U"PacketType does not exist");
 	}
 }
 

@@ -49,7 +49,7 @@ void Game::Run()
 
 void Game::ChangeScene(BaseScene* newScene)
 {
-	MK_ASSERT(newScene);
+	MK_ERROR(newScene, U"newScene is nullptr");
 
 	mActiveScene->Exit();
 	mActiveScene.reset(newScene);

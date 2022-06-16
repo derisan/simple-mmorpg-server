@@ -45,7 +45,7 @@ void TileMap::LoadMap(const String& mapFile)
 
 	if (not file.is_open())
 	{
-		MK_ASSERT(false);
+		MK_ERROR(false, U"Failed to open map file!");
 	}
 
 	int32 width = 0;
