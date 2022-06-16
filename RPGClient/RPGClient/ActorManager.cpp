@@ -61,3 +61,15 @@ void ActorManager::RenderActors()
 		actor.Render();
 	}
 }
+
+s3d::String ActorManager::GetActorName(const int32 id)
+{
+	if (auto iter = sActors.find(id); iter != sActors.end())
+	{
+		return (iter->second).GetName();
+	}
+	else
+	{
+		return U"Default";
+	}
+}

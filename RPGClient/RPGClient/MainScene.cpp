@@ -4,6 +4,7 @@
 #include <chrono>
 
 #include "ActorManager.h"
+#include "ChatManager.h"
 #include "TileMap.h"
 #include "PacketManager.h"
 
@@ -54,11 +55,13 @@ void MainScene::Update(const float deltaTime)
 
 void MainScene::Render()
 {
-	//ClearPrint();
 	Point myPos = mActor->GetPos();
-	//Print << myPos;
-
 	TileMap::RenderMap(myPos);
+
+	if (mbChatFlag)
+	{
+		ChatManager::TakeUserChat();
+	}
 }
 
 void MainScene::pollKeyDown()
@@ -93,5 +96,15 @@ void MainScene::pollKeyDown()
 		packet.client_time = static_cast<unsigned>(duration_cast<milliseconds>(
 			system_clock::now().time_since_epoch()).count());
 		PacketManager::SendPacket(&packet, packet.size);
+	}
+
+	if (KeyEnter.down())
+	{
+		mbChatFlag = !mbChatFlag;
+
+		if (not mbChatFlag)
+		{
+			ChatManager::SendCurrentChat();
+		}
 	}
 }

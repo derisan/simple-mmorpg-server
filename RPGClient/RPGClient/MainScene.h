@@ -22,5 +22,7 @@ private:
 
 private:
 	Actor* mActor = nullptr;
+
+	bool mbChatFlag = false;
 };
 

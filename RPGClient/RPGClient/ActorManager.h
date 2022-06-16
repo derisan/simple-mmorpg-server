@@ -14,6 +14,8 @@ public:
 
 	static void RenderActors();
 
+	static String GetActorName(const int32 id);
+
 private:
 	static std::unordered_map<int32, Actor> sActors;
 };

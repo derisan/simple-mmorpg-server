@@ -6,6 +6,7 @@
 #include "ActorManager.h"
 #include "PacketManager.h"
 #include "ResourceManager.h"
+#include "ChatManager.h"
 
 std::unique_ptr<Game> gGame;
 
@@ -25,6 +26,8 @@ void Game::Init()
 	TileMap::LoadMapAsync(ASSET_PATH(WorldMap.txt));
 	ResourceManager::Init();
 	PacketManager::Init();
+	ChatManager::Init();
+
 	mActiveScene = std::make_unique<LoginScene>();
 	mActiveScene->Enter();
 }

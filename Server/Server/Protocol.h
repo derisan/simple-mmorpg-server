@@ -41,13 +41,31 @@ struct CS_MOVE_PACKET
 	unsigned int client_time;
 };
 
-struct SC_LOGIN_OK_PACKET
-{
+struct CS_ATTACK_PACKET {
 	unsigned char size;
-	char type;
-	int id;
-	short x;
-	short y;
+	char	type;
+};
+
+struct CS_CHAT_PACKET {
+	unsigned char size;
+	char	type;
+	int		target_id;
+	char	chat_type;		// 0 : 일반 채팅 (say)
+							// 1 : 1:1 통신 (tell)
+							// 2 : 방송 (shout)
+							// 3 : 공지
+	char	mess[BUF_SIZE];
+};
+
+struct SC_LOGIN_OK_PACKET {
+	unsigned char size;
+	char	type;
+	int	id;
+	//short race;
+	short x, y;
+	//short level;
+	//int	  exp;
+	//int   hp, hpmax;
 };
 
 struct SC_LOGIN_FAIL_PACKET {
@@ -85,6 +103,27 @@ struct SC_MOVE_OBJECT_PACKET
 	short x;
 	short y;
 	unsigned int client_time;
+};
+
+struct SC_CHAT_PACKET {
+	unsigned char size;
+	char	type;
+	int		id;				// 0 - 100만 : Object ID
+							// -1 : System Message
+	char	chat_type;		// 0 : 일반 채팅 (say)
+							// 1 : 1:1 통신 (tell)
+							// 2 : 방송 (shout)
+							// 3 : 공지
+	char	mess[BUF_SIZE];
+};
+
+struct SC_STAT_CHANGE_PACKET {
+	unsigned char size;
+	char	type;
+	int		id;
+	short	level;
+	int		exp;
+	int		hp, hpmax;
 };
 
 #pragma pack(pop)

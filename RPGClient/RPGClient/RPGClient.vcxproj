@@ -116,6 +116,7 @@
     <ClCompile Include="Actor.cpp" />
     <ClCompile Include="ActorManager.cpp" />
     <ClCompile Include="BaseScene.cpp" />
+    <ClCompile Include="ChatManager.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="LoginScene.cpp" />
     <ClCompile Include="Main.cpp" />
@@ -325,6 +326,7 @@
     <ClInclude Include="Actor.h" />
     <ClInclude Include="ActorManager.h" />
     <ClInclude Include="BaseScene.h" />
+    <ClInclude Include="ChatManager.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="LoginScene.h" />
     <ClInclude Include="MainScene.h" />
