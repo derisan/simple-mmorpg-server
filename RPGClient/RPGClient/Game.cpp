@@ -23,8 +23,8 @@ void Game::Init()
 {
 	TileMap::Init();
 	TileMap::LoadMapAsync(ASSET_PATH(WorldMap.txt));
-	ResourceManager::LoadAssets();
-
+	ResourceManager::Init();
+	PacketManager::Init();
 	mActiveScene = std::make_unique<LoginScene>();
 	mActiveScene->Enter();
 }

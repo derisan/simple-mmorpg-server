@@ -3,10 +3,11 @@
 class PacketManager
 {
 public:
+	static void Init();
 	static void Shutdown();
 
 	static void Recv();
-	static bool Connect(const IPv4Address& ip, uint16 port);
+	static bool Connect();
 	static void RegisterPacketFunc(char packetType, std::function<void(char*)> func);
 	static void RemovePacketFunc(char packetType);
 
@@ -22,6 +23,8 @@ private:
 	static int32 sReadPos;
 
 	static TCPClient sTCPContext;
+
+	static String sIP;
 
 	static std::unordered_map<char, std::function<void(char*)>> sPacketFuncDict;
 };

@@ -6,9 +6,20 @@
 s3d::int32 PacketManager::sWritePos = 0;
 s3d::int32 PacketManager::sReadPos = 0;
 s3d::TCPClient PacketManager::sTCPContext = {};
+s3d::String PacketManager::sIP = {};
 std::unordered_map<char, std::function<void(char*)>> PacketManager::sPacketFuncDict;
 char PacketManager::sRecvBuffer[RECV_BUFFER_SIZE] = {};
 char PacketManager::sPacketBuffer[PACKET_BUFFER_SIZE] = {};
+
+
+void PacketManager::Init()
+{
+	const INI ini{ U"Settings.ini" };
+
+	MK_ERROR(ini, U"Could not open ini file!");
+
+	sIP = ini[U"data.server"];
+}
 
 void PacketManager::Shutdown()
 {
@@ -65,11 +76,12 @@ void PacketManager::Recv()
 	}
 }
 
-bool PacketManager::Connect(const IPv4Address& ip, uint16 port)
+bool PacketManager::Connect()
 {
 	using namespace std::chrono;
 
-	sTCPContext.connect(ip, port);
+	const IPv4Address ip{ sIP };
+	sTCPContext.connect(ip, PORT_NUM);
 	if (not sTCPContext.isConnected())
 	{
 		std::this_thread::sleep_for(2s);

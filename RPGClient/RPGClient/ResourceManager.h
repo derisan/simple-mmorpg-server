@@ -5,7 +5,7 @@ class ResourceManager
 public:
 	using race_type = int16;
 
-	static void LoadAssets();
+	static void Init();
 	static String GetTexName(race_type race);
 };
 

@@ -71,10 +71,7 @@ void LoginScene::renderUI()
 
 void LoginScene::doLogin(const String& loginID)
 {
-	// TODO : ip, port 매직 넘버 수정
-	const IPv4Address ip = IPv4Address::Localhost();
-	bool bConnect = PacketManager::Connect(ip, 4000);
-
+	bool bConnect = PacketManager::Connect();
 	if (not bConnect)
 	{
 		System::Exit();
