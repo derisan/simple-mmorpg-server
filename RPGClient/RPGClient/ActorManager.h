@@ -12,9 +12,12 @@ public:
 
 	static void MoveActor(const int32 id, const int16 x, const int16 y);
 
-	static void RenderActors();
+	static void RenderActors(const Point& myPos);
 
 	static String GetActorName(const int32 id);
+
+private:
+	static bool isInSameArea(const Point& myPos, const Point& otherPos);
 
 private:
 	static std::unordered_map<int32, Actor> sActors;

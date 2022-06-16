@@ -29,6 +29,11 @@ void LoginScene::Exit()
 	PacketManager::RemovePacketFunc(SC_LOGIN_OK);
 }
 
+void LoginScene::ProcessInput()
+{
+	BaseScene::ProcessInput();
+}
+
 void LoginScene::Render()
 {
 	renderBackground();

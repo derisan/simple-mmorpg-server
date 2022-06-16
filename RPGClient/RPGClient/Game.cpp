@@ -61,7 +61,6 @@ void Game::ChangeScene(BaseScene* newScene)
 
 void Game::processInput()
 {
-	PacketManager::Recv();
 	mActiveScene->ProcessInput();
 }
 
@@ -74,5 +73,4 @@ void Game::update()
 void Game::render()
 {
 	mActiveScene->Render();
-	ActorManager::RenderActors();
 }

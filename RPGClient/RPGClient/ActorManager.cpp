@@ -54,11 +54,16 @@ void ActorManager::MoveActor(const int32 id, const int16 x, const int16 y)
 	}
 }
 
-void ActorManager::RenderActors()
+void ActorManager::RenderActors(const Point& myPos)
 {
 	for (auto& [id, actor] : sActors)
 	{
-		actor.Render();
+		bool bSameArea = isInSameArea(myPos, actor.GetPos());
+
+		if (bSameArea)
+		{
+			actor.Render();
+		}
 	}
 }
 
@@ -72,4 +77,21 @@ s3d::String ActorManager::GetActorName(const int32 id)
 	{
 		return U"Default";
 	}
+}
+
+bool ActorManager::isInSameArea(const Point& myPos, const Point& otherPos)
+{
+	Point leftTop = { myPos.x / 20 * 20, myPos.y / 20 * 20 };
+
+	if (otherPos.x < leftTop.x || otherPos.x > leftTop.x + 19)
+	{
+		return false;
+	}
+
+	if (otherPos.y < leftTop.y || otherPos.y > leftTop.y + 19)
+	{
+		return false;
+	}
+
+	return true;
 }

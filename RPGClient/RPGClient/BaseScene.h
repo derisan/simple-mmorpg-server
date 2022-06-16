@@ -7,7 +7,7 @@ public:
 
 	virtual void Enter() {}
 	virtual void Exit() {}
-	virtual void ProcessInput() {};
+	virtual void ProcessInput();
 	virtual void Update(const float deltaTime) { UNREFERENCED_PARAMETER(deltaTime); }
 	virtual void Render() {}
 };

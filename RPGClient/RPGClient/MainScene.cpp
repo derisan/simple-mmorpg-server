@@ -64,6 +64,8 @@ void MainScene::Render()
 	}
 
 	PutText(Format(myPos), Vec2{ 580, 10 });
+
+	ActorManager::RenderActors(myPos);
 }
 
 void MainScene::pollKeyDown()
