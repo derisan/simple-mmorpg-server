@@ -4,7 +4,7 @@
 
 namespace mk
 {
-	constexpr int SEND_BUFFER_SIZE = 200;
+	constexpr int SEND_BUFFER_SIZE = 256;
 	
 	enum class OperationType
 	{

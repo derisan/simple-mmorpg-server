@@ -377,10 +377,11 @@ namespace mk
 
 		for (auto actorID : nearList)
 		{
-			if (actorID > MAX_USER) continue; // NPC
-
-			static_cast<Session*>(gClients[actorID])->SendChatPacket(target->GetID(),
-				chatType, chat);
+			if (actorID < MAX_USER) 
+			{
+				static_cast<Session*>(gClients[actorID])->SendChatPacket(target->GetID(),
+					chatType, chat);
+			}
 		}
 	}
 
