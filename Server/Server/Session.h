@@ -26,6 +26,7 @@ namespace mk
 		void SendAddObjectPacket(const int id);
 		void SendRemoveObjectPacket(const int id);
 		void SendChatPacket(const int senderID, const char chatType, std::string_view chat);
+		void SendStatChangePacket(const int id);
 
 	private:
 		OVERLAPPEDEX* pop();

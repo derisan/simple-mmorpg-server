@@ -7,6 +7,7 @@
 #include "SectorManager.h"
 #include "NPC.h"
 #include "Random.h"
+#include "Timer.h"
 
 namespace mk
 {
@@ -54,6 +55,7 @@ namespace mk
 			npc->SetMoveType(NpcMoveType::FIXED);
 			auto [x, y] = getAvailablePos(0);
 			npc->SetPos(x, y);
+			npc->SetAttackPower(npc->GetLevel());
 			mActorIds.insert(freeID);
 		}
 
@@ -73,6 +75,7 @@ namespace mk
 			npc->SetMoveType(NpcMoveType::FIXED);
 			auto [x, y] = getAvailablePos(1);
 			npc->SetPos(x, y);
+			npc->SetAttackPower(npc->GetLevel());
 			mActorIds.insert(freeID);
 		}
 
@@ -92,6 +95,7 @@ namespace mk
 			npc->SetMoveType(NpcMoveType::FIXED);
 			auto [x, y] = getAvailablePos(2);
 			npc->SetPos(x, y);
+			npc->SetAttackPower(npc->GetLevel());
 			mActorIds.insert(freeID);
 		}
 
@@ -111,6 +115,7 @@ namespace mk
 			npc->SetMoveType(NpcMoveType::FIXED);
 			auto [x, y] = getAvailablePos(3);
 			npc->SetPos(x, y);
+			npc->SetAttackPower(npc->GetLevel());
 			mActorIds.insert(freeID);
 		}
 	}
@@ -194,22 +199,20 @@ namespace mk
 
 		for (auto actorID : viewList)
 		{
-			static_cast<Session*>(target)->SendRemoveObjectPacket(actorID);
+			if (targetID < MAX_USER)
+			{
+				static_cast<Session*>(target)->SendRemoveObjectPacket(actorID);
+			}
 
 			auto actor = gClients[actorID];
 
-			{
-				ReadLockGuard guard = { actor->ViewLock };
-				if (0 == (actor->ViewList).count(targetID))
-				{
-					continue;
-				}
-			}
-
+			size_t cnt = 0;
 			{
 				WriteLockGuard guard = { actor->ViewLock };
-				actor->ViewList.erase(targetID);
+				cnt = actor->ViewList.erase(targetID);
 			}
+
+			if (0 == cnt) continue;
 
 			if (actorID < MAX_USER)
 			{
@@ -385,6 +388,90 @@ namespace mk
 		}
 	}
 
+	void Sector::DoAttack(Actor* hitter)
+	{
+		using namespace std::chrono;
+
+		Timer::AddEvent(TimerEventType::EV_RESET_ATTACK, hitter->GetID(),
+			system_clock::now() + 1s);
+
+		{
+			WriteLockGuard guard = { hitter->ActorLock };
+			hitter->SetAttack(false);
+		}
+
+		std::unordered_set<id_type> viewList;
+		{
+			ReadLockGuard guard = { hitter->ViewLock };
+			viewList = hitter->ViewList;
+		}
+
+		auto [x, y] = hitter->GetPos();
+
+		for (auto actorID : viewList)
+		{
+			if (actorID < MAX_USER) continue;
+
+			bool bInRange = isInAttackRange({ x, y }, gClients[actorID]->GetPos());
+
+			if (bInRange)
+			{
+				auto attackPower = hitter->GetAttackPower();
+				int victimHP = 0;
+				{
+					ReadLockGuard guard = { gClients[actorID]->ActorLock };
+					victimHP = gClients[actorID]->GetCurrentHP();
+				}
+				victimHP -= attackPower;
+				
+				if (victimHP <= 0)
+				{
+					RemoveActor(gClients[actorID]);
+				}
+				else
+				{
+					{
+						WriteLockGuard guard = { gClients[actorID]->ActorLock };
+						gClients[actorID]->SetCurrentHP(victimHP);
+					}
+					SendStatChange(gClients[actorID]);
+				}
+			}
+		}
+	}
+
+	void Sector::SendStatChange(Actor* target)
+	{
+		std::unordered_set<id_type> viewList;
+		{
+			ReadLockGuard guard = { target->ViewLock };
+			viewList = target->ViewList;
+		}
+
+		auto targetID = target->GetID();
+
+		if (targetID < MAX_USER)
+		{
+			static_cast<Session*>(target)->SendStatChangePacket(targetID);
+		}
+
+		for (auto actorID : viewList)
+		{
+			if (actorID >= MAX_USER) continue;
+
+			(gClients[actorID]->ViewLock).ReadLock();
+			if (0 != gClients[actorID]->ViewList.count(targetID))
+			{
+				(gClients[actorID]->ViewLock).ReadUnlock();
+				static_cast<Session*>(gClients[actorID])->SendStatChangePacket(targetID);
+			}
+			else
+			{
+				(gClients[actorID]->ViewLock).ReadUnlock();
+			}
+		}
+	}
+
 	bool Sector::isSolid(const short row, const short col)
 	{
 		return mTileMap[row % TILE_PER_SECTOR][col % TILE_PER_SECTOR].Solidity == 1;
@@ -429,6 +516,41 @@ namespace mk
 		}
 
 		return true;
+	}
+
+	bool Sector::isInAttackRange(const pos_type& hitterPos, const pos_type& victimPos)
+	{
+		if (hitterPos.first + 1 == victimPos.first
+			&& hitterPos.second == victimPos.second)
+		{
+			return true;
+		}
+
+		if (hitterPos.first - 1 == victimPos.first
+			&& hitterPos.second == victimPos.second)
+		{
+			return true;
+		}
+
+		if (hitterPos.first == victimPos.first
+			&& hitterPos.second + 1 == victimPos.second)
+		{
+			return true;
+		}
+
+		if (hitterPos.first == victimPos.first
+			&& hitterPos.second - 1 == victimPos.second)
+		{
+			return true;
+		}
+
+		if (hitterPos.first == victimPos.first
+			&& hitterPos.second == victimPos.second)
+		{
+			return true;
+		}
+
+		return false;
 	}
 
 	Sector::pos_type Sector::getAvailablePos(const int area)

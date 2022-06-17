@@ -7,62 +7,71 @@ namespace mk
 
 	constexpr milliseconds TIMER_SLEEP_TIME = 33ms;
 
-	std::priority_queue<mk::TimerEvent> Timer::mTimerQueue;
-	std::mutex Timer::mLock;
-	HANDLE Timer::mIocp = INVALID_HANDLE_VALUE;
-	std::unique_ptr<mk::OverlappedPool> Timer::mPool = nullptr;
+	std::priority_queue<mk::TimerEvent> Timer::sTimerQueue;
+	SpinLock Timer::sLock;
+	HANDLE Timer::sIocp = INVALID_HANDLE_VALUE;
+	std::unique_ptr<mk::OverlappedPool> Timer::sPool = nullptr;
 
 	void Timer::Init(HANDLE iocp)
 	{
-		mIocp = iocp;
-		mPool = std::make_unique<mk::OverlappedPool>();
+		sIocp = iocp;
+		sPool = std::make_unique<mk::OverlappedPool>();
 	}
 
 	void Timer::AddEvent(const TimerEvent& ev)
 	{
-		std::lock_guard guard{ mLock };
-		mTimerQueue.push(ev);
+		WriteLockGuard guard = { sLock };
+		sTimerQueue.push(ev);
 	}
 
 	void Timer::AddEvent(const TimerEventType eventType, const int id, 
 		const std::chrono::system_clock::time_point actTime)
 	{
-		std::lock_guard guard{ mLock };
-		mTimerQueue.emplace(eventType, id, actTime);
+		WriteLockGuard guard = { sLock };
+		sTimerQueue.emplace(eventType, id, actTime);
 	}
 
 	void Timer::Run()
 	{
 		while (true)
 		{
-			mLock.lock();
-			if (mTimerQueue.empty())
+			sLock.WriteLock();
+			if (sTimerQueue.empty())
 			{
-				mLock.unlock();
+				sLock.WriteUnlock();
 				std::this_thread::sleep_for(TIMER_SLEEP_TIME);
 				continue;
 			}
 
-			const TimerEvent ev = mTimerQueue.top();
+			const TimerEvent ev = sTimerQueue.top();
 			if (ev.ActTime > system_clock::now())
 			{
-				mLock.unlock();
+				sLock.WriteUnlock();
 				std::this_thread::sleep_for(TIMER_SLEEP_TIME);
 				continue;
 			}
-			mTimerQueue.pop();
-			mLock.unlock();
+			sTimerQueue.pop();
+			sLock.WriteUnlock();
 
 			switch (ev.EventType)
 			{
 			case TimerEventType::EV_BIND_ACCEPT:
 			{
-				OVERLAPPEDEX* overEx = mPool->Pop();
+				OVERLAPPEDEX* overEx = sPool->Pop();
 				ZeroMemory(overEx, sizeof(OVERLAPPEDEX));
 				overEx->OpType = OperationType::TIMER_BIND_ACCEPT;
-				PostQueuedCompletionStatus(mIocp, 1, ev.ID, &overEx->Overlapped);
-			}
+				PostQueuedCompletionStatus(sIocp, 1, ev.ID, &overEx->Overlapped);
 				break;
+			}
+
+			case TimerEventType::EV_RESET_ATTACK:
+			{
+				OVERLAPPEDEX* overEx = sPool->Pop();
+				ZeroMemory(overEx, sizeof(OVERLAPPEDEX));
+				overEx->OpType = OperationType::TIMER_RESET_ATTACK;
+				PostQueuedCompletionStatus(sIocp, 1, ev.ID, &overEx->Overlapped);
+				break;
+			}
 
 			default:
 				MK_ASSERT(false);
@@ -73,6 +82,6 @@ namespace mk
 
 	void Timer::PushOverEx(OVERLAPPEDEX* overEx)
 	{
-		mPool->Push(overEx);
+		sPool->Push(overEx);
 	}
 }

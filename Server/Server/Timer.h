@@ -2,16 +2,17 @@
 
 #include <queue>
 #include <chrono>
-#include <mutex>
 
 #include "OverlappedEx.h"
+#include "Lock.h"
 
 namespace mk
 {
 	enum class TimerEventType
 	{
 		EV_NONE,
-		EV_BIND_ACCEPT
+		EV_BIND_ACCEPT,
+		EV_RESET_ATTACK,
 	};
 
 	struct TimerEvent
@@ -37,10 +38,10 @@ namespace mk
 		static void PushOverEx(OVERLAPPEDEX* overEx);
 
 	private:
-		static std::priority_queue<TimerEvent> mTimerQueue;
-		static std::mutex mLock;
-		static HANDLE mIocp;
-		static std::unique_ptr<OverlappedPool> mPool;
+		static std::priority_queue<TimerEvent> sTimerQueue;
+		static SpinLock sLock;
+		static HANDLE sIocp;
+		static std::unique_ptr<OverlappedPool> sPool;
 	};
 }
 

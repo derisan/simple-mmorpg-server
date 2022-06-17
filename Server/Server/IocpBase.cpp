@@ -200,6 +200,14 @@ namespace mk
 				break;
 			}
 
+			case OperationType::TIMER_RESET_ATTACK:
+			{
+				auto session = GetSession(id);
+				session->SetAttack(true);
+				Timer::PushOverEx(overEx);
+				break;
+			}
+
 			default:
 				MK_ASSERT(false);
 				break;
@@ -233,6 +241,7 @@ namespace mk
 			session->SetMaxHP(session->GetLevel() * 20 + 100);
 			session->SetCurrentHP(session->GetMaxHP());
 			session->SetRace(Race::Player);
+			session->SetAttackPower(1);
 			session->SendLoginInfoPacket();
 			SectorManager::AddActor(session);
 			break;
@@ -244,6 +253,22 @@ namespace mk
 			auto session = GetSession(id);
 			SectorManager::MoveActor(session, movePacket->direction,
 				movePacket->client_time);
+			break;
+		}
+
+		case CS_ATTACK:
+		{
+			CS_ATTACK_PACKET* attackPacket = reinterpret_cast<CS_ATTACK_PACKET*>(packet);
+			auto session = GetSession(id);
+			bool canAttack = false;
+			{
+				ReadLockGuard guard = { session->ActorLock };
+				canAttack = session->CanAttack();
+			}
+			if (canAttack)
+			{
+				SectorManager::DoAttack(session);
+			}
 			break;
 		}
 

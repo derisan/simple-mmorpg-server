@@ -25,6 +25,10 @@ namespace mk
 			const unsigned int clientTime);
 
 		void SendChat(Actor* target, const char chatType, std::string_view chat);
+
+		void DoAttack(Actor* hitter);
+
+		void SendStatChange(Actor* target);
 		
 	private:
 		bool isSolid(const short row, const short col);
@@ -32,6 +36,8 @@ namespace mk
 		bool isOutOfBound(const short x, const short y);
 
 		bool isInView(const pos_type& aPos, const pos_type& bPos);
+
+		bool isInAttackRange(const pos_type& hitterPos, const pos_type& victimPos);
 
 		pos_type getAvailablePos(const int area);
 

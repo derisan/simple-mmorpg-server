@@ -10,7 +10,13 @@ namespace mk
 			ViewList.clear();
 		}
 		mName = {};
-		mPosX = 0;
-		mPosY = 0;
+		mPosX = INVALID_VALUE;
+		mPosY = INVALID_VALUE;
+		mLevel = INVALID_VALUE;
+		mMaxHP = INVALID_VALUE;
+		mCurrentHP = INVALID_VALUE;
+		mRace = Race::None;
+		mbAttack = true;
+		mAttackPower = INVALID_VALUE;
 	}
 }

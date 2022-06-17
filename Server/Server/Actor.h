@@ -33,6 +33,10 @@ namespace mk
 		void SetCurrentHP(const int value) { mCurrentHP = std::clamp(value, 0, mMaxHP); }
 		short GetRace() const { return mRace; }
 		void SetRace(const short race) { mRace = race; }
+		void SetAttack(const bool value) { mbAttack = value; }
+		bool CanAttack() const { return mbAttack; }
+		void SetAttackPower(const int value) { mAttackPower = value; }
+		int GetAttackPower() const { return mAttackPower; }
 
 	public:
 		SpinLock ActorLock = {};
@@ -48,5 +52,7 @@ namespace mk
 		int mMaxHP = INVALID_VALUE;
 		int mCurrentHP = INVALID_VALUE;
 		short mRace = Race::None;
+		bool mbAttack = true;
+		int mAttackPower = INVALID_VALUE;
 	};
 }

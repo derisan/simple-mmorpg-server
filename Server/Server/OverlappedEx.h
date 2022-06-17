@@ -13,6 +13,7 @@ namespace mk
 		OP_RECV,
 		OP_SEND,
 		TIMER_BIND_ACCEPT,
+		TIMER_RESET_ATTACK,
 	};
 
 	struct OVERLAPPEDEX

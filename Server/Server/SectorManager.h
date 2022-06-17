@@ -1,5 +1,7 @@
 #pragma once
 
+#include <string_view>
+
 namespace mk
 {
 	constexpr int TILE_PER_SECTOR = 40;
@@ -17,10 +19,12 @@ namespace mk
 
 		static void RemoveActor(Actor* actor);
 		
-		static void MoveActor(Actor* actor, const char direction, 
+		static void MoveActor(Actor* actor, const char direction,
 			const unsigned int clientTime = 0);
 
 		static void SendChat(Actor* actor, const char chatType, std::string_view chat);
+
+		static void DoAttack(Actor* actor);
 
 		static void ChangeSector(Actor* actor, const int prevSectorNum);
 		

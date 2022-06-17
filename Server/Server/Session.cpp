@@ -203,6 +203,19 @@ namespace mk
 		sendPacket(&packet, packet.size);
 	}
 
+	void Session::SendStatChangePacket(const int id)
+	{
+		SC_STAT_CHANGE_PACKET packet = {};
+		packet.size = sizeof(packet);
+		packet.type = SC_STAT_CHANGE;
+		packet.id = id;
+		packet.level = gClients[id]->GetLevel();
+		packet.exp = 0; // TODO : exp
+		packet.hp = gClients[id]->GetCurrentHP();
+		packet.hpmax = gClients[id]->GetMaxHP();
+		sendPacket(&packet, packet.size);
+	}
+
 	void Session::sendPacket(void* packet, const int packetSize)
 	{
 		OVERLAPPEDEX* overEx = mPool->Pop();
