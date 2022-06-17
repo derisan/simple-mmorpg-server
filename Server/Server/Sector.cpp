@@ -273,6 +273,26 @@ namespace mk
 		}
 	}
 
+	void Sector::SendChat(Actor* target, const char chatType, std::string_view chat)
+	{
+		std::unordered_set<id_type> nearList;
+		{
+			ReadLockGuard guard = { target->ViewLock };
+			nearList = target->ViewList;
+		}
+
+		static_cast<Session*>(target)->SendChatPacket(target->GetID(),
+			chatType, chat);
+
+		for (auto actorID : nearList)
+		{
+			if (actorID > MAX_USER) continue; // NPC
+
+			static_cast<Session*>(gClients[actorID])->SendChatPacket(target->GetID(),
+				chatType, chat);
+		}
+	}
+
 	bool Sector::isSolid(const short row, const short col)
 	{
 		return mTileMap[row % TILE_PER_SECTOR][col % TILE_PER_SECTOR].Solidity == 1;

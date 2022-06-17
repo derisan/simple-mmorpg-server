@@ -45,22 +45,26 @@ void ChatManager::AddChat(const int32 id, StringView mess)
 	}
 }
 
+void ChatManager::AddChat(const int32 id, std::string_view mess)
+{
+	AddChat(id, Unicode::Widen(mess));
+}
+
 void ChatManager::SendCurrentChat()
 {
 	if (sMyChat.length() > 0)
 	{
-		//std::string narrowed = sMyChat.narrow();
+		std::string narrowed = sMyChat.narrow();
 
-		//CS_CHAT_PACKET packet = {};
-		//packet.size = sizeof(packet);
-		//packet.type = CS_CHAT;
-		//packet.target_id = 0;
-		//packet.chat_type = 0;
-		//CopyMemory(packet.mess, narrowed.data(), narrowed.length());
-		//PacketManager::SendPacket(&packet, packet.size);
+		CS_CHAT_PACKET packet = {};
+		packet.size = sizeof(packet);
+		packet.type = CS_CHAT;
+		packet.target_id = 0;
+		packet.chat_type = 0;
+		CopyMemory(packet.mess, narrowed.data(), narrowed.length());
+		PacketManager::SendPacket(&packet, packet.size);
+		sMyChat.clear();
 	}
-
-	sMyChat.clear();
 }
 
 void ChatManager::TakeUserChat()

@@ -23,6 +23,8 @@ namespace mk
 
 		void MoveActor(Actor* target, const char direction,
 			const unsigned int clientTime);
+
+		void SendChat(Actor* target, const char chatType, std::string_view chat);
 		
 	private:
 		bool isSolid(const short row, const short col);

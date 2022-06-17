@@ -34,6 +34,11 @@ void MainScene::Enter()
 		SC_REMOVE_OBJECT_PACKET* packet = reinterpret_cast<SC_REMOVE_OBJECT_PACKET*>(p);
 		ActorManager::RemoveActor(packet->id);
 	});
+
+	PacketManager::RegisterPacketFunc(SC_CHAT, [](char* p) {
+		SC_CHAT_PACKET* packet = reinterpret_cast<SC_CHAT_PACKET*>(p);
+		ChatManager::AddChat(packet->id, packet->mess);
+	});
 }
 
 void MainScene::Exit()

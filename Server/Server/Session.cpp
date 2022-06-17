@@ -3,6 +3,7 @@
 
 #include "Protocol.h"
 #include "Timer.h"
+#include "IocpBase.h"
 
 namespace mk
 {
@@ -68,7 +69,7 @@ namespace mk
 		auto remain = mWritePos - mReadPos;
 		while (remain > 0)
 		{
-			int packetSize = mRecvBuffer[mReadPos];
+			auto packetSize = static_cast<unsigned char>(mRecvBuffer[mReadPos]);
 			if (remain >= packetSize)
 			{
 				packets.push_back(&mRecvBuffer[mReadPos]);
@@ -182,6 +183,17 @@ namespace mk
 		packet.size = sizeof(packet);
 		packet.type = SC_REMOVE_OBJECT;
 		packet.id = id;
+		sendPacket(&packet, packet.size);
+	}
+
+	void Session::SendChatPacket(const int senderID, const char chatType, std::string_view chat)
+	{
+		SC_CHAT_PACKET packet = {};
+		packet.size = sizeof(packet);
+		packet.type = SC_CHAT;
+		packet.chat_type = chatType;
+		packet.id = senderID;
+		CopyMemory(packet.mess, chat.data(), chat.length());		
 		sendPacket(&packet, packet.size);
 	}
 

@@ -221,9 +221,9 @@ namespace mk
 			CS_LOGIN_PACKET* loginPacket = reinterpret_cast<CS_LOGIN_PACKET*>(packet);
 			auto session = GetSession(id);
 			session->SetName(loginPacket->name);
-			short x = rand() % W_WIDTH;
-			short y = rand() % W_HEIGHT;
-			session->SetPos(x, y);
+			//short x = rand() % W_WIDTH;
+			//short y = rand() % W_HEIGHT;
+			//session->SetPos(x, y);
 			session->SendLoginInfoPacket();
 			SectorManager::AddActor(session);
 			break;
@@ -235,6 +235,14 @@ namespace mk
 			auto session = GetSession(id);
 			SectorManager::MoveActor(session, movePacket->direction,
 				movePacket->client_time);
+			break;
+		}
+
+		case CS_CHAT:
+		{
+			CS_CHAT_PACKET* chatPacket = reinterpret_cast<CS_CHAT_PACKET*>(packet);
+			auto session = GetSession(id);
+			SectorManager::SendChat(session, chatPacket->chat_type, chatPacket->mess);
 			break;
 		}
 

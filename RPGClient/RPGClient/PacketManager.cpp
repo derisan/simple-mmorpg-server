@@ -57,7 +57,7 @@ void PacketManager::Recv()
 		auto remain = sWritePos - sReadPos;
 		while (remain > 0)
 		{
-			auto packetSize = sPacketBuffer[sReadPos];
+			auto packetSize = static_cast<uint8>(sPacketBuffer[sReadPos]);
 
 			if (remain >= packetSize)
 			{

@@ -27,6 +27,7 @@ namespace mk
 		void SendAddObjectPacket(const int id, const short x, const short y, 
 			const std::string& name);
 		void SendRemoveObjectPacket(const int id);
+		void SendChatPacket(const int senderID, const char chatType, std::string_view chat);
 
 	public:
 		bool IsConnected() const { return mbConnected; }

@@ -20,6 +20,8 @@ namespace mk
 		static void MoveActor(Actor* actor, const char direction, 
 			const unsigned int clientTime = 0);
 
+		static void SendChat(Actor* actor, const char chatType, std::string_view chat);
+
 		static void ChangeSector(Actor* actor, const int prevSectorNum);
 		
 	private:

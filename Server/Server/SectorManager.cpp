@@ -49,6 +49,13 @@ namespace mk
 		sector->MoveActor(actor, direction, clientTime);
 	}
 
+	void SectorManager::SendChat(Actor* actor, const char chatType, std::string_view chat)
+	{
+		auto [x, y] = actor->GetPos();
+		auto& sector = getSector(x, y);
+		sector->SendChat(actor, chatType, chat);
+	}
+
 	void SectorManager::ChangeSector(Actor* actor, const int prevSectorNum)
 	{
 		auto& prevSector = getSector(prevSectorNum);
