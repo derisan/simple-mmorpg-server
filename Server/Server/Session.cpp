@@ -206,7 +206,6 @@ namespace mk
 		if (SOCKET_ERROR == ret && (WSAGetLastError() != WSA_IO_PENDING))
 		{
 			mPool->Push(overEx);
-			MK_ERROR("WSASend failed: {0}", WSAGetLastError());
 			return;
 		}
 	}

@@ -35,6 +35,7 @@ void PacketManager::Recv()
 
 	if (numBytes > 0)
 	{
+		numBytes = Clamp(numBytes, 0, RECV_BUFFER_SIZE);
 		sTCPContext.read(sRecvBuffer, numBytes);
 
 		if (sWritePos + numBytes >= PACKET_BUFFER_SIZE)
