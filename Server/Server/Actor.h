@@ -28,6 +28,7 @@ namespace mk
 
 	public:
 		SpinLock ActorLock = {};
+		SpinLock ViewLock = {};
 		std::unordered_set<int> ViewList;
 
 	private:

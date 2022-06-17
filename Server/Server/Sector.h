@@ -32,7 +32,7 @@ namespace mk
 		bool isInView(const pos_type& aPos, const pos_type& bPos);
 
 	private:
-		std::unordered_set<id_type> mActors;
+		std::unordered_set<id_type> mActorIds;
 		const std::vector<std::vector<Tile>>& mTileMap;
 		int mSectorNum = INVALID_VALUE;
 

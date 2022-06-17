@@ -7,7 +7,7 @@ constexpr int NAME_SIZE = 20;
 constexpr int W_WIDTH = 2000;
 constexpr int W_HEIGHT = 2000;
 
-constexpr int MAX_USER = 3000;
+constexpr int MAX_USER = 1000;
 constexpr int NUM_NPC = 200000;
 
 // Packet ID

@@ -49,6 +49,16 @@ namespace mk
 		sector->MoveActor(actor, direction, clientTime);
 	}
 
+	void SectorManager::ChangeSector(Actor* actor, const int prevSectorNum)
+	{
+		auto& prevSector = getSector(prevSectorNum);
+		prevSector->RemoveActor(actor);
+		
+		auto [x, y] = actor->GetPos();
+		auto& curSector = getSector(x, y);
+		curSector->AddActor(actor);
+	}
+
 	std::unique_ptr<Sector>& SectorManager::getSector(const short x, const short y)
 	{
 		short row = (y / TILE_PER_SECTOR);
@@ -56,4 +66,13 @@ namespace mk
 
 		return sSectors[row][col];
 	}
+
+	std::unique_ptr<mk::Sector>& SectorManager::getSector(const int sectorNum)
+	{
+		short row = sectorNum / gSectorsPerLine;
+		short col = sectorNum % gSectorsPerLine;
+
+		return sSectors[row][col];
+	}
+
 }

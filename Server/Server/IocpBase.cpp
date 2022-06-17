@@ -133,6 +133,7 @@ namespace mk
 				if (OperationType::OP_ACCEPT == overEx->OpType)
 				{
 					MK_ERROR("Accept error.");
+					disconnect(id);
 				}
 				else
 				{

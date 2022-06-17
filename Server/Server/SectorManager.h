@@ -19,9 +19,12 @@ namespace mk
 		
 		static void MoveActor(Actor* actor, const char direction, 
 			const unsigned int clientTime = 0);
+
+		static void ChangeSector(Actor* actor, const int prevSectorNum);
 		
 	private:
 		static std::unique_ptr<Sector>& getSector(const short x, const short y);
+		static std::unique_ptr<Sector>& getSector(const int sectorNum);
 
 	private:
 		static std::vector<std::vector<std::unique_ptr<Sector>>> sSectors;

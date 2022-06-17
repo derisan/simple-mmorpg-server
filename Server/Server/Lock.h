@@ -9,7 +9,7 @@ namespace mk
 
 		void ReadLock();
 
-		void ReadUnLock();
+		void ReadUnlock();
 
 		void WriteLock();
 
@@ -30,7 +30,7 @@ namespace mk
 
 		~ReadLockGuard()
 		{
-			mLock.ReadUnLock();
+			mLock.ReadUnlock();
 		}
 
 	private:

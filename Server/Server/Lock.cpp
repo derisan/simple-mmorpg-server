@@ -13,7 +13,7 @@ namespace mk
 		AcquireSRWLockShared(&mLock);
 	}
 
-	void SpinLock::ReadUnLock()
+	void SpinLock::ReadUnlock()
 	{
 		ReleaseSRWLockShared(&mLock);
 	}

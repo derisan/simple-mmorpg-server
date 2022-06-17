@@ -26,49 +26,54 @@ namespace mk
 	void Sector::AddActor(Actor* target)
 	{
 		auto targetID = target->GetID();
-		auto targetPos = target->GetPos();
-		const auto& targetName = target->GetName();
-
-		{
-			WriteLockGuard guard = { mLock };
-			mActors.insert(targetID);
-		}
 
 		{
 			ReadLockGuard guard = { mLock };
-			for (auto actorID : mActors)
+			if (0 != mActorIds.count(targetID))
 			{
-				if (actorID == targetID)
+				MK_SLOG("AddActor() : Actor[{0}] is already in sector[{1}]", targetID,
+					mSectorNum);
+				return;
+			}
+		}
+
+		auto targetPos = target->GetPos();
+		const auto& targetName = target->GetName();
+
+		std::unordered_set<id_type> actorIds;
+		{
+			WriteLockGuard guard = { mLock };
+			mActorIds.insert(targetID);
+			actorIds = mActorIds;
+		}
+
+		for (auto actorID : actorIds)
+		{
+			if (actorID == targetID) continue;
+			if (actorID > MAX_USER) continue; // NPC
+
+			Session* oldbie = static_cast<Session*>(gClients[actorID]);
+			auto oldbiePos = oldbie->GetPos();
+
+			bool bInView = isInView(targetPos, oldbiePos);
+
+			if (bInView)
+			{
 				{
-					continue;
+					WriteLockGuard guard = { oldbie->ViewLock };
+					oldbie->ViewList.insert(targetID);
 				}
+				oldbie->SendAddObjectPacket(targetID, targetPos.first,
+					targetPos.second, targetName);
 
-				if (actorID < MAX_USER)
+				auto oldbieID = oldbie->GetID();
 				{
-					Session* oldbie = static_cast<Session*>(gClients[actorID]);
-					auto oldbiePos = oldbie->GetPos();
-
-					bool bInView = isInView(targetPos, oldbiePos);
-
-					if (bInView)
-					{
-						{
-							WriteLockGuard guard = { oldbie->ActorLock };
-							oldbie->ViewList.insert(targetID);
-						}
-						oldbie->SendAddObjectPacket(targetID, targetPos.first,
-							targetPos.second, targetName);
-
-						auto oldbieID = oldbie->GetID();
-						const auto& oldbieName = oldbie->GetName();
-						{
-							WriteLockGuard guard = { target->ActorLock };
-							target->ViewList.insert(oldbieID);
-						}
-						static_cast<Session*>(target)->SendAddObjectPacket(oldbieID,
-							oldbiePos.first, oldbiePos.second, oldbieName);
-					}
+					WriteLockGuard guard = { target->ViewLock };
+					target->ViewList.insert(oldbieID);
 				}
+				const auto& oldbieName = oldbie->GetName();
+				static_cast<Session*>(target)->SendAddObjectPacket(oldbieID,
+					oldbiePos.first, oldbiePos.second, oldbieName);
 			}
 		}
 	}
@@ -76,33 +81,49 @@ namespace mk
 	void Sector::RemoveActor(Actor* target)
 	{
 		auto targetID = target->GetID();
-		mActors.erase(targetID);
+		{
+			WriteLockGuard guard = { mLock };
+			if (0 == mActorIds.count(targetID))
+			{
+				MK_SLOG("RemoveActor() : Actor[{0}] is not in sector[{1}]", targetID,
+					mSectorNum);
+				return;
+			}
+			else
+			{
+				mActorIds.erase(targetID);
+			}
+		}
 
 		std::unordered_set<id_type> viewList;
 		{
-			ReadLockGuard guard = { target->ActorLock };
+			ReadLockGuard guard = { target->ViewLock };
 			viewList = target->ViewList;
 		}
 
 		for (auto actorID : viewList)
 		{
-			WriteLockGuard guard = { target->ActorLock };
-			if (0 == (target->ViewList).count(actorID))
+			static_cast<Session*>(target)->SendRemoveObjectPacket(actorID);
+
 			{
-				continue;
+				ReadLockGuard guard = { gClients[actorID]->ViewLock };
+				if (0 == (gClients[actorID]->ViewList).count(targetID))
+				{
+					continue;
+				}
 			}
 
 			if (actorID < MAX_USER)
 			{
-				static_cast<Session*>(gClients[actorID])->SendRemoveObjectPacket(targetID);
-				static_cast<Session*>(target)->SendRemoveObjectPacket(actorID);
-
-				target->ViewList.erase(actorID);
-
 				{
-					WriteLockGuard guard = { gClients[actorID]->ActorLock };
+					WriteLockGuard guard = { gClients[actorID]->ViewLock };
 					gClients[actorID]->ViewList.erase(targetID);
 				}
+				static_cast<Session*>(gClients[actorID])->SendRemoveObjectPacket(targetID);
+			}
+			else
+			{
+				// TODO : NPC things
 			}
 		}
 	}
@@ -112,18 +133,16 @@ namespace mk
 	{
 		auto targetID = target->GetID();
 
+		mLock.ReadLock();
+		if (0 == mActorIds.count(targetID))
 		{
-			mLock.ReadLock();
-			auto count = mActors.count(targetID);
-			if (count == 0)
-			{
-				mLock.ReadUnLock();
-				MK_SLOG("Actor id[{0}]: is not in sector[{1}]", targetID, mSectorNum);
-				AddActor(target);
-				return;
-			}
-			mLock.ReadUnLock();
+			mLock.ReadUnlock();
+			MK_SLOG("MoveActor : Actor[{0}]: is not in sector[{1}]", targetID,
+				mSectorNum);
+			AddActor(target);
+			return;
 		}
+		mLock.ReadUnlock();
 
 		auto [x, y] = target->GetPos();
 		switch (direction)
@@ -151,40 +170,44 @@ namespace mk
 		bool bOut = isOutOfBound(x, y);
 		if (bOut)
 		{
-			RemoveActor(target);
-			SectorManager::AddActor(target);
+			SectorManager::ChangeSector(target, mSectorNum);
 			return;
 		}
 
+		// 기존 ViewList 복사
 		std::unordered_set<id_type> oldList;
 		{
-			ReadLockGuard guard = { target->ActorLock };
+			ReadLockGuard guard = { target->ViewLock };
 			oldList = target->ViewList;
 		}
 
+		// NearList 생성
 		std::unordered_set<id_type> nearList;
-		for (auto actorID : mActors)
 		{
-			if (actorID == targetID)
+			ReadLockGuard guard = { mLock };
+			for (auto actorID : mActorIds)
 			{
-				continue;
-			}
+				if (actorID == targetID)
+				{
+					continue;
+				}
 
-			bool bInRange = isInView({ x, y }, gClients[actorID]->GetPos());
+				bool bInRange = isInView({ x, y }, gClients[actorID]->GetPos());
 
-			if (bInRange)
-			{
-				nearList.insert(actorID);
+				if (bInRange)
+				{
+					nearList.insert(actorID);
+				}
 			}
 		}
 
 		for (auto actorID : nearList)
 		{
-			(target->ActorLock).WriteLock();
+			(target->ViewLock).WriteLock();
 			if (0 == target->ViewList.count(actorID))
 			{
 				(target->ViewList).insert(actorID);
-				(target->ActorLock).WriteUnlock();
+				(target->ViewLock).WriteUnlock();
 				auto [x, y] = gClients[actorID]->GetPos();
 				const auto& name = gClients[actorID]->GetName();
 				static_cast<Session*>(target)->SendAddObjectPacket(actorID,
@@ -192,23 +215,22 @@ namespace mk
 			}
 			else
 			{
-				(target->ActorLock).WriteUnlock();
-				//static_cast<Session*>(target)->SendMovePacket()
+				(target->ViewLock).WriteUnlock();
 			}
 
 			if (actorID < MAX_USER)
 			{
-				(gClients[actorID]->ActorLock).WriteLock();
+				(gClients[actorID]->ViewLock).WriteLock();
 				if (0 == (gClients[actorID]->ViewList).count(targetID))
 				{
 					(gClients[actorID]->ViewList).insert(targetID);
-					(gClients[actorID]->ActorLock).WriteUnlock();
+					(gClients[actorID]->ViewLock).WriteUnlock();
 					static_cast<Session*>(gClients[actorID])->SendAddObjectPacket(targetID,
 						x, y, target->GetName());
 				}
 				else
 				{
-					(gClients[actorID]->ActorLock).WriteUnlock();
+					(gClients[actorID]->ViewLock).WriteUnlock();
 					static_cast<Session*>(gClients[actorID])->SendMovePacket(targetID,
 						x, y, 0);
 				}
@@ -222,30 +244,30 @@ namespace mk
 				continue;
 			}
 
-			(target->ActorLock).WriteLock();
+			(target->ViewLock).WriteLock();
 			if (0 != (target->ViewList).count(actorID))
 			{
 				(target->ViewList).erase(actorID);
-				(target->ActorLock).WriteUnlock();
+				(target->ViewLock).WriteUnlock();
 				static_cast<Session*>(target)->SendRemoveObjectPacket(actorID);
 			}
 			else
 			{
-				(target->ActorLock).WriteUnlock();
+				(target->ViewLock).WriteUnlock();
 			}
 
 			if (actorID < MAX_USER)
 			{
-				(gClients[actorID]->ActorLock).WriteLock();
+				(gClients[actorID]->ViewLock).WriteLock();
 				if (0 != (gClients[actorID]->ViewList).count(targetID))
 				{
 					gClients[actorID]->ViewList.erase(targetID);
-					(gClients[actorID]->ActorLock).WriteUnlock();
+					(gClients[actorID]->ViewLock).WriteUnlock();
 					static_cast<Session*>(gClients[actorID])->SendRemoveObjectPacket(targetID);
 				}
 				else
 				{
-					(gClients[actorID]->ActorLock).WriteUnlock();
+					(gClients[actorID]->ViewLock).WriteUnlock();
 				}
 			}
 		}
