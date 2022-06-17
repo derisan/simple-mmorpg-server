@@ -29,38 +29,48 @@ namespace mk
 		auto targetPos = target->GetPos();
 		const auto& targetName = target->GetName();
 
-		for (auto actor : mActors)
 		{
-			if (actor < MAX_USER)
+			WriteLockGuard guard = { mLock };
+			mActors.insert(targetID);
+		}
+
+		{
+			ReadLockGuard guard = { mLock };
+			for (auto actorID : mActors)
 			{
-				Session* oldbie = static_cast<Session*>(gClients[actor]);
-				auto oldbiePos = oldbie->GetPos();
-
-				bool bInRange = isInRange(targetPos, oldbiePos);
-
-				if (bInRange)
+				if (actorID == targetID)
 				{
-					{
-						WriteLockGuard guard = { oldbie->ActorLock };
-						oldbie->ViewList.insert(targetID);
-					}
-					oldbie->SendAddObjectPacket(targetID, targetPos.first,
-						targetPos.second, targetName);
+					continue;
+				}
 
-					auto oldbieID = oldbie->GetID();
-					const auto& oldbieName = oldbie->GetName();
+				if (actorID < MAX_USER)
+				{
+					Session* oldbie = static_cast<Session*>(gClients[actorID]);
+					auto oldbiePos = oldbie->GetPos();
+
+					bool bInView = isInView(targetPos, oldbiePos);
+
+					if (bInView)
 					{
-						WriteLockGuard guard = { target->ActorLock };
-						target->ViewList.insert(oldbieID);
+						{
+							WriteLockGuard guard = { oldbie->ActorLock };
+							oldbie->ViewList.insert(targetID);
+						}
+						oldbie->SendAddObjectPacket(targetID, targetPos.first,
+							targetPos.second, targetName);
+
+						auto oldbieID = oldbie->GetID();
+						const auto& oldbieName = oldbie->GetName();
+						{
+							WriteLockGuard guard = { target->ActorLock };
+							target->ViewList.insert(oldbieID);
+						}
+						static_cast<Session*>(target)->SendAddObjectPacket(oldbieID,
+							oldbiePos.first, oldbiePos.second, oldbieName);
 					}
-					static_cast<Session*>(target)->SendAddObjectPacket(oldbieID,
-						oldbiePos.first, oldbiePos.second, oldbieName);
 				}
 			}
 		}
-
-		WriteLockGuard guard = { mLock };
-		mActors.insert(targetID);
 	}
 
 	void Sector::RemoveActor(Actor* target)
@@ -103,13 +113,16 @@ namespace mk
 		auto targetID = target->GetID();
 
 		{
-			ReadLockGuard guard = { mLock };
+			mLock.ReadLock();
 			auto count = mActors.count(targetID);
 			if (count == 0)
 			{
-				MK_INFO("Actor id[{0}]: is not in sector[{1}]", targetID, mSectorNum);
+				mLock.ReadUnLock();
+				MK_SLOG("Actor id[{0}]: is not in sector[{1}]", targetID, mSectorNum);
+				AddActor(target);
 				return;
 			}
+			mLock.ReadUnLock();
 		}
 
 		auto [x, y] = target->GetPos();
@@ -157,7 +170,7 @@ namespace mk
 				continue;
 			}
 
-			bool bInRange = isInRange({ x, y }, gClients[actorID]->GetPos());
+			bool bInRange = isInView({ x, y }, gClients[actorID]->GetPos());
 
 			if (bInRange)
 			{
@@ -271,7 +284,7 @@ namespace mk
 		return false;
 	}
 
-	bool Sector::isInRange(const pos_type& aPos, const pos_type& bPos)
+	bool Sector::isInView(const pos_type& aPos, const pos_type& bPos)
 	{
 		if (bPos.first < aPos.first - 7 ||
 			bPos.first > aPos.first + 7 ||

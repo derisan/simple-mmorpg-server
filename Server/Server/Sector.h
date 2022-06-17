@@ -29,7 +29,7 @@ namespace mk
 
 		bool isOutOfBound(const short x, const short y);
 
-		bool isInRange(const pos_type& aPos, const pos_type& bPos);
+		bool isInView(const pos_type& aPos, const pos_type& bPos);
 
 	private:
 		std::unordered_set<id_type> mActors;

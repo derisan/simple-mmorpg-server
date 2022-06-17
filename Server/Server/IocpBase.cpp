@@ -92,7 +92,7 @@ namespace mk
 
 		SectorManager::Init();
 
-		MK_INFO("Server initialization success");
+		MK_SLOG("Server initialization success");
 		return true;
 	}
 
@@ -151,7 +151,6 @@ namespace mk
 			{
 			case OperationType::OP_ACCEPT:
 			{
-				MK_INFO("Client[{0}] connected.", overEx->ID);
 				auto session = GetSession(overEx->ID);
 				session->DoAccept(mIocp);
 				break;
@@ -220,6 +219,9 @@ namespace mk
 			CS_LOGIN_PACKET* loginPacket = reinterpret_cast<CS_LOGIN_PACKET*>(packet);
 			auto session = GetSession(id);
 			session->SetName(loginPacket->name);
+			short x = rand() % W_WIDTH;
+			short y = rand() % W_HEIGHT;
+			session->SetPos(x, y);
 			session->SendLoginInfoPacket();
 			SectorManager::AddActor(session);
 			break;
