@@ -16,6 +16,9 @@ public:
 
 	static void RenderActors(const Point& myPos);
 
+	static void ChangeStat(const int32 id, const int16 level,
+		const int32 exp, const int32 hp, const int32 hpMax);
+
 	static String GetActorName(const int32 id);
 
 private:

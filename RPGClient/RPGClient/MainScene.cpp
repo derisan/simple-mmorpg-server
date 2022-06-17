@@ -43,6 +43,15 @@ void MainScene::Enter()
 		SC_CHAT_PACKET* packet = reinterpret_cast<SC_CHAT_PACKET*>(p);
 		ChatManager::AddChat(packet->id, packet->mess);
 	});
+
+	PacketManager::RegisterPacketFunc(SC_STAT_CHANGE, [](char* p) {
+		SC_STAT_CHANGE_PACKET* packet = reinterpret_cast<SC_STAT_CHANGE_PACKET*>(p);
+		ActorManager::ChangeStat(packet->id,
+			packet->level,
+			packet->exp,
+			packet->hp,
+			packet->hpmax);
+	});
 }
 
 void MainScene::Exit()
@@ -72,8 +81,8 @@ void MainScene::Render()
 		ChatManager::TakeUserChat();
 	}
 
-	PutText(U"POS: " + Format(myPos), Vec2{320, 600});
-	PutText(U"ID: " + Format(mActor->GetID()), Vec2{320, 622});
+	PutText(U"POS: " + Format(myPos), Vec2{ 320, 600 });
+	PutText(U"ID: " + Format(mActor->GetID()), Vec2{ 320, 622 });
 	//PutText(U"LEVEL: " + Format(mActor->GetLevel()), Vec2{ 320, 10 });
 	//PutText(U"HP: " + Format(mActor->GetCurrentHP()) + U" | " + Format(mActor->GetMaxHP()),
 	//	Vec2{ 320, 30 });
@@ -124,5 +133,13 @@ void MainScene::pollKeyDown()
 		{
 			ChatManager::SendCurrentChat();
 		}
+	}
+
+	if (KeySpace.down())
+	{
+		CS_ATTACK_PACKET packet = {};
+		packet.size = sizeof(packet);
+		packet.type = CS_ATTACK;
+		PacketManager::SendPacket(&packet, packet.size);
 	}
 }

@@ -75,6 +75,18 @@ void ActorManager::RenderActors(const Point& myPos)
 	}
 }
 
+void ActorManager::ChangeStat(const int32 id, const int16 level,
+	const int32 exp, const int32 hp, const int32 hpMax)
+{
+	if (auto iter = sActors.find(id); iter != sActors.end())
+	{
+		(iter->second).SetLevel(level);
+		(iter->second).SetExp(exp);
+		(iter->second).SetCurrentHP(hp);
+		(iter->second).SetMaxHP(hpMax);
+	}
+}
+
 s3d::String ActorManager::GetActorName(const int32 id)
 {
 	if (auto iter = sActors.find(id); iter != sActors.end())
