@@ -63,8 +63,7 @@ namespace mk
 					WriteLockGuard guard = { oldbie->ViewLock };
 					oldbie->ViewList.insert(targetID);
 				}
-				oldbie->SendAddObjectPacket(targetID, targetPos.first,
-					targetPos.second, targetName);
+				oldbie->SendAddObjectPacket(targetID);
 
 				auto oldbieID = oldbie->GetID();
 				{
@@ -72,8 +71,7 @@ namespace mk
 					target->ViewList.insert(oldbieID);
 				}
 				const auto& oldbieName = oldbie->GetName();
-				static_cast<Session*>(target)->SendAddObjectPacket(oldbieID,
-					oldbiePos.first, oldbiePos.second, oldbieName);
+				static_cast<Session*>(target)->SendAddObjectPacket(oldbieID);
 			}
 		}
 	}
@@ -165,7 +163,7 @@ namespace mk
 		}
 
 		target->SetPos(x, y);
-		static_cast<Session*>(target)->SendMovePacket(targetID, x, y, clientTime);
+		static_cast<Session*>(target)->SendMovePacket(targetID, clientTime);
 
 		bool bOut = isOutOfBound(x, y);
 		if (bOut)
@@ -210,8 +208,7 @@ namespace mk
 				(target->ViewLock).WriteUnlock();
 				auto [x, y] = gClients[actorID]->GetPos();
 				const auto& name = gClients[actorID]->GetName();
-				static_cast<Session*>(target)->SendAddObjectPacket(actorID,
-					x, y, name);
+				static_cast<Session*>(target)->SendAddObjectPacket(actorID);
 			}
 			else
 			{
@@ -225,14 +222,12 @@ namespace mk
 				{
 					(gClients[actorID]->ViewList).insert(targetID);
 					(gClients[actorID]->ViewLock).WriteUnlock();
-					static_cast<Session*>(gClients[actorID])->SendAddObjectPacket(targetID,
-						x, y, target->GetName());
+					static_cast<Session*>(gClients[actorID])->SendAddObjectPacket(targetID);
 				}
 				else
 				{
 					(gClients[actorID]->ViewLock).WriteUnlock();
-					static_cast<Session*>(gClients[actorID])->SendMovePacket(targetID,
-						x, y, 0);
+					static_cast<Session*>(gClients[actorID])->SendMovePacket(targetID, 0);
 				}
 			}
 		}

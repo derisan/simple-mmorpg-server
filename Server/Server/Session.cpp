@@ -156,28 +156,31 @@ namespace mk
 		sendPacket(&packet, packet.size);
 	}
 
-	void Session::SendMovePacket(const int id, const short x, const short y,
-		const unsigned int time)
+	void Session::SendMovePacket(const int id, const unsigned int time)
 	{
 		SC_MOVE_OBJECT_PACKET packet = {};
 		packet.size = sizeof(packet);
 		packet.type = SC_MOVE_OBJECT;
 		packet.id = id;
-		packet.x = x;
-		packet.y = y;
+		packet.x = gClients[id]->GetX();
+		packet.y = gClients[id]->GetY();
 		packet.client_time = time;
 		sendPacket(&packet, packet.size);
 	}
 
-	void Session::SendAddObjectPacket(const int id, const short x, const short y, 
-		const std::string& name)
+	void Session::SendAddObjectPacket(const int id)
 	{
 		SC_ADD_OBJECT_PACKET packet = {};
 		packet.size = sizeof(packet);
 		packet.type = SC_ADD_OBJECT;
 		packet.id = id;
-		packet.x = x;
-		packet.y = y;
+		packet.x = gClients[id]->GetX();
+		packet.y = gClients[id]->GetY();
+		packet.race = gClients[id]->GetRace();
+		packet.level = gClients[id]->GetLevel();
+		packet.hp = gClients[id]->GetCurrentHP();
+		packet.hpmax = gClients[id]->GetMaxHP();
+		const auto& name = gClients[id]->GetName();
 		CopyMemory(packet.name, name.data(), name.length());
 		sendPacket(&packet, packet.size);
 	}

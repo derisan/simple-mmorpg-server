@@ -22,10 +22,8 @@ namespace mk
 
 	public:
 		void SendLoginInfoPacket();
-		void SendMovePacket(const int id, const short x,
-			const short y, const unsigned int time);
-		void SendAddObjectPacket(const int id, const short x, const short y, 
-			const std::string& name);
+		void SendMovePacket(const int id, const unsigned int time);
+		void SendAddObjectPacket(const int id);
 		void SendRemoveObjectPacket(const int id);
 		void SendChatPacket(const int senderID, const char chatType, std::string_view chat);
 
