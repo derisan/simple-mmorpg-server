@@ -128,6 +128,37 @@ namespace mk
 		Timer::AddEvent(TimerEventType::EV_BIND_ACCEPT, GetID(), system_clock::now() + 3s);
 	}
 
+	void Session::AddToViewList(const int id)
+	{
+		bool bInsert = false;
+
+		{
+			WriteLockGuard guard = { ViewLock };
+			auto [_, bResult] = ViewList.insert(id);
+			bInsert = bResult;
+		}
+
+		if (bInsert)
+		{
+			SendAddObjectPacket(id);
+		}
+	}
+
+	void Session::RemoveFromViewList(const int id)
+	{
+		size_t cnt = 0;
+
+		{
+			WriteLockGuard guard = { ViewLock };
+			cnt = ViewList.erase(id);
+		}
+
+		if (0 != cnt)
+		{
+			SendRemoveObjectPacket(id);
+		}
+	}
+
 	OVERLAPPEDEX* Session::pop()
 	{
 		return mPool->Pop();

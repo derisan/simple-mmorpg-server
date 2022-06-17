@@ -134,9 +134,6 @@ namespace mk
 			}
 		}
 
-		auto targetPos = target->GetPos();
-		const auto& targetName = target->GetName();
-
 		std::unordered_set<id_type> actorIds;
 		{
 			WriteLockGuard guard = { mLock };
@@ -144,32 +141,20 @@ namespace mk
 			actorIds = mActorIds;
 		}
 
+		auto targetPos = target->GetPos();
+
 		for (auto actorID : actorIds)
 		{
 			if (actorID == targetID) continue;
 
 			auto actor = gClients[actorID];
-
 			auto actorPos = actor->GetPos();
 			bool bInView = isInView(targetPos, actorPos);
 
 			if (bInView)
 			{
-				{
-					WriteLockGuard guard = { target->ViewLock };
-					target->ViewList.insert(actorID);
-				}
-				static_cast<Session*>(target)->SendAddObjectPacket(actorID);
-
-				{
-					WriteLockGuard guard = { actor->ViewLock };
-					actor->ViewList.insert(targetID);
-				}
-
-				if (actorID < MAX_USER)
-				{
-					static_cast<Session*>(actor)->SendAddObjectPacket(targetID);
-				}
+				target->AddToViewList(actorID);
+				actor->AddToViewList(targetID);
 			}
 		}
 	}
@@ -179,15 +164,12 @@ namespace mk
 		auto targetID = target->GetID();
 		{
 			WriteLockGuard guard = { mLock };
-			if (0 == mActorIds.count(targetID))
+			auto cnt = mActorIds.erase(targetID);
+			if (0 == cnt)
 			{
 				MK_SLOG("RemoveActor() : Actor[{0}] is not in sector[{1}]", targetID,
 					mSectorNum);
 				return;
-			}
-			else
-			{
-				mActorIds.erase(targetID);
 			}
 		}
 
@@ -199,25 +181,8 @@ namespace mk
 
 		for (auto actorID : viewList)
 		{
-			if (targetID < MAX_USER)
-			{
-				static_cast<Session*>(target)->SendRemoveObjectPacket(actorID);
-			}
-
-			auto actor = gClients[actorID];
-
-			size_t cnt = 0;
-			{
-				WriteLockGuard guard = { actor->ViewLock };
-				cnt = actor->ViewList.erase(targetID);
-			}
-
-			if (0 == cnt) continue;
-
-			if (actorID < MAX_USER)
-			{
-				static_cast<Session*>(actor)->SendRemoveObjectPacket(targetID);
-			}
+			target->RemoveFromViewList(actorID);
+			gClients[actorID]->RemoveFromViewList(targetID);
 		}
 	}
 

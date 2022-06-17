@@ -20,6 +20,9 @@ namespace mk
 		void Push(OVERLAPPEDEX* overEX);
 		void Disconnect(SOCKET listenSocket);
 
+		virtual void AddToViewList(const int id) override;
+		virtual void RemoveFromViewList(const int id) override;
+
 	public:
 		void SendLoginInfoPacket();
 		void SendMovePacket(const int id, const unsigned int time);

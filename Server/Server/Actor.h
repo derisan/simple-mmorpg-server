@@ -12,6 +12,9 @@ namespace mk
 	public:
 		void Disconnect();
 
+		virtual void AddToViewList(const int id) abstract;
+		virtual void RemoveFromViewList(const int id) abstract;
+
 	public:
 		int GetID() const { return mID; }
 		void SetID(const int value) { mID = value; }
