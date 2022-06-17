@@ -3,11 +3,9 @@
 
 namespace mk
 {
-	constexpr int MAX_OVEREX_NUM = 100;
-
-	OverlappedPool::OverlappedPool()
+	OverlappedPool::OverlappedPool(const int initialSize /*= 300*/)
 	{
-		for (int i = 0; i < MAX_OVEREX_NUM; ++i)
+		for (int i = 0; i < initialSize; ++i)
 		{
 			auto overEX = new OVERLAPPEDEX{};
 			mPool.push(overEX);

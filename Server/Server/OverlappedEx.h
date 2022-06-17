@@ -28,7 +28,7 @@ namespace mk
 	class OverlappedPool
 	{
 	public:
-		OverlappedPool();
+		OverlappedPool(const int initialSize = 300);
 		~OverlappedPool();
 
 		OVERLAPPEDEX* Pop();

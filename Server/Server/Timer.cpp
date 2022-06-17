@@ -15,7 +15,7 @@ namespace mk
 	void Timer::Init(HANDLE iocp)
 	{
 		sIocp = iocp;
-		sPool = std::make_unique<mk::OverlappedPool>();
+		sPool = std::make_unique<mk::OverlappedPool>(5000);
 	}
 
 	void Timer::AddEvent(const TimerEvent& ev)
