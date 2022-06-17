@@ -221,9 +221,9 @@ namespace mk
 			CS_LOGIN_PACKET* loginPacket = reinterpret_cast<CS_LOGIN_PACKET*>(packet);
 			auto session = GetSession(id);
 			session->SetName(loginPacket->name);
-			//short x = rand() % W_WIDTH;
-			//short y = rand() % W_HEIGHT;
-			//session->SetPos(x, y);
+			short x = 4;
+			short y = 4;
+			session->SetPos(x, y);
 			session->SendLoginInfoPacket();
 			SectorManager::AddActor(session);
 			break;
