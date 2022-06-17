@@ -133,7 +133,8 @@ namespace mk
 				if (OperationType::OP_ACCEPT == overEx->OpType)
 				{
 					MK_ERROR("Accept error.");
-					disconnect(id);
+					auto session = GetSession(overEx->ID);
+					session->BindAccept(mListenSocket);
 				}
 				else
 				{

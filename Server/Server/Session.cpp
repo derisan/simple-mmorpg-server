@@ -120,6 +120,7 @@ namespace mk
 	{
 		Actor::Disconnect();
 
+		shutdown(mSocket, SD_BOTH);
 		closesocket(mSocket);
 		mSocket = INVALID_SOCKET;
 		mWritePos = 0;
