@@ -146,8 +146,13 @@ namespace mk
 		packet.size = sizeof(packet);
 		packet.type = SC_LOGIN_OK;
 		packet.id = GetID();
+		packet.race = GetRace();
 		packet.x = GetX();
 		packet.y = GetY();
+		packet.level = GetLevel();
+		packet.exp = 0; // TODO : Exp
+		packet.hp = GetCurrentHP();
+		packet.hpmax = GetMaxHP();
 		sendPacket(&packet, packet.size);
 	}
 

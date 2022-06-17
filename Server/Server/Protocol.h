@@ -24,6 +24,13 @@ constexpr char SC_MOVE_OBJECT = 15;
 constexpr char SC_CHAT = 16;
 constexpr char SC_STAT_CHANGE = 17;
 
+// Race
+enum Race : short
+{
+	None,
+	Player,
+};
+
 #pragma pack(push, 1)
 
 struct CS_LOGIN_PACKET
@@ -61,11 +68,11 @@ struct SC_LOGIN_OK_PACKET {
 	unsigned char size;
 	char	type;
 	int	id;
-	//short race;
+	short race;
 	short x, y;
-	//short level;
-	//int	  exp;
-	//int   hp, hpmax;
+	short level;
+	int	  exp;
+	int   hp, hpmax;
 };
 
 struct SC_LOGIN_FAIL_PACKET {
@@ -81,12 +88,12 @@ struct SC_ADD_OBJECT_PACKET {
 	char	type;
 	int		id;
 	short	x, y;
-	//short	race;			// 종족 : 인간, 엘프, 드워프, 오크, 드래곤
+	short	race;			// 종족 : 인간, 엘프, 드워프, 오크, 드래곤
 							// 클라이언트에서 종족별로 별도의 그래픽 표현
 							// 추가적으로 성별이나, 직업을 추가할 수 있다.
 	char	name[NAME_SIZE];
-	//short	level;
-	//int		hp, hpmax;
+	short	level;
+	int		hp, hpmax;
 };
 
 struct SC_REMOVE_OBJECT_PACKET {

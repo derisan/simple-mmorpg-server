@@ -25,8 +25,12 @@ void MainScene::Enter()
 		std::string_view name = packet->name;
 
 		ActorManager::RegisterActor(packet->id,
+			packet->race,
 			packet->x,
 			packet->y,
+			packet->level,
+			packet->hp,
+			packet->hpmax,
 			Unicode::Widen(name));
 	});
 

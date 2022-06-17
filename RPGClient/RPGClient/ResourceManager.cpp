@@ -11,7 +11,7 @@ String ResourceManager::GetTexName(race_type race)
 {
 	switch (race)
 	{
-	case 0: return U"Tex_Character";
+	case Race::Player: return U"Tex_Character";
 	default: return U"Null";
 	}
 }

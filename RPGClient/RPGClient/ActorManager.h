@@ -5,8 +5,10 @@
 class ActorManager
 {
 public:
-	static Actor& RegisterActor(const int32 id, const int16 x, const int16 y,
-		const String& name);
+	static Actor& RegisterActor(const int32 id, const int16 race,
+		const int16 x, const int16 y, const int16 level,
+		const int32 hp, const int32 hpMax,
+		const String& name, const int32 exp = 0);
 
 	static void RemoveActor(const int32 id);
 

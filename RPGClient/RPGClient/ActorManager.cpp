@@ -5,14 +5,20 @@
 
 std::unordered_map<s3d::int32, Actor> ActorManager::sActors;
 
-Actor& ActorManager::RegisterActor(const int32 id, const int16 x, const int16 y,
-	const String& name)
+Actor& ActorManager::RegisterActor(const int32 id, const int16 race,
+	const int16 x, const int16 y, const int16 level,
+	const int32 hp, const int32 hpMax,
+	const String& name, const int32 exp /*= 0*/)
 {
 	Actor actor = {};
 	actor.SetID(id);
+	actor.SetRace(race);
 	actor.SetX(x);
 	actor.SetY(y);
-	actor.SetRace(0);
+	actor.SetLevel(level);
+	actor.SetExp(exp);
+	actor.SetCurrentHP(hp);
+	actor.SetMaxHP(hpMax);
 	actor.SetName(name);
 
 	if (auto iter = sActors.find(id); iter == sActors.end())

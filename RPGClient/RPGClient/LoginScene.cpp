@@ -14,8 +14,15 @@ void LoginScene::Enter()
 	PacketManager::RegisterPacketFunc(SC_LOGIN_OK, [this](char* p) {
 		SC_LOGIN_OK_PACKET* packet = reinterpret_cast<SC_LOGIN_OK_PACKET*>(p);
 		// TODO : 로그인 성공 여부 따져서 메인 씬으로 전환
-		auto& actor = ActorManager::RegisterActor(packet->id, packet->x,
-			packet->y, mUserInput.text);
+		auto& actor = ActorManager::RegisterActor(packet->id,
+			packet->race,
+			packet->x,
+			packet->y,
+			packet->level,
+			packet->hp,
+			packet->hpmax,
+			mUserInput.text,
+			packet->exp);
 
 		auto mainScene = new MainScene;
 		mainScene->SetActor(&actor);
