@@ -305,18 +305,23 @@ namespace mk
 				(target->ViewLock).WriteUnlock();
 			}
 
-			if (actorID < MAX_USER)
+			(gClients[actorID]->ViewLock).WriteLock();
+			if (0 == (gClients[actorID]->ViewList).count(targetID))
 			{
-				(gClients[actorID]->ViewLock).WriteLock();
-				if (0 == (gClients[actorID]->ViewList).count(targetID))
+				(gClients[actorID]->ViewList).insert(targetID);
+				(gClients[actorID]->ViewLock).WriteUnlock();
+
+				if (actorID < MAX_USER)
 				{
-					(gClients[actorID]->ViewList).insert(targetID);
-					(gClients[actorID]->ViewLock).WriteUnlock();
 					static_cast<Session*>(gClients[actorID])->SendAddObjectPacket(targetID);
 				}
-				else
+			}
+			else
+			{
+				(gClients[actorID]->ViewLock).WriteUnlock();
+
+				if (actorID < MAX_USER)
 				{
-					(gClients[actorID]->ViewLock).WriteUnlock();
 					static_cast<Session*>(gClients[actorID])->SendMovePacket(targetID, 0);
 				}
 			}
@@ -341,19 +346,20 @@ namespace mk
 				(target->ViewLock).WriteUnlock();
 			}
 
-			if (actorID < MAX_USER)
+			(gClients[actorID]->ViewLock).WriteLock();
+			if (0 != (gClients[actorID]->ViewList).count(targetID))
 			{
-				(gClients[actorID]->ViewLock).WriteLock();
-				if (0 != (gClients[actorID]->ViewList).count(targetID))
+				gClients[actorID]->ViewList.erase(targetID);
+				(gClients[actorID]->ViewLock).WriteUnlock();
+
+				if (actorID < MAX_USER)
 				{
-					gClients[actorID]->ViewList.erase(targetID);
-					(gClients[actorID]->ViewLock).WriteUnlock();
 					static_cast<Session*>(gClients[actorID])->SendRemoveObjectPacket(targetID);
 				}
-				else
-				{
-					(gClients[actorID]->ViewLock).WriteUnlock();
-				}
+			}
+			else
+			{
+				(gClients[actorID]->ViewLock).WriteUnlock();
 			}
 		}
 	}
