@@ -27,10 +27,6 @@ namespace mk
 		void SendRemoveObjectPacket(const int id);
 		void SendChatPacket(const int senderID, const char chatType, std::string_view chat);
 
-	public:
-		bool IsConnected() const { return mbConnected; }
-		void SetConnect(bool value) { mbConnected = value; }
-
 	private:
 		OVERLAPPEDEX* pop();
 		void sendPacket(void* packet, const int packetSize);
@@ -46,7 +42,5 @@ namespace mk
 		char mRecvBuffer[RECV_BUFFER_SIZE] = {};
 		int mWritePos = 0;
 		int mReadPos = 0;
-
-		bool mbConnected = false;
 	};
 }

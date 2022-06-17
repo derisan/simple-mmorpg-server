@@ -5,6 +5,8 @@
 #include "Protocol.h"
 #include "Session.h"
 #include "SectorManager.h"
+#include "NPC.h"
+#include "Random.h"
 
 namespace mk
 {
@@ -16,11 +18,101 @@ namespace mk
 		RIGHT
 	};
 
+	int GetFreeNpcID()
+	{
+		for (int idx = MAX_USER; idx < MAX_USER + NUM_NPC; ++idx)
+		{
+			if (NOT gClients[idx])
+			{
+				return idx;
+			}
+		}
+
+		return -1;
+	}
+
 	Sector::Sector(const std::vector<std::vector<Tile>>& tileMap, int sectorNum)
 		: mTileMap{ tileMap }
 		, mSectorNum{ sectorNum }
 	{
+		auto npcPerSector = NUM_NPC / (gSectorsPerLine * gSectorsPerLine);
+		auto quater = npcPerSector / 4;
 
+		for (int i = 0; i < quater; ++i)
+		{
+			auto npc = new NPC;
+			auto freeID = GetFreeNpcID();
+			gClients[freeID] = npc;
+			npc->SetID(freeID);
+			npc->SetName("»ÔÃæÀÌ");
+			npc->SetLevel(mSectorNum / gSectorsPerLine + 1);
+			npc->SetMaxHP(mSectorNum / gSectorsPerLine + 3);
+			npc->SetCurrentHP(npc->GetMaxHP());
+			npc->SetRace(Race::Enemy1);
+			npc->SetHostile(true);
+			npc->SetBehaviorType(NpcBehaviorType::PEACE);
+			npc->SetMoveType(NpcMoveType::FIXED);
+			auto [x, y] = getAvailablePos(0);
+			npc->SetPos(x, y);
+			mActorIds.insert(freeID);
+		}
+
+		for (int i = quater; i < quater * 2; ++i)
+		{
+			auto npc = new NPC;
+			auto freeID = GetFreeNpcID();
+			gClients[freeID] = npc;
+			npc->SetID(freeID);
+			npc->SetName("ÆÒÅÒ");
+			npc->SetLevel(mSectorNum / gSectorsPerLine + 2);
+			npc->SetMaxHP(mSectorNum / gSectorsPerLine + 5);
+			npc->SetCurrentHP(npc->GetMaxHP());
+			npc->SetRace(Race::Enemy2);
+			npc->SetHostile(true);
+			npc->SetBehaviorType(NpcBehaviorType::PEACE);
+			npc->SetMoveType(NpcMoveType::FIXED);
+			auto [x, y] = getAvailablePos(1);
+			npc->SetPos(x, y);
+			mActorIds.insert(freeID);
+		}
+
+		for (int i = quater * 2; i < quater * 3; ++i)
+		{
+			auto npc = new NPC;
+			auto freeID = GetFreeNpcID();
+			gClients[freeID] = npc;
+			npc->SetID(freeID);
+			npc->SetName("±ÙÀ°¸ó");
+			npc->SetLevel(mSectorNum / gSectorsPerLine + 3);
+			npc->SetMaxHP(mSectorNum / gSectorsPerLine + 7);
+			npc->SetCurrentHP(npc->GetMaxHP());
+			npc->SetRace(Race::Enemy3);
+			npc->SetHostile(true);
+			npc->SetBehaviorType(NpcBehaviorType::PEACE);
+			npc->SetMoveType(NpcMoveType::FIXED);
+			auto [x, y] = getAvailablePos(2);
+			npc->SetPos(x, y);
+			mActorIds.insert(freeID);
+		}
+
+		for (int i = quater * 3; i < quater * 3 + 1; ++i)
+		{
+			auto npc = new NPC;
+			auto freeID = GetFreeNpcID();
+			gClients[freeID] = npc;
+			npc->SetID(freeID);
+			npc->SetName("ÇÇÄ«Ãò");
+			npc->SetLevel(mSectorNum / gSectorsPerLine + 4);
+			npc->SetMaxHP(mSectorNum / gSectorsPerLine + 10);
+			npc->SetCurrentHP(npc->GetMaxHP());
+			npc->SetRace(Race::Enemy4);
+			npc->SetHostile(true);
+			npc->SetBehaviorType(NpcBehaviorType::PEACE);
+			npc->SetMoveType(NpcMoveType::FIXED);
+			auto [x, y] = getAvailablePos(3);
+			npc->SetPos(x, y);
+			mActorIds.insert(freeID);
+		}
 	}
 
 	void Sector::AddActor(Actor* target)
@@ -50,28 +142,29 @@ namespace mk
 		for (auto actorID : actorIds)
 		{
 			if (actorID == targetID) continue;
-			if (actorID > MAX_USER) continue; // NPC
 
-			Session* oldbie = static_cast<Session*>(gClients[actorID]);
-			auto oldbiePos = oldbie->GetPos();
+			auto actor = gClients[actorID];
 
-			bool bInView = isInView(targetPos, oldbiePos);
+			auto actorPos = actor->GetPos();
+			bool bInView = isInView(targetPos, actorPos);
 
 			if (bInView)
 			{
 				{
-					WriteLockGuard guard = { oldbie->ViewLock };
-					oldbie->ViewList.insert(targetID);
-				}
-				oldbie->SendAddObjectPacket(targetID);
-
-				auto oldbieID = oldbie->GetID();
-				{
 					WriteLockGuard guard = { target->ViewLock };
-					target->ViewList.insert(oldbieID);
+					target->ViewList.insert(actorID);
 				}
-				const auto& oldbieName = oldbie->GetName();
-				static_cast<Session*>(target)->SendAddObjectPacket(oldbieID);
+				static_cast<Session*>(target)->SendAddObjectPacket(actorID);
+
+				{
+					WriteLockGuard guard = { actor->ViewLock };
+					actor->ViewList.insert(targetID);
+				}
+
+				if (actorID < MAX_USER)
+				{
+					static_cast<Session*>(actor)->SendAddObjectPacket(targetID);
+				}
 			}
 		}
 	}
@@ -103,25 +196,24 @@ namespace mk
 		{
 			static_cast<Session*>(target)->SendRemoveObjectPacket(actorID);
 
+			auto actor = gClients[actorID];
+
 			{
-				ReadLockGuard guard = { gClients[actorID]->ViewLock };
-				if (0 == (gClients[actorID]->ViewList).count(targetID))
+				ReadLockGuard guard = { actor->ViewLock };
+				if (0 == (actor->ViewList).count(targetID))
 				{
 					continue;
 				}
 			}
 
+			{
+				WriteLockGuard guard = { actor->ViewLock };
+				actor->ViewList.erase(targetID);
+			}
+
 			if (actorID < MAX_USER)
 			{
-				{
-					WriteLockGuard guard = { gClients[actorID]->ViewLock };
-					gClients[actorID]->ViewList.erase(targetID);
-				}
-				static_cast<Session*>(gClients[actorID])->SendRemoveObjectPacket(targetID);
-			}
-			else
-			{
-				// TODO : NPC things
+				static_cast<Session*>(actor)->SendRemoveObjectPacket(targetID);
 			}
 		}
 	}
@@ -206,8 +298,6 @@ namespace mk
 			{
 				(target->ViewList).insert(actorID);
 				(target->ViewLock).WriteUnlock();
-				auto [x, y] = gClients[actorID]->GetPos();
-				const auto& name = gClients[actorID]->GetName();
 				static_cast<Session*>(target)->SendAddObjectPacket(actorID);
 			}
 			else
@@ -332,5 +422,60 @@ namespace mk
 		}
 
 		return true;
+	}
+
+	Sector::pos_type Sector::getAvailablePos(const int area)
+	{
+		const POINT leftTop = { (mSectorNum % gSectorsPerLine) * TILE_PER_SECTOR,
+			(mSectorNum / gSectorsPerLine) * TILE_PER_SECTOR };
+
+		short x = 0;
+		short y = 0;
+
+		switch (area)
+		{
+		case 0: // 2»çºÐ¸é
+		{
+			do
+			{
+				x = Random::RandInt(leftTop.x, leftTop.x + 19);
+				y = Random::RandInt(leftTop.y, leftTop.y + 19);
+			} while (isSolid(y, x));
+
+			return { x, y };
+		}
+
+		case 1: // 1»çºÐ¸é
+		{
+			do
+			{
+				x = Random::RandInt(leftTop.x + 20, leftTop.x + 39);
+				y = Random::RandInt(leftTop.y, leftTop.y + 19);
+			} while (isSolid(y, x));
+
+			return { x, y };
+		}
+
+		case 2: // 3»çºÐ¸é
+		{
+			do
+			{
+				x = Random::RandInt(leftTop.x, leftTop.x + 19);
+				y = Random::RandInt(leftTop.y + 20, leftTop.y + 39);
+			} while (isSolid(y, x));
+
+			return { x, y };
+		}
+
+		case 3: // 4»çºÐ¸é
+		{
+			return { static_cast<int>(leftTop.x) + 30,
+				static_cast<int>(leftTop.y) + 30 };
+		}
+
+		default:
+			MK_ASSERT(false);
+			return { -1, -1 };
+		}
 	}
 }

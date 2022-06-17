@@ -74,9 +74,9 @@ void MainScene::Render()
 
 	PutText(U"POS: " + Format(myPos), Vec2{320, 600});
 	PutText(U"ID: " + Format(mActor->GetID()), Vec2{320, 622});
-	PutText(U"LEVEL: " + Format(mActor->GetLevel()), Vec2{ 320, 10 });
-	PutText(U"HP: " + Format(mActor->GetCurrentHP()) + U" | " + Format(mActor->GetMaxHP()),
-		Vec2{ 320, 30 });
+	//PutText(U"LEVEL: " + Format(mActor->GetLevel()), Vec2{ 320, 10 });
+	//PutText(U"HP: " + Format(mActor->GetCurrentHP()) + U" | " + Format(mActor->GetMaxHP()),
+	//	Vec2{ 320, 30 });
 
 
 	ActorManager::RenderActors(myPos);

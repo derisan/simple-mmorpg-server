@@ -33,6 +33,8 @@ namespace mk
 
 		bool isInView(const pos_type& aPos, const pos_type& bPos);
 
+		pos_type getAvailablePos(const int area);
+
 	private:
 		std::unordered_set<id_type> mActorIds;
 		const std::vector<std::vector<Tile>>& mTileMap;

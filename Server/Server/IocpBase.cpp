@@ -4,6 +4,8 @@
 #include "Session.h"
 #include "Timer.h"
 #include "SectorManager.h"
+#include "NPC.h"
+#include "Random.h"
 
 namespace mk
 {
@@ -18,6 +20,8 @@ namespace mk
 
 	bool IocpBase::Init()
 	{
+		Random::Init();
+
 		WSADATA wsaData = {};
 		int ret = WSAStartup(MAKEWORD(2, 2), &wsaData);
 		if (0 != ret)
@@ -78,6 +82,12 @@ namespace mk
 			mWorkerThreads.emplace_back([this]() { doWorker(); });
 		}
 
+		Timer::Init(mIocp);
+
+		mTimerThread = std::thread{ []() { Timer::Run(); } };
+
+		SectorManager::Init();
+
 		for (int idx = 0; idx < MAX_USER; ++idx)
 		{
 			auto session = new Session;
@@ -86,11 +96,6 @@ namespace mk
 			gClients[idx] = session;
 		}
 
-		Timer::Init(mIocp);
-
-		mTimerThread = std::thread{ []() { Timer::Run(); } };
-
-		SectorManager::Init();
 
 		MK_SLOG("Server initialization success");
 		return true;

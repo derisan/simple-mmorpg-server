@@ -8,7 +8,7 @@ constexpr int W_WIDTH = 2000;
 constexpr int W_HEIGHT = 2000;
 
 constexpr int MAX_USER = 1000;
-constexpr int NUM_NPC = 200000;
+constexpr int NUM_NPC = 20000;
 
 // Packet ID
 constexpr char CS_LOGIN = 0;
@@ -29,6 +29,11 @@ enum Race : short
 {
 	None,
 	Player,
+	ShopKeeper,
+	Enemy1,
+	Enemy2,
+	Enemy3,
+	Enemy4,
 };
 
 #pragma pack(push, 1)

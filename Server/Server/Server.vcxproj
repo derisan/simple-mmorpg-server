@@ -151,7 +151,9 @@
     <ClCompile Include="Lock.cpp" />
     <ClCompile Include="Log.cpp" />
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="NPC.cpp" />
     <ClCompile Include="OverlappedEx.cpp" />
+    <ClCompile Include="Random.cpp" />
     <ClCompile Include="Sector.cpp" />
     <ClCompile Include="SectorManager.cpp" />
     <ClCompile Include="Session.cpp" />
@@ -167,8 +169,10 @@
     <ClInclude Include="IocpBase.h" />
     <ClInclude Include="Lock.h" />
     <ClInclude Include="Log.h" />
+    <ClInclude Include="NPC.h" />
     <ClInclude Include="OverlappedEx.h" />
     <ClInclude Include="Protocol.h" />
+    <ClInclude Include="Random.h" />
     <ClInclude Include="Sector.h" />
     <ClInclude Include="SectorManager.h" />
     <ClInclude Include="Session.h" />

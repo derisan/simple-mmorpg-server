@@ -57,7 +57,6 @@ namespace mk
 			return;
 		}
 
-		SetConnect(true);
 		BindRecv();
 	}
 
@@ -126,7 +125,6 @@ namespace mk
 		mSocket = INVALID_SOCKET;
 		mWritePos = 0;
 		mReadPos = 0;
-		SetConnect(false);
 		Timer::AddEvent(TimerEventType::EV_BIND_ACCEPT, GetID(), system_clock::now() + 3s);
 	}
 
