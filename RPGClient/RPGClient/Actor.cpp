@@ -8,7 +8,7 @@ void Actor::Render()
 	int32 x = mX % 20 * 32;
 	int32 y = mY % 20 * 32;
 
-	Rect{ x, y, 32, 32 }(TextureAsset(mTexName)).draw();
+	TextureAsset{ mTexName }.draw(x, y);
 	PutText(mName, Vec2{ x + 16, y - 16 });
 }
 
