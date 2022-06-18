@@ -5,10 +5,9 @@ namespace mk
 {
 	void Actor::Shutdown()
 	{
-		{
-			WriteLockGuard guard = { ViewLock };
-			ViewList.clear();
-		}
+		WriteLockGuard guard = { ViewLock };
+		mbActive = false;
+		ViewList.clear();
 		mName = {};
 		mPosX = INVALID_VALUE;
 		mPosY = INVALID_VALUE;
@@ -19,6 +18,5 @@ namespace mk
 		mbAttack = true;
 		mAttackPower = INVALID_VALUE;
 		mExp = INVALID_VALUE;
-		mbActive = false;
 	}
 }

@@ -183,6 +183,14 @@ namespace mk
 	{
 		auto actor = gClients[job.ID];
 
+		{
+			ReadLockGuard guard = { actor->ActorLock };
+			if (NOT actor->IsActive())
+			{
+				return;
+			}
+		}
+
 		(actor->ActorLock).ReadLock();
 		std::wstring query = L"EXEC UpdateUserInfo "
 			+ s2ws(actor->GetName())
