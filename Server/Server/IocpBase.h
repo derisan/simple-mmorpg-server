@@ -23,6 +23,8 @@ namespace mk
 	private:
 		void doWorker();
 
+		void doTick(const int numActors);
+
 		void disconnect(const int id);
 
 		void processPacket(const int id, char* packet);
@@ -33,5 +35,6 @@ namespace mk
 
 		std::vector<std::thread> mWorkerThreads;
 		std::thread mTimerThread;
+		std::thread mTickThread;
 	};
 }

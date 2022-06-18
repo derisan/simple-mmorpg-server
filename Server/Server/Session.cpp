@@ -118,9 +118,9 @@ namespace mk
 		}
 	}
 
-	void Session::Disconnect(SOCKET listenSocket)
+	void Session::Shutdown()
 	{
-		Actor::Disconnect();
+		Actor::Shutdown();
 
 		shutdown(mSocket, SD_BOTH);
 		closesocket(mSocket);
@@ -129,6 +129,15 @@ namespace mk
 		mReadPos = 0;
 		mRequiredExp = INT_MAX;
 		Timer::AddEvent(TimerEventType::EV_BIND_ACCEPT, GetID(), system_clock::now() + 3s);
+	}
+
+	void Session::Tick()
+	{
+		if (NOT IsActive())
+		{
+			return;
+		}
+
 	}
 
 	bool Session::AddToViewList(const int id, const bool bSendMove /*= false*/)

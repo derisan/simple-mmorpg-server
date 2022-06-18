@@ -18,6 +18,19 @@ namespace mk
 		return static_cast<Session*>(gClients[id]);
 	}
 
+	inline int GetNumValidActors()
+	{
+		for (int idx = 0; idx < MAX_USER + NUM_NPC; ++idx)
+		{
+			if (NOT gClients[idx])
+			{
+				return idx;
+			}
+		}
+
+		return -1;
+	}
+
 	bool IocpBase::Init()
 	{
 		Random::Init();
@@ -96,6 +109,9 @@ namespace mk
 			gClients[idx] = session;
 		}
 
+		// Session과 NPC 생성이 선행되어야 함.
+		int numValids = GetNumValidActors();
+		mTickThread = std::thread{ [this, numValids]() { doTick(numValids); } };
 
 		MK_SLOG("Server initialization success");
 		return true;
@@ -108,6 +124,11 @@ namespace mk
 
 	void IocpBase::Run()
 	{
+		if (mTickThread.joinable())
+		{
+			mTickThread.join();
+		}
+
 		if (mTimerThread.joinable())
 		{
 			mTimerThread.join();
@@ -215,12 +236,29 @@ namespace mk
 		}
 	}
 
+	void IocpBase::doTick(const int numActors)
+	{
+		using namespace std::chrono;
+
+		while (true)
+		{
+			auto start = system_clock::now();
+
+			for (auto idx = 0; idx < numActors; ++idx)
+			{
+				gClients[idx]->Tick();
+			}
+
+			std::this_thread::sleep_until(start + 1s);
+		}
+	}
+
 	void IocpBase::disconnect(const int id)
 	{
 		MK_INFO("Client[{0}] disconnected.", id);
 		auto session = GetSession(id);
 		SectorManager::RemoveActor(session);
-		session->Disconnect(mListenSocket);
+		session->Shutdown();
 	}
 
 	void IocpBase::processPacket(const int id, char* packet)
@@ -246,6 +284,7 @@ namespace mk
 			session->SetExp(0);
 			auto requiredExp = session->GetLevel() * 10;
 			session->SetRequiredExp(requiredExp);
+			session->SetActive(true);
 			session->SendLoginInfoPacket();
 			SectorManager::AddActor(session);
 			break;

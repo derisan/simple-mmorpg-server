@@ -3,7 +3,7 @@
 
 namespace mk
 {
-	void Actor::Disconnect()
+	void Actor::Shutdown()
 	{
 		{
 			WriteLockGuard guard = { ViewLock };
@@ -19,5 +19,6 @@ namespace mk
 		mbAttack = true;
 		mAttackPower = INVALID_VALUE;
 		mExp = INVALID_VALUE;
+		mbActive = false;
 	}
 }

@@ -18,8 +18,9 @@ namespace mk
 		void DoAccept(HANDLE iocp);
 		std::vector<char*> DoRecv(const int dataSize);
 		void Push(OVERLAPPEDEX* overEX);
-		void Disconnect(SOCKET listenSocket);
 
+		virtual void Shutdown() override;
+		virtual void Tick() override;
 		virtual bool AddToViewList(const int id, const bool bSendMove = false) override;
 		virtual bool RemoveFromViewList(const int id) override;
 		

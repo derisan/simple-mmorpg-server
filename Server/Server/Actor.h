@@ -12,7 +12,8 @@ namespace mk
 	public:
 		virtual ~Actor() = default;
 
-		void Disconnect();
+		virtual void Shutdown();
+		virtual void Tick() {};
 
 		virtual bool AddToViewList(const int id, const bool bSendMove = false) abstract;
 		virtual bool RemoveFromViewList(const int id) abstract;
@@ -44,6 +45,8 @@ namespace mk
 		int GetAttackPower() const { return mAttackPower; }
 		void SetExp(const int value) { mExp = value; }
 		int GetExp() const { return mExp; }
+		void SetActive(const bool value) { mbActive = value; }
+		bool IsActive() const { return mbActive; }
 
 	public:
 		SpinLock ActorLock = {};
@@ -62,5 +65,6 @@ namespace mk
 		bool mbAttack = true;
 		int mAttackPower = INVALID_VALUE;
 		int mExp = INVALID_VALUE;
+		bool mbActive = false;
 	};
 }
