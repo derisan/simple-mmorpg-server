@@ -39,5 +39,6 @@ namespace mk
 		std::thread mTimerThread;
 		std::thread mTickThread;
 		std::thread mAIThread;
+		std::thread mDBThread;
 	};
 }

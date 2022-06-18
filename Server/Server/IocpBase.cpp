@@ -6,6 +6,7 @@
 #include "SectorManager.h"
 #include "NPC.h"
 #include "Random.h"
+#include "DBConnection.h"
 
 namespace mk
 {
@@ -95,8 +96,10 @@ namespace mk
 		}
 
 		Timer::Init(mIocp);
+		DBConnection::Init(mIocp);
 
 		mTimerThread = std::thread{ []() { Timer::Run(); } };
+		mDBThread = std::thread{ []() {DBConnection::Run(); } };
 
 		SectorManager::Init();
 
@@ -120,6 +123,8 @@ namespace mk
 
 	void IocpBase::Shutdown()
 	{
+		DBConnection::Shutdown();
+
 		WSACleanup();
 	}
 
@@ -230,6 +235,39 @@ namespace mk
 				break;
 			}
 
+			case OperationType::DB_LOGIN_NO_INFO:
+			{
+				auto session = GetSession(id);
+
+				// TODO : 
+
+				DBConnection::PushOverEx(overEx);
+				break;
+			}
+
+			case OperationType::DB_LOGIN_WITH_INFO:
+			{
+				UserInfo info = {};
+				CopyMemory(&info, overEx->SendBuffer, sizeof(info));
+
+				auto session = GetSession(id);
+				session->SetPos(info.X, info.Y);
+				session->SetLevel(info.Level);
+				session->SetMaxHP((info.Level - 1) * 20 + 100);
+				session->SetCurrentHP(info.HP);
+				session->SetRace(info.Race);
+				auto attackPower = info.Level;
+				session->SetAttackPower(attackPower);
+				session->SetExp(info.Exp);
+				auto requiredExp = info.Level * 10;
+				session->SetRequiredExp(requiredExp);
+				session->SetActive(true);
+				session->SendLoginInfoPacket();
+				SectorManager::AddActor(session);
+				DBConnection::PushOverEx(overEx);
+				break;
+			}
+
 			default:
 				MK_ASSERT(false);
 				break;
@@ -290,22 +328,7 @@ namespace mk
 			CS_LOGIN_PACKET* loginPacket = reinterpret_cast<CS_LOGIN_PACKET*>(packet);
 			auto session = GetSession(id);
 			session->SetName(loginPacket->name);
-			short x = 4;
-			short y = 4;
-			session->SetPos(x, y);
-			session->SetLevel(1);
-			session->SetMaxHP((session->GetLevel() - 1) * 20 + 100);
-			//session->SetCurrentHP(session->GetMaxHP());
-			session->SetCurrentHP(1);
-			session->SetRace(Race::Player);
-			auto attackPower = session->GetLevel();
-			session->SetAttackPower(attackPower);
-			session->SetExp(0);
-			auto requiredExp = session->GetLevel() * 10;
-			session->SetRequiredExp(requiredExp);
-			session->SetActive(true);
-			session->SendLoginInfoPacket();
-			SectorManager::AddActor(session);
+			DBConnection::PushJob(id, DBJobType::GetUserInfo);
 			break;
 		}
 
