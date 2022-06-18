@@ -8,6 +8,7 @@
 #pragma comment(lib, "mswsock")
 #pragma comment(lib, "libtcmalloc_minimal")
 #pragma comment(linker, "/include:__tcmalloc")
+#pragma comment (lib, "lua54.lib")
 
 #pragma warning(push, 0)
 #include <spdlog/spdlog.h>
@@ -27,5 +28,12 @@ using namespace DirectX::SimpleMath;
 #include <array>
 
 #include "Log.h"
+
+extern "C"
+{
+#include "lua.h"
+#include "lauxlib.h"
+#include "lualib.h"
+}
 
 constexpr int INVALID_VALUE = -1;
