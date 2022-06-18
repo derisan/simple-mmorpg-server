@@ -239,8 +239,19 @@ namespace mk
 			{
 				auto session = GetSession(id);
 
-				// TODO : 
-
+				auto [x, y] = SectorManager::GetAvailablePos();
+				session->SetPos(x, y);
+				auto level = 1;
+				session->SetLevel(level);
+				session->SetMaxHP(level * 100);
+				session->SetCurrentHP(level * 100);
+				session->SetRace(Race::Player);
+				session->SetAttackPower(level);
+				session->SetExp(0);
+				session->SetRequiredExp(level * 10);
+				session->SetActive(true);
+				session->SendLoginInfoPacket();
+				SectorManager::AddActor(session);
 				DBConnection::PushOverEx(overEx);
 				break;
 			}

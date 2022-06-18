@@ -8,6 +8,8 @@
 
 namespace mk
 {
+	constexpr int MAX_SESSION_PER_SECTOR = 50;
+
 	std::vector<std::vector<std::unique_ptr<Sector>>> SectorManager::sSectors;
 	int gSectorsPerLine = 0;
 
@@ -78,6 +80,26 @@ namespace mk
 		auto [x, y] = actor->GetPos();
 		auto& curSector = getSector(x, y);
 		curSector->AddActor(actor);
+	}
+
+	std::pair<short, short> SectorManager::GetAvailablePos()
+	{
+		for (const auto& row : sSectors)
+		{
+			for (const auto& sector : row)
+			{
+				if (sector->GetNumSessions() < MAX_SESSION_PER_SECTOR)
+				{
+					auto sectorNum = sector->GetSectorNum();
+					short left = (sectorNum % gSectorsPerLine) * TILE_PER_SECTOR;
+					short top = (sectorNum / gSectorsPerLine) * TILE_PER_SECTOR;
+					return { left + 4, top + 4 };
+				}
+			}
+		}
+
+		MK_ASSERT(false);
+		return { -1, -1 };
 	}
 
 	std::unique_ptr<Sector>& SectorManager::getSector(const short x, const short y)

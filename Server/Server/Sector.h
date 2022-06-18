@@ -29,6 +29,10 @@ namespace mk
 		void DoAttack(Actor* hitter);
 
 		void SendStatChangeToViewList(Actor* target);
+
+		int GetNumSessions() const { return mNumSessions.load(); }
+
+		int GetSectorNum() const { return mSectorNum; }
 		
 	private:
 		bool isSolid(const short row, const short col);
@@ -45,6 +49,7 @@ namespace mk
 		std::unordered_set<id_type> mActorIds;
 		const std::vector<std::vector<Tile>>& mTileMap;
 		int mSectorNum = INVALID_VALUE;
+		std::atomic<int> mNumSessions = 0;
 
 		SpinLock mLock = {};
 	};

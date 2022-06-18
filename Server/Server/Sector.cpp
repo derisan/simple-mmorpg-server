@@ -32,6 +32,11 @@ namespace mk
 		return -1;
 	}
 
+	bool IsUser(const int id)
+	{
+		return id < MAX_USER;
+	}
+
 	Sector::Sector(const std::vector<std::vector<Tile>>& tileMap, int sectorNum)
 		: mTileMap{ tileMap }
 		, mSectorNum{ sectorNum }
@@ -154,6 +159,11 @@ namespace mk
 			}
 		}
 
+		if (IsUser(targetID))
+		{
+			mNumSessions.fetch_add(1);
+		}
+
 		std::unordered_set<id_type> actorIds;
 		{
 			WriteLockGuard guard = { mLock };
@@ -191,6 +201,11 @@ namespace mk
 					mSectorNum);
 				return;
 			}
+		}
+
+		if (IsUser(targetID))
+		{
+			mNumSessions.fetch_sub(1);
 		}
 
 		std::unordered_set<id_type> viewList;
@@ -310,7 +325,7 @@ namespace mk
 
 		for (auto actorID : nearList)
 		{
-			if (actorID < MAX_USER)
+			if(IsUser(actorID))
 			{
 				static_cast<Session*>(gClients[actorID])->SendChatPacket(target->GetID(),
 					chatType, chat);
@@ -340,7 +355,7 @@ namespace mk
 
 		for (auto actorID : viewList)
 		{
-			if (actorID < MAX_USER) continue;
+			if (IsUser(actorID)) continue;
 
 			bool bInRange = isInAttackRange({ x, y }, gClients[actorID]->GetPos());
 
@@ -404,14 +419,14 @@ namespace mk
 
 		auto targetID = target->GetID();
 
-		if (targetID < MAX_USER)
+		if (IsUser(targetID))
 		{
 			static_cast<Session*>(target)->SendStatChangePacket(targetID);
 		}
 
 		for (auto actorID : viewList)
 		{
-			if (actorID >= MAX_USER) continue;
+			if (NOT IsUser(actorID)) continue;
 
 			(gClients[actorID]->ViewLock).ReadLock();
 			if (0 != gClients[actorID]->ViewList.count(targetID))

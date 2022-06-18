@@ -29,6 +29,8 @@ namespace mk
 		static void SendStatChangeToViewList(Actor* actor);
 
 		static void ChangeSector(Actor* actor, const int prevSectorNum);
+
+		static std::pair<short, short> GetAvailablePos();
 		
 	private:
 		static std::unique_ptr<Sector>& getSector(const short x, const short y);
