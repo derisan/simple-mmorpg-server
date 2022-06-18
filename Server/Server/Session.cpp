@@ -128,7 +128,7 @@ namespace mk
 		Timer::AddEvent(TimerEventType::EV_BIND_ACCEPT, GetID(), system_clock::now() + 3s);
 	}
 
-	void Session::AddToViewList(const int id)
+	bool Session::AddToViewList(const int id, const bool bSendMove /*= false*/)
 	{
 		bool bInsert = false;
 
@@ -142,9 +142,18 @@ namespace mk
 		{
 			SendAddObjectPacket(id);
 		}
+		else
+		{
+			if (bSendMove)
+			{
+				SendMovePacket(id, 0);
+			}
+		}
+
+		return bInsert;
 	}
 
-	void Session::RemoveFromViewList(const int id)
+	bool Session::RemoveFromViewList(const int id)
 	{
 		size_t cnt = 0;
 
@@ -156,7 +165,10 @@ namespace mk
 		if (0 != cnt)
 		{
 			SendRemoveObjectPacket(id);
+			return true;
 		}
+		
+		return false;
 	}
 
 	OVERLAPPEDEX* Session::pop()

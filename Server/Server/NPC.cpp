@@ -5,15 +5,17 @@
 
 namespace mk
 {
-	void NPC::AddToViewList(const int id)
+	bool NPC::AddToViewList(const int id, const bool bSendMove /*= false*/)
 	{
 		WriteLockGuard guard = { ViewLock };
-		ViewList.insert(id);
+		auto [_, bInsert] = ViewList.insert(id);
+		return bInsert;
 	}
 
-	void NPC::RemoveFromViewList(const int id)
+	bool NPC::RemoveFromViewList(const int id)
 	{
 		WriteLockGuard guard = { ViewLock };
-		ViewList.erase(id);
+		auto cnt = ViewList.erase(id);
+		return cnt == 1;
 	}
 }

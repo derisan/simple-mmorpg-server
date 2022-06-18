@@ -12,8 +12,8 @@ namespace mk
 	public:
 		void Disconnect();
 
-		virtual void AddToViewList(const int id) abstract;
-		virtual void RemoveFromViewList(const int id) abstract;
+		virtual bool AddToViewList(const int id, const bool bSendMove = false) abstract;
+		virtual bool RemoveFromViewList(const int id) abstract;
 
 	public:
 		int GetID() const { return mID; }
