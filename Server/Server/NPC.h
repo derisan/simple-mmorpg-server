@@ -24,8 +24,8 @@ namespace mk
     public:
         virtual void Shutdown() override;
         virtual void Tick() override;
-        virtual bool AddToViewList(const int id, const bool bSendMove = false) override;
-        virtual bool RemoveFromViewList(const int id) override;
+        virtual bool AddToViewList(const id_t id, const bool bSendMove = false) override;
+        virtual bool RemoveFromViewList(const id_t id) override;
 
     public:
         bool IsHostile() const { return mbHostile; }

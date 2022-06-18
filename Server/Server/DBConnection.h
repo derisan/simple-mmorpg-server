@@ -27,7 +27,7 @@ namespace mk
 
 	struct DBJob
 	{
-		int ID = 0;
+		id_t ID = 0;
 		DBJobType Type = DBJobType::NONE;
 	};
 
@@ -37,7 +37,7 @@ namespace mk
 		static void Init(HANDLE iocpHandle);
 		static void Shutdown();
 		static void Run();
-		static void PushJob(const int id, DBJobType type);
+		static void PushJob(const id_t id, DBJobType type);
 		static void PushOverEx(OVERLAPPEDEX* overex);
 
 	private:

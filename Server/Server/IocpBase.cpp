@@ -12,7 +12,7 @@ namespace mk
 {
 	std::array<Actor*, MAX_USER + NUM_NPC> gClients;
 
-	inline Session* GetSession(const int id)
+	inline Session* GetSession(const id_t id)
 	{
 		return static_cast<Session*>(gClients[id]);
 	}
@@ -158,7 +158,7 @@ namespace mk
 			OVERLAPPEDEX* overEx = nullptr;
 
 			BOOL ret = GetQueuedCompletionStatus(mIocp, &numBytes, &key, (LPOVERLAPPED*)&overEx, INFINITE);
-			int id = static_cast<int>(key);
+			id_t id = static_cast<id_t>(key);
 
 			if (FALSE == ret)
 			{
@@ -320,7 +320,7 @@ namespace mk
 		}
 	}
 
-	void IocpBase::disconnect(const int id)
+	void IocpBase::disconnect(const id_t id)
 	{
 		MK_INFO("Client[{0}] disconnected.", id);
 		auto session = GetSession(id);
@@ -328,7 +328,7 @@ namespace mk
 		session->Shutdown();
 	}
 
-	void IocpBase::processPacket(const int id, char* packet)
+	void IocpBase::processPacket(const id_t id, char* packet)
 	{
 		char packetType = packet[1];
 

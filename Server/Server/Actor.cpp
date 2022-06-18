@@ -9,8 +9,7 @@ namespace mk
 		mbActive = false;
 		ViewList.clear();
 		mName = {};
-		mPosX = INVALID_VALUE;
-		mPosY = INVALID_VALUE;
+		mPos = {};
 		mLevel = INVALID_VALUE;
 		mMaxHP = INVALID_VALUE;
 		mCurrentHP = INVALID_VALUE;

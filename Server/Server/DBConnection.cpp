@@ -106,7 +106,7 @@ namespace mk
 		}
 	}
 
-	void DBConnection::PushJob(const int id, DBJobType type)
+	void DBConnection::PushJob(const id_t id, DBJobType type)
 	{
 		DBJob job = { id, type };
 		sJobs.push(job);

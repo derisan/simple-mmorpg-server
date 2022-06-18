@@ -161,7 +161,7 @@ namespace mk
 		DBConnection::PushJob(GetID(), DBJobType::UpdateUserInfo);
 	}
 
-	bool Session::AddToViewList(const int id, const bool bSendMove /*= false*/)
+	bool Session::AddToViewList(const id_t id, const bool bSendMove /*= false*/)
 	{
 		bool bInsert = false;
 
@@ -186,7 +186,7 @@ namespace mk
 		return bInsert;
 	}
 
-	bool Session::RemoveFromViewList(const int id)
+	bool Session::RemoveFromViewList(const id_t id)
 	{
 		size_t cnt = 0;
 
@@ -254,7 +254,7 @@ namespace mk
 		sendPacket(&packet, packet.size);
 	}
 
-	void Session::SendMovePacket(const int id, const unsigned int time)
+	void Session::SendMovePacket(const id_t id, const unsigned int time)
 	{
 		SC_MOVE_OBJECT_PACKET packet = {};
 		packet.size = sizeof(packet);
@@ -266,7 +266,7 @@ namespace mk
 		sendPacket(&packet, packet.size);
 	}
 
-	void Session::SendAddObjectPacket(const int id)
+	void Session::SendAddObjectPacket(const id_t id)
 	{
 		SC_ADD_OBJECT_PACKET packet = {};
 		packet.size = sizeof(packet);
@@ -283,7 +283,7 @@ namespace mk
 		sendPacket(&packet, packet.size);
 	}
 
-	void Session::SendRemoveObjectPacket(const int id)
+	void Session::SendRemoveObjectPacket(const id_t id)
 	{
 		SC_REMOVE_OBJECT_PACKET packet = {};
 		packet.size = sizeof(packet);
@@ -292,7 +292,7 @@ namespace mk
 		sendPacket(&packet, packet.size);
 	}
 
-	void Session::SendSystemChatDamage(const int victimID)
+	void Session::SendSystemChatDamage(const id_t victimID)
 	{
 		const auto& victimName = gClients[victimID]->GetName();
 		const auto myPower = GetAttackPower();
@@ -303,7 +303,7 @@ namespace mk
 			+ "의 데미지를 입혔습니다.");
 	}
 
-	void Session::SendSystemChatExp(const int victimID)
+	void Session::SendSystemChatExp(const id_t victimID)
 	{
 		const auto& victimName = gClients[victimID]->GetName();
 		const auto victimExp = gClients[victimID]->GetExp();
@@ -314,7 +314,7 @@ namespace mk
 			+ "의 경험치를 얻었습니다.");
 	}
 
-	void Session::SendChatPacket(const int senderID, const char chatType, std::string_view chat)
+	void Session::SendChatPacket(const id_t senderID, const char chatType, std::string_view chat)
 	{
 		SC_CHAT_PACKET packet = {};
 		packet.size = sizeof(packet);
@@ -325,7 +325,7 @@ namespace mk
 		sendPacket(&packet, packet.size);
 	}
 
-	void Session::SendStatChangePacket(const int id)
+	void Session::SendStatChangePacket(const id_t id)
 	{
 		SC_STAT_CHANGE_PACKET packet = {};
 		packet.size = sizeof(packet);

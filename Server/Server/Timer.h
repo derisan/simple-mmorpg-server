@@ -18,7 +18,7 @@ namespace mk
 	struct TimerEvent
 	{
 		TimerEventType EventType = TimerEventType::EV_NONE;
-		int ID = INVALID_VALUE;
+		id_t ID = INVALID_VALUE;
 		std::chrono::system_clock::time_point ActTime = {};
 
 		bool operator < (const TimerEvent& other) const
@@ -32,7 +32,7 @@ namespace mk
 	public:
 		static void Init(HANDLE iocp);
 		static void AddEvent(const TimerEvent& ev);
-		static void AddEvent(const TimerEventType eventType, const int id, 
+		static void AddEvent(const TimerEventType eventType, const id_t id, 
 			const std::chrono::system_clock::time_point actTime);
 		static void Run();
 		static void PushOverEx(OVERLAPPEDEX* overEx);

@@ -32,7 +32,7 @@ namespace mk
 		return -1;
 	}
 
-	bool IsUser(const int id)
+	bool IsUser(const id_t id)
 	{
 		return id < MAX_USER;
 	}
@@ -164,7 +164,7 @@ namespace mk
 			mNumSessions.fetch_add(1);
 		}
 
-		std::unordered_set<id_type> actorIds;
+		std::unordered_set<id_t> actorIds;
 		{
 			WriteLockGuard guard = { mLock };
 			mActorIds.insert(targetID);
@@ -208,7 +208,7 @@ namespace mk
 			mNumSessions.fetch_sub(1);
 		}
 
-		std::unordered_set<id_type> viewList;
+		std::unordered_set<id_t> viewList;
 		{
 			ReadLockGuard guard = { target->ViewLock };
 			viewList = target->ViewList;
@@ -268,14 +268,14 @@ namespace mk
 		}
 
 		// 기존 ViewList 복사
-		std::unordered_set<id_type> oldList;
+		std::unordered_set<id_t> oldList;
 		{
 			ReadLockGuard guard = { target->ViewLock };
 			oldList = target->ViewList;
 		}
 
 		// NearList 생성
-		std::unordered_set<id_type> nearList;
+		std::unordered_set<id_t> nearList;
 		{
 			ReadLockGuard guard = { mLock };
 			for (auto actorID : mActorIds)
@@ -314,7 +314,7 @@ namespace mk
 
 	void Sector::SendChatToViewList(Actor* target, const char chatType, std::string_view chat)
 	{
-		std::unordered_set<id_type> nearList;
+		std::unordered_set<id_t> nearList;
 		{
 			ReadLockGuard guard = { target->ViewLock };
 			nearList = target->ViewList;
@@ -345,7 +345,7 @@ namespace mk
 			hitter->SetAttack(false);
 		}
 
-		std::unordered_set<id_type> viewList;
+		std::unordered_set<id_t> viewList;
 		{
 			ReadLockGuard guard = { hitter->ViewLock };
 			viewList = hitter->ViewList;
@@ -411,7 +411,7 @@ namespace mk
 
 	void Sector::SendStatChangeToViewList(Actor* target)
 	{
-		std::unordered_set<id_type> viewList;
+		std::unordered_set<id_t> viewList;
 		{
 			ReadLockGuard guard = { target->ViewLock };
 			viewList = target->ViewList;
@@ -474,12 +474,12 @@ namespace mk
 		return false;
 	}
 
-	bool Sector::isInView(const pos_type& aPos, const pos_type& bPos)
+	bool Sector::isInView(const vec2& aPos, const vec2& bPos)
 	{
-		if (bPos.first < aPos.first - 7 ||
-			bPos.first > aPos.first + 7 ||
-			bPos.second < aPos.second - 7 ||
-			bPos.second > aPos.second + 7)
+		if (bPos.x < aPos.x - 7 ||
+			bPos.x > aPos.x + 7 ||
+			bPos.y < aPos.y - 7 ||
+			bPos.y > aPos.y + 7)
 		{
 			return false;
 		}
@@ -487,34 +487,34 @@ namespace mk
 		return true;
 	}
 
-	bool Sector::isInAttackRange(const pos_type& hitterPos, const pos_type& victimPos)
+	bool Sector::isInAttackRange(const vec2& hitterPos, const vec2& victimPos)
 	{
-		if (hitterPos.first + 1 == victimPos.first
-			&& hitterPos.second == victimPos.second)
+		if (hitterPos.x + 1 == victimPos.x
+			&& hitterPos.y == victimPos.y)
 		{
 			return true;
 		}
 
-		if (hitterPos.first - 1 == victimPos.first
-			&& hitterPos.second == victimPos.second)
+		if (hitterPos.x - 1 == victimPos.x
+			&& hitterPos.y == victimPos.y)
 		{
 			return true;
 		}
 
-		if (hitterPos.first == victimPos.first
-			&& hitterPos.second + 1 == victimPos.second)
+		if (hitterPos.x == victimPos.x
+			&& hitterPos.y + 1 == victimPos.y)
 		{
 			return true;
 		}
 
-		if (hitterPos.first == victimPos.first
-			&& hitterPos.second - 1 == victimPos.second)
+		if (hitterPos.x == victimPos.x
+			&& hitterPos.y - 1 == victimPos.y)
 		{
 			return true;
 		}
 
-		if (hitterPos.first == victimPos.first
-			&& hitterPos.second == victimPos.second)
+		if (hitterPos.x == victimPos.x
+			&& hitterPos.y == victimPos.y)
 		{
 			return true;
 		}
@@ -522,10 +522,13 @@ namespace mk
 		return false;
 	}
 
-	Sector::pos_type Sector::getAvailablePos(const int area)
+	vec2 Sector::getAvailablePos(const int area)
 	{
-		const POINT leftTop = { (mSectorNum % gSectorsPerLine) * TILE_PER_SECTOR,
-			(mSectorNum / gSectorsPerLine) * TILE_PER_SECTOR };
+		const vec2 leftTop = vec2
+		{
+			static_cast<short>((mSectorNum % gSectorsPerLine) * TILE_PER_SECTOR),
+			static_cast<short>((mSectorNum / gSectorsPerLine) * TILE_PER_SECTOR) 
+		};
 
 		short x = 0;
 		short y = 0;
@@ -567,8 +570,8 @@ namespace mk
 
 		case 3: // 4사분면
 		{
-			return { static_cast<int>(leftTop.x) + 30,
-				static_cast<int>(leftTop.y) + 30 };
+			return vec2{ static_cast<short>(leftTop.x + 30), 
+				static_cast<short>(leftTop.y + 30) };
 		}
 
 		default:

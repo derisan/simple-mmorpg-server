@@ -21,8 +21,8 @@ namespace mk
 
 		virtual void Shutdown() override;
 		virtual void Tick() override;
-		virtual bool AddToViewList(const int id, const bool bSendMove = false) override;
-		virtual bool RemoveFromViewList(const int id) override;
+		virtual bool AddToViewList(const id_t id, const bool bSendMove = false) override;
+		virtual bool RemoveFromViewList(const id_t id) override;
 		
 		bool OnKillEnemy(const int incomingExp);
 
@@ -30,13 +30,13 @@ namespace mk
 
 	public:
 		void SendLoginInfoPacket();
-		void SendMovePacket(const int id, const unsigned int time);
-		void SendAddObjectPacket(const int id);
-		void SendRemoveObjectPacket(const int id);
-		void SendSystemChatDamage(const int victimID);
-		void SendSystemChatExp(const int victimID);
-		void SendChatPacket(const int senderID, const char chatType, std::string_view chat);
-		void SendStatChangePacket(const int id);
+		void SendMovePacket(const id_t id, const unsigned int time);
+		void SendAddObjectPacket(const id_t id);
+		void SendRemoveObjectPacket(const id_t id);
+		void SendSystemChatDamage(const id_t victimID);
+		void SendSystemChatExp(const id_t victimID);
+		void SendChatPacket(const id_t senderID, const char chatType, std::string_view chat);
+		void SendStatChangePacket(const id_t id);
 
 	private:
 		OVERLAPPEDEX* pop();

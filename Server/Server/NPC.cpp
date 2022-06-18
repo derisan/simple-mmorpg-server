@@ -23,14 +23,14 @@ namespace mk
 
 	}
 
-	bool NPC::AddToViewList(const int id, const bool bSendMove /*= false*/)
+	bool NPC::AddToViewList(const id_t id, const bool bSendMove /*= false*/)
 	{
 		WriteLockGuard guard = { ViewLock };
 		auto [_, bInsert] = ViewList.insert(id);
 		return bInsert;
 	}
 
-	bool NPC::RemoveFromViewList(const int id)
+	bool NPC::RemoveFromViewList(const id_t id)
 	{
 		WriteLockGuard guard = { ViewLock };
 		auto cnt = ViewList.erase(id);

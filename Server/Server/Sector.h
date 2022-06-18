@@ -12,9 +12,6 @@ namespace mk
 	class Sector
 	{
 	public:
-		using id_type = int;
-		using pos_type = std::pair<short, short>;
-
 		Sector(const std::vector<std::vector<Tile>>& tileMap, int sectorNum);
 
 		void AddActor(Actor* target);
@@ -39,14 +36,14 @@ namespace mk
 
 		bool isOutOfBound(const short x, const short y);
 
-		bool isInView(const pos_type& aPos, const pos_type& bPos);
+		bool isInView(const vec2& aPos, const vec2& bPos);
 
-		bool isInAttackRange(const pos_type& hitterPos, const pos_type& victimPos);
+		bool isInAttackRange(const vec2& hitterPos, const vec2& victimPos);
 
-		pos_type getAvailablePos(const int area);
+		vec2 getAvailablePos(const int area);
 
 	private:
-		std::unordered_set<id_type> mActorIds;
+		std::unordered_set<id_t> mActorIds;
 		const std::vector<std::vector<Tile>>& mTileMap;
 		int mSectorNum = INVALID_VALUE;
 		std::atomic<int> mNumSessions = 0;

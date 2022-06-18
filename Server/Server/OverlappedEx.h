@@ -23,7 +23,7 @@ namespace mk
 		WSAOVERLAPPED Overlapped = {};
 		WSABUF WsaBuf = {};
 		OperationType OpType = OperationType::OP_NONE;
-		int ID = INVALID_VALUE;
+		id_t ID = INVALID_VALUE;
 		char SendBuffer[SEND_BUFFER_SIZE] = {};
 	};
 

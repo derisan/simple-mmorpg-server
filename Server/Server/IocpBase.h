@@ -27,9 +27,9 @@ namespace mk
 
 		void doAI(const int lastIndex);
 
-		void disconnect(const int id);
+		void disconnect(const id_t id);
 
-		void processPacket(const int id, char* packet);
+		void processPacket(const id_t id, char* packet);
 
 	private:
 		SOCKET mListenSocket = INVALID_SOCKET;

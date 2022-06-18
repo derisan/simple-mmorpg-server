@@ -34,3 +34,6 @@ extern "C"
 }
 
 constexpr int INVALID_VALUE = -1;
+
+using vec2 = POINTS;
+using id_t = int;

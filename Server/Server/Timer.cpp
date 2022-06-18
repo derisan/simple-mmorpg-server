@@ -24,7 +24,7 @@ namespace mk
 		sTimerQueue.push(ev);
 	}
 
-	void Timer::AddEvent(const TimerEventType eventType, const int id, 
+	void Timer::AddEvent(const TimerEventType eventType, const id_t id, 
 		const std::chrono::system_clock::time_point actTime)
 	{
 		WriteLockGuard guard = { sLock };

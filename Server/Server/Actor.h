@@ -15,22 +15,22 @@ namespace mk
 		virtual void Shutdown();
 		virtual void Tick() {};
 
-		virtual bool AddToViewList(const int id, const bool bSendMove = false) abstract;
-		virtual bool RemoveFromViewList(const int id) abstract;
+		virtual bool AddToViewList(const id_t id, const bool bSendMove = false) abstract;
+		virtual bool RemoveFromViewList(const id_t id) abstract;
 
 	public:
-		int GetID() const { return mID; }
+		id_t GetID() const { return mID; }
 		void SetID(const int value) { mID = value; }
 		std::string GetName() const { return mName; }
 		const std::string& GetName() { return mName; }
 		void SetName(std::string_view value) { mName = value; }
-		short GetX() const { return mPosX; }
-		short GetY() const { return mPosY; }
-		std::pair<short, short> GetPos() const { return { mPosX, mPosY }; }
-		void SetX(const short value) { mPosX = value; }
-		void SetY(const short value) { mPosY = value; }
-		void SetPos(const std::pair<short, short>& value) { mPosX = value.first; mPosY = value.second; }
-		void SetPos(const short x, const short y) { mPosX = x; mPosY = y; }
+		short GetX() const { return mPos.x; }
+		short GetY() const { return mPos.y; }
+		vec2 GetPos() const { return mPos; }
+		void SetX(const short value) { mPos.x = value; }
+		void SetY(const short value) { mPos.y = value; }
+		void SetPos(const vec2& value) { mPos = value; }
+		void SetPos(const short x, const short y) { mPos = vec2{ x, y }; }
 		int GetLevel() const { return mLevel; }
 		void SetLevel(const int value) { mLevel = value; }
 		int GetMaxHP() const { return mMaxHP; }
@@ -54,10 +54,9 @@ namespace mk
 		std::unordered_set<int> ViewList;
 
 	private:
-		int mID = INVALID_VALUE;
+		id_t mID = INVALID_VALUE;
 		std::string mName = {};
-		short mPosX = INVALID_VALUE;
-		short mPosY = INVALID_VALUE;
+		vec2 mPos = {};
 		short mLevel = INVALID_VALUE;
 		int mMaxHP = INVALID_VALUE;
 		int mCurrentHP = INVALID_VALUE;
