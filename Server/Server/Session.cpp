@@ -204,28 +204,37 @@ namespace mk
 		return false;
 	}
 
-	bool Session::OnKillEnemy(const int incomingExp)
+	void Session::OnKillEnemy(const int incomingExp)
 	{
 		auto exp = GetExp() + incomingExp;
 
 		bool bLevelUp = false;
 
-		if (exp >= mRequiredExp)
 		{
-			auto level = GetLevel() + 1;
-			SetLevel(level);
-			exp -= mRequiredExp;
-			auto maxHP = GetMaxHP() + 20;
-			SetMaxHP(maxHP);
-			SetCurrentHP(maxHP);
-			SetAttackPower(level);
-			SetRequiredExp(level * 10);
-			bLevelUp = true;
+			WriteLockGuard guard = { ActorLock };
+			if (exp >= mRequiredExp)
+			{
+				auto level = GetLevel() + 1;
+				SetLevel(level);
+				exp -= mRequiredExp;
+				auto maxHP = GetMaxHP() + 20;
+				SetMaxHP(maxHP);
+				SetCurrentHP(maxHP);
+				SetAttackPower(level);
+				SetRequiredExp(level * 10);
+				bLevelUp = true;
+			}
+			SetExp(exp);
 		}
 
-		SetExp(exp);
-
-		return bLevelUp;
+		if (bLevelUp)
+		{
+			SectorManager::SendStatChangeToViewList(this);
+		}
+		else
+		{
+			SendStatChangePacket(GetID());
+		}
 	}
 
 	OVERLAPPEDEX* Session::pop()

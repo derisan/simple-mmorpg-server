@@ -24,7 +24,7 @@ namespace mk
 		virtual bool AddToViewList(const id_t id, const bool bSendMove = false) override;
 		virtual bool RemoveFromViewList(const id_t id) override;
 		
-		bool OnKillEnemy(const int incomingExp);
+		void OnKillEnemy(const int incomingExp);
 
 		void SetRequiredExp(const int value) { mRequiredExp = value; }
 

@@ -343,18 +343,18 @@ namespace mk
 			viewList = hitter->ViewList;
 		}
 
-		auto [x, y] = hitter->GetPos();
+		auto hitterPos = hitter->GetPos();
 
 		for (auto actorID : viewList)
 		{
 			if (IsUser(actorID)) continue;
 
-			bool bInRange = isInAttackRange({ x, y }, gClients[actorID]->GetPos());
+			auto victim = gClients[actorID];
+			auto victimPos = victim->GetPos();
+			bool bInRange = isInAttackRange(hitterPos, victimPos);
 
 			if (bInRange)
 			{
-				auto victim = gClients[actorID];
-
 				auto attackPower = hitter->GetAttackPower();
 				int victimHP = 0;
 				{
@@ -363,28 +363,14 @@ namespace mk
 				}
 				victimHP -= attackPower;
 
-				static_cast<Session*>(hitter)->SendSystemChatDamage(actorID);
+				auto hitterSession = static_cast<Session*>(hitter);
+				hitterSession->SendSystemChatDamage(actorID);
 
 				if (victimHP <= 0)
 				{
-					static_cast<Session*>(hitter)->SendSystemChatExp(actorID);
-					
 					auto victimExp = victim->GetExp();
-					bool bLevelUp = false;
-					{
-						WriteLockGuard guard = { hitter->ActorLock };
-						bLevelUp = static_cast<Session*>(hitter)->OnKillEnemy(victimExp);
-					}
-
-					if (bLevelUp)
-					{
-						SendStatChangeToViewList(hitter);
-					}
-					else
-					{
-						auto hitterID = hitter->GetID();
-						static_cast<Session*>(hitter)->SendStatChangePacket(hitterID);
-					}
+					hitterSession->OnKillEnemy(victimExp);
+					hitterSession->SendSystemChatExp(actorID);
 					
 					RemoveActor(victim);
 
