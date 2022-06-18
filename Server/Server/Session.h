@@ -28,6 +28,8 @@ namespace mk
 		void SendMovePacket(const int id, const unsigned int time);
 		void SendAddObjectPacket(const int id);
 		void SendRemoveObjectPacket(const int id);
+		void SendSystemChatDamage(const int victimID);
+		void SendSystemChatExp(const int victimID);
 		void SendChatPacket(const int senderID, const char chatType, std::string_view chat);
 		void SendStatChangePacket(const int id);
 

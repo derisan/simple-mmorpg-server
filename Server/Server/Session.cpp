@@ -9,6 +9,8 @@ namespace mk
 {
 	using namespace std::chrono;
 
+	constexpr int SYSTEM_CHAT_ID = -1;
+
 	Session::Session()
 	{
 		mPool = std::make_unique<OverlappedPool>();
@@ -191,7 +193,7 @@ namespace mk
 		packet.x = GetX();
 		packet.y = GetY();
 		packet.level = GetLevel();
-		packet.exp = 0; // TODO : Exp
+		packet.exp = GetExp();
 		packet.hp = GetCurrentHP();
 		packet.hpmax = GetMaxHP();
 		sendPacket(&packet, packet.size);
@@ -235,6 +237,28 @@ namespace mk
 		sendPacket(&packet, packet.size);
 	}
 
+	void Session::SendSystemChatDamage(const int victimID)
+	{
+		const auto& victimName = gClients[victimID]->GetName();
+		const auto myPower = GetAttackPower();
+
+		SendChatPacket(SYSTEM_CHAT_ID,
+			0,
+			victimName + "을(를) 때려 " + std::to_string(myPower)
+			+ "의 데미지를 입혔습니다.");
+	}
+
+	void Session::SendSystemChatExp(const int victimID)
+	{
+		const auto& victimName = gClients[victimID]->GetName();
+		const auto victimExp = gClients[victimID]->GetExp();
+
+		SendChatPacket(SYSTEM_CHAT_ID,
+			0,
+			victimName + "을(를) 무찔러 " + std::to_string(victimExp)
+			+ "의 경험치를 얻었습니다.");
+	}
+
 	void Session::SendChatPacket(const int senderID, const char chatType, std::string_view chat)
 	{
 		SC_CHAT_PACKET packet = {};
@@ -253,7 +277,7 @@ namespace mk
 		packet.type = SC_STAT_CHANGE;
 		packet.id = id;
 		packet.level = gClients[id]->GetLevel();
-		packet.exp = 0; // TODO : exp
+		packet.exp = gClients[id]->GetExp();
 		packet.hp = gClients[id]->GetCurrentHP();
 		packet.hpmax = gClients[id]->GetMaxHP();
 		sendPacket(&packet, packet.size);

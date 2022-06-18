@@ -18,5 +18,6 @@ namespace mk
 		mRace = Race::None;
 		mbAttack = true;
 		mAttackPower = INVALID_VALUE;
+		mExp = INVALID_VALUE;
 	}
 }

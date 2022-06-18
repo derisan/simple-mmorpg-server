@@ -56,7 +56,7 @@ void MainScene::Enter()
 
 void MainScene::Exit()
 {
-	PacketManager::RemovePacketFunc(SC_MOVE_OBJECT);
+	
 }
 
 void MainScene::ProcessInput()
@@ -81,6 +81,7 @@ void MainScene::Render()
 		ChatManager::TakeUserChat();
 	}
 
+	PutText(U"EXP: " + Format(mActor->GetExp()), Vec2{ 320, 578 });
 	PutText(U"POS: " + Format(myPos), Vec2{ 320, 600 });
 	PutText(U"ID: " + Format(mActor->GetID()), Vec2{ 320, 622 });
 	//PutText(U"LEVEL: " + Format(mActor->GetLevel()), Vec2{ 320, 10 });

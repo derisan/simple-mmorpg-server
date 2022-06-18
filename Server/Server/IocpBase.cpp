@@ -242,6 +242,7 @@ namespace mk
 			session->SetCurrentHP(session->GetMaxHP());
 			session->SetRace(Race::Player);
 			session->SetAttackPower(1);
+			session->SetExp(0);
 			session->SendLoginInfoPacket();
 			SectorManager::AddActor(session);
 			break;

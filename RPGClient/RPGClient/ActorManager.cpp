@@ -23,12 +23,10 @@ Actor& ActorManager::RegisterActor(const int32 id, const int16 race,
 
 	if (auto iter = sActors.find(id); iter == sActors.end())
 	{
-		Console << U"Actor id : " << id << U" added!(RegisterActor())";
 		sActors.emplace(id, std::move(actor));
 	}
 	else
 	{
-		Console << U"Actor id: " << id << U" already exists!(RegisterActor())";
 		sActors.erase(id);
 		sActors.emplace(id, std::move(actor));
 	}
@@ -40,12 +38,7 @@ void ActorManager::RemoveActor(const int32 id)
 {
 	if (auto iter = sActors.find(id); iter != sActors.end())
 	{
-		Console << U"Actor id : " << id << U" removed!(RemoveActor())";
 		sActors.erase(iter);
-	}
-	else
-	{
-		Console << U"Actor id : " << id << U" does not exist!(RemoveActor())";
 	}
 }
 
@@ -55,10 +48,6 @@ void ActorManager::MoveActor(const int32 id, const int16 x, const int16 y)
 	{
 		(iter->second).SetX(x);
 		(iter->second).SetY(y);
-	}
-	else
-	{
-		Console << U"Actor id : " << id << U" does not exist!(MoveActor())";
 	}
 }
 

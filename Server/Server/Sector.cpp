@@ -56,6 +56,11 @@ namespace mk
 			auto [x, y] = getAvailablePos(0);
 			npc->SetPos(x, y);
 			npc->SetAttackPower(npc->GetLevel());
+			auto level = npc->GetLevel();
+			auto exp = level * level
+				* static_cast<int>(npc->GetBehaviorType())
+				* static_cast<int>(npc->GetMoveType());
+			npc->SetExp(exp);
 			mActorIds.insert(freeID);
 		}
 
@@ -76,6 +81,11 @@ namespace mk
 			auto [x, y] = getAvailablePos(1);
 			npc->SetPos(x, y);
 			npc->SetAttackPower(npc->GetLevel());
+			auto level = npc->GetLevel();
+			auto exp = level * level
+				* static_cast<int>(npc->GetBehaviorType())
+				* static_cast<int>(npc->GetMoveType());
+			npc->SetExp(exp);
 			mActorIds.insert(freeID);
 		}
 
@@ -96,6 +106,11 @@ namespace mk
 			auto [x, y] = getAvailablePos(2);
 			npc->SetPos(x, y);
 			npc->SetAttackPower(npc->GetLevel());
+			auto level = npc->GetLevel();
+			auto exp = level * level
+				* static_cast<int>(npc->GetBehaviorType())
+				* static_cast<int>(npc->GetMoveType());
+			npc->SetExp(exp);
 			mActorIds.insert(freeID);
 		}
 
@@ -116,6 +131,11 @@ namespace mk
 			auto [x, y] = getAvailablePos(3);
 			npc->SetPos(x, y);
 			npc->SetAttackPower(npc->GetLevel());
+			auto level = npc->GetLevel();
+			auto exp = level * level
+				* static_cast<int>(npc->GetBehaviorType())
+				* static_cast<int>(npc->GetMoveType());
+			npc->SetExp(exp);
 			mActorIds.insert(freeID);
 		}
 	}
@@ -290,7 +310,7 @@ namespace mk
 
 		for (auto actorID : nearList)
 		{
-			if (actorID < MAX_USER) 
+			if (actorID < MAX_USER)
 			{
 				static_cast<Session*>(gClients[actorID])->SendChatPacket(target->GetID(),
 					chatType, chat);
@@ -326,25 +346,42 @@ namespace mk
 
 			if (bInRange)
 			{
+				auto victim = gClients[actorID];
+
 				auto attackPower = hitter->GetAttackPower();
 				int victimHP = 0;
 				{
-					ReadLockGuard guard = { gClients[actorID]->ActorLock };
-					victimHP = gClients[actorID]->GetCurrentHP();
+					ReadLockGuard guard = { victim->ActorLock };
+					victimHP = victim->GetCurrentHP();
 				}
 				victimHP -= attackPower;
-				
+
+				static_cast<Session*>(hitter)->SendSystemChatDamage(actorID);
+
 				if (victimHP <= 0)
 				{
-					RemoveActor(gClients[actorID]);
+					// TODO : NPC »ç¸Á Ã³¸®
+					static_cast<Session*>(hitter)->SendSystemChatExp(actorID);
+					
+					auto victimExp = victim->GetExp();
+					{
+						WriteLockGuard guard = { hitter->ActorLock };
+						auto currentExp = hitter->GetExp();
+						hitter->SetExp(currentExp + victimExp);
+					}
+					
+					auto hitterID = hitter->GetID();
+					static_cast<Session*>(hitter)->SendStatChangePacket(hitterID);
+					
+					RemoveActor(victim);
 				}
 				else
 				{
 					{
-						WriteLockGuard guard = { gClients[actorID]->ActorLock };
-						gClients[actorID]->SetCurrentHP(victimHP);
+						WriteLockGuard guard = { victim->ActorLock };
+						victim->SetCurrentHP(victimHP);
 					}
-					SendStatChange(gClients[actorID]);
+					SendStatChange(victim);
 				}
 			}
 		}

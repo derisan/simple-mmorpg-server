@@ -6,12 +6,14 @@ namespace mk
 {
     enum class NpcBehaviorType
     {
+        NONE,
         PEACE,
         AGGRO,
     };
 
     enum class NpcMoveType
     {
+        NONE,
         FIXED,
         ROAMING,
     };
@@ -27,7 +29,7 @@ namespace mk
         bool GetActive() const { return mbActive; }
         bool IsHostile() const { return mbHostile; }
         NpcBehaviorType GetBehaviorType() const { return mBehaviorType; }
-        NpcMoveType GetMoveType() const { mMoveType; }
+        NpcMoveType GetMoveType() const { return mMoveType; }
 
         void SetActive(const bool value) { mbActive = value; }
         void SetHostile(const bool value) { mbHostile = value; }
@@ -37,8 +39,8 @@ namespace mk
     private:
         bool mbActive = false;
         bool mbHostile = false;
-        NpcBehaviorType mBehaviorType = NpcBehaviorType::PEACE;
-        NpcMoveType mMoveType = NpcMoveType::FIXED;
+        NpcBehaviorType mBehaviorType = NpcBehaviorType::NONE;
+        NpcMoveType mMoveType = NpcMoveType::NONE;
     };
 }
 

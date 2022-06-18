@@ -40,6 +40,8 @@ namespace mk
 		bool CanAttack() const { return mbAttack; }
 		void SetAttackPower(const int value) { mAttackPower = value; }
 		int GetAttackPower() const { return mAttackPower; }
+		void SetExp(const int value) { mExp = value; }
+		int GetExp() const { return mExp; }
 
 	public:
 		SpinLock ActorLock = {};
@@ -57,5 +59,6 @@ namespace mk
 		short mRace = Race::None;
 		bool mbAttack = true;
 		int mAttackPower = INVALID_VALUE;
+		int mExp = INVALID_VALUE;
 	};
 }
