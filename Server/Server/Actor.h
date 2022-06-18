@@ -10,6 +10,8 @@ namespace mk
 	class Actor
 	{
 	public:
+		virtual ~Actor() = default;
+
 		void Disconnect();
 
 		virtual bool AddToViewList(const int id, const bool bSendMove = false) abstract;
