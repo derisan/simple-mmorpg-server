@@ -5,6 +5,7 @@
 #include "Timer.h"
 #include "IocpBase.h"
 #include "SectorManager.h"
+#include "DBConnection.h"
 
 namespace mk
 {
@@ -156,6 +157,8 @@ namespace mk
 		{
 			SectorManager::SendStatChangeToViewList(this);
 		}
+
+		DBConnection::PushJob(GetID(), DBJobType::UpdateUserInfo);
 	}
 
 	bool Session::AddToViewList(const int id, const bool bSendMove /*= false*/)

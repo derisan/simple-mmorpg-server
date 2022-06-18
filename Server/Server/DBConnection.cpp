@@ -37,7 +37,7 @@ namespace mk
 
 		SQLRETURN retcode
 			= SQLAllocHandle(SQL_HANDLE_ENV, SQL_NULL_HANDLE, &sHenv);
-		if (!(retcode == SQL_SUCCESS || retcode == SQL_SUCCESS_WITH_INFO))
+		if (NOT (retcode == SQL_SUCCESS || retcode == SQL_SUCCESS_WITH_INFO))
 		{
 			handleDiagnosticRecord(sHenv, SQL_HANDLE_ENV, retcode);
 			MK_ASSERT(false);
@@ -45,7 +45,7 @@ namespace mk
 
 		retcode
 			= SQLSetEnvAttr(sHenv, SQL_ATTR_ODBC_VERSION, (void*)SQL_OV_ODBC3, 0);
-		if (!(retcode == SQL_SUCCESS || retcode == SQL_SUCCESS_WITH_INFO))
+		if (NOT(retcode == SQL_SUCCESS || retcode == SQL_SUCCESS_WITH_INFO))
 		{
 			handleDiagnosticRecord(sHenv, SQL_HANDLE_ENV, retcode);
 			MK_ASSERT(false);
@@ -53,7 +53,7 @@ namespace mk
 
 		retcode
 			= SQLAllocHandle(SQL_HANDLE_DBC, sHenv, &sHdbc);
-		if (!(retcode == SQL_SUCCESS || retcode == SQL_SUCCESS_WITH_INFO))
+		if (NOT (retcode == SQL_SUCCESS || retcode == SQL_SUCCESS_WITH_INFO))
 		{
 			handleDiagnosticRecord(sHdbc, SQL_HANDLE_DBC, retcode);
 			MK_ASSERT(false);
@@ -62,7 +62,7 @@ namespace mk
 		retcode
 			= SQLConnect(sHdbc, (SQLWCHAR*)L"2016180007_MMORPG", SQL_NTS, 
 				(SQLWCHAR*)NULL, 0, NULL, 0);
-		if (!(retcode == SQL_SUCCESS || retcode == SQL_SUCCESS_WITH_INFO))
+		if (NOT (retcode == SQL_SUCCESS || retcode == SQL_SUCCESS_WITH_INFO))
 		{
 			handleDiagnosticRecord(sHdbc, SQL_HANDLE_DBC, retcode);
 			MK_ASSERT(false);
@@ -70,7 +70,7 @@ namespace mk
 
 		retcode
 			= SQLAllocHandle(SQL_HANDLE_STMT, sHdbc, &sHstmt);
-		if (!(retcode == SQL_SUCCESS || retcode == SQL_SUCCESS_WITH_INFO))
+		if (NOT (retcode == SQL_SUCCESS || retcode == SQL_SUCCESS_WITH_INFO))
 		{
 			handleDiagnosticRecord(sHstmt, SQL_HANDLE_STMT, retcode);
 			MK_ASSERT(false);
@@ -125,8 +125,8 @@ namespace mk
 			execGetUserInfo(job);
 			break;
 
-		case DBJobType::SetUserInfo:
-			execSetUserInfo(job);
+		case DBJobType::UpdateUserInfo:
+			execUpdateUserInfo(job);
 			break;
 
 		default:
@@ -179,9 +179,26 @@ namespace mk
 		SQLCloseCursor(sHstmt);
 	}
 
-	void DBConnection::execSetUserInfo(const DBJob& job)
+	void DBConnection::execUpdateUserInfo(const DBJob& job)
 	{
+		auto actor = gClients[job.ID];
 
+		(actor->ActorLock).ReadLock();
+		std::wstring query = L"EXEC UpdateUserInfo "
+			+ s2ws(actor->GetName())
+			+ L"," + std::to_wstring(actor->GetX())
+			+ L"," + std::to_wstring(actor->GetY())
+			+ L"," + std::to_wstring(actor->GetLevel())
+			+ L"," + std::to_wstring(actor->GetCurrentHP())
+			+ L"," + std::to_wstring(actor->GetRace())
+			+ L"," + std::to_wstring(actor->GetExp());
+		(actor->ActorLock).ReadUnlock();
+
+		SQLRETURN retcode = SQLExecDirect(sHstmt, (SQLWCHAR*)query.data(), SQL_NTS);
+		if (NOT (retcode == SQL_SUCCESS || retcode == SQL_SUCCESS_WITH_INFO))
+		{
+			handleDiagnosticRecord(sHstmt, SQL_HANDLE_STMT, retcode);
+		}
 	}
 
 	void DBConnection::handleDiagnosticRecord(SQLHANDLE hHandle, SQLSMALLINT hType, RETCODE retCode)

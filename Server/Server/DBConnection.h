@@ -22,7 +22,7 @@ namespace mk
 	{
 		NONE,
 		GetUserInfo,
-		SetUserInfo,
+		UpdateUserInfo,
 	};
 
 	struct DBJob
@@ -43,7 +43,7 @@ namespace mk
 	private:
 		static void executeJob(const DBJob& job);
 		static void execGetUserInfo(const DBJob& job);
-		static void execSetUserInfo(const DBJob& job);
+		static void execUpdateUserInfo(const DBJob& job);
 
 		static void handleDiagnosticRecord(SQLHANDLE hHandle, SQLSMALLINT hType, RETCODE retCode);
 
