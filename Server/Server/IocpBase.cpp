@@ -9,8 +9,6 @@
 
 namespace mk
 {
-	constexpr int WORKER_THREAD_NUM = 6;
-
 	std::array<Actor*, MAX_USER + NUM_NPC> gClients;
 
 	inline Session* GetSession(const int id)
@@ -90,7 +88,8 @@ namespace mk
 			return false;
 		}
 
-		for (auto i = 0; i < WORKER_THREAD_NUM; ++i)
+		auto workerThreadNum = static_cast<int>(std::thread::hardware_concurrency() * 1.5);
+		for (auto i = 0; i < workerThreadNum; ++i)
 		{
 			mWorkerThreads.emplace_back([this]() { doWorker(); });
 		}
