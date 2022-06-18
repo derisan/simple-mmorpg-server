@@ -53,7 +53,7 @@ namespace mk
 	{
 		auto [x, y] = actor->GetPos();
 		auto& sector = getSector(x, y);
-		sector->SendChat(actor, chatType, chat);
+		sector->SendChatToViewList(actor, chatType, chat);
 	}
 
 	void SectorManager::DoAttack(Actor* actor)

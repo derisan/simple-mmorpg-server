@@ -297,7 +297,7 @@ namespace mk
 		}
 	}
 
-	void Sector::SendChat(Actor* target, const char chatType, std::string_view chat)
+	void Sector::SendChatToViewList(Actor* target, const char chatType, std::string_view chat)
 	{
 		std::unordered_set<id_type> nearList;
 		{
@@ -381,13 +381,13 @@ namespace mk
 						WriteLockGuard guard = { victim->ActorLock };
 						victim->SetCurrentHP(victimHP);
 					}
-					SendStatChange(victim);
+					SendStatChangeToViewList(victim);
 				}
 			}
 		}
 	}
 
-	void Sector::SendStatChange(Actor* target)
+	void Sector::SendStatChangeToViewList(Actor* target)
 	{
 		std::unordered_set<id_type> viewList;
 		{

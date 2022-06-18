@@ -24,11 +24,11 @@ namespace mk
 		void MoveActor(Actor* target, const char direction,
 			const unsigned int clientTime);
 
-		void SendChat(Actor* target, const char chatType, std::string_view chat);
+		void SendChatToViewList(Actor* target, const char chatType, std::string_view chat);
 
 		void DoAttack(Actor* hitter);
 
-		void SendStatChange(Actor* target);
+		void SendStatChangeToViewList(Actor* target);
 		
 	private:
 		bool isSolid(const short row, const short col);
