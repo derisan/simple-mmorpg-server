@@ -82,6 +82,12 @@ namespace mk
 		curSector->AddActor(actor);
 	}
 
+	void SectorManager::RegenEnemy(Actor* actor, const int sectorNum)
+	{
+		auto& sector = getSector(sectorNum);
+		sector->RegenEnemy(actor);
+	}
+
 	std::pair<short, short> SectorManager::GetAvailablePos()
 	{
 		for (const auto& row : sSectors)

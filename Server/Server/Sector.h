@@ -27,6 +27,8 @@ namespace mk
 
 		void SendStatChangeToViewList(Actor* target);
 
+		void RegenEnemy(Actor* actor);
+
 		int GetNumSessions() const { return mNumSessions.load(); }
 
 		int GetSectorNum() const { return mSectorNum; }

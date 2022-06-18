@@ -30,6 +30,8 @@ namespace mk
 
 		static void ChangeSector(Actor* actor, const int prevSectorNum);
 
+		static void RegenEnemy(Actor* actor, const int sectorNum);
+
 		static std::pair<short, short> GetAvailablePos();
 		
 	private:

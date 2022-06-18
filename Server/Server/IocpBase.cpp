@@ -235,6 +235,15 @@ namespace mk
 				break;
 			}
 
+			case OperationType::TIMER_REGEN_ENEMY:
+			{
+				int sectorNum = 0;
+				CopyMemory(&sectorNum, overEx->SendBuffer, sizeof(sectorNum));
+				SectorManager::RegenEnemy(gClients[id], sectorNum);
+				Timer::PushOverEx(overEx);
+				break;
+			}
+
 			case OperationType::DB_LOGIN_NO_INFO:
 			{
 				auto session = GetSession(id);

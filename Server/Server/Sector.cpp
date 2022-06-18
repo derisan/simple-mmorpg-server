@@ -375,7 +375,6 @@ namespace mk
 
 				if (victimHP <= 0)
 				{
-					// TODO : NPC »ç¸Á Ã³¸®
 					static_cast<Session*>(hitter)->SendSystemChatExp(actorID);
 					
 					auto victimExp = victim->GetExp();
@@ -396,6 +395,18 @@ namespace mk
 					}
 					
 					RemoveActor(victim);
+
+					{
+						WriteLockGuard guard = { victim->ActorLock };
+						victim->SetActive(false);
+					}
+
+					TimerEvent ev = {};
+					ev.EventType = TimerEventType::EV_REGEN_ENEMY;
+					ev.ID = actorID;
+					ev.ActTime = system_clock::now() + 30s;
+					CopyMemory(ev.ExtraData, &mSectorNum, sizeof(mSectorNum));
+					Timer::AddEvent(ev);
 				}
 				else
 				{
@@ -439,6 +450,20 @@ namespace mk
 				(gClients[actorID]->ViewLock).ReadUnlock();
 			}
 		}
+	}
+
+	void Sector::RegenEnemy(Actor* actor)
+	{
+		NPC* enemy = static_cast<NPC*>(actor);
+		vec2 newPos = getAvailablePos(enemy->GetRace() - 3);
+
+		{
+			WriteLockGuard guard = { enemy->ActorLock };
+			enemy->SetPos(newPos);
+			enemy->SetCurrentHP(enemy->GetMaxHP());
+		}
+
+		AddActor(actor);
 	}
 
 	bool Sector::isSolid(const short row, const short col)

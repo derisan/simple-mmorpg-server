@@ -73,6 +73,16 @@ namespace mk
 				break;
 			}
 
+			case TimerEventType::EV_REGEN_ENEMY:
+			{
+				OVERLAPPEDEX* overEx = sPool->Pop();
+				ZeroMemory(overEx, sizeof(OVERLAPPEDEX));
+				overEx->OpType = OperationType::TIMER_REGEN_ENEMY;
+				CopyMemory(overEx->SendBuffer, ev.ExtraData, 20);
+				PostQueuedCompletionStatus(sIocp, 1, ev.ID, &overEx->Overlapped);
+				break;
+			}
+
 			default:
 				MK_ASSERT(false);
 				break;

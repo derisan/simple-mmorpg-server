@@ -13,6 +13,7 @@ namespace mk
 		EV_NONE,
 		EV_BIND_ACCEPT,
 		EV_RESET_ATTACK,
+		EV_REGEN_ENEMY,
 	};
 
 	struct TimerEvent
@@ -20,6 +21,7 @@ namespace mk
 		TimerEventType EventType = TimerEventType::EV_NONE;
 		id_t ID = INVALID_VALUE;
 		std::chrono::system_clock::time_point ActTime = {};
+		char ExtraData[20] = {};
 
 		bool operator < (const TimerEvent& other) const
 		{
