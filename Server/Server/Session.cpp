@@ -4,6 +4,7 @@
 #include "Protocol.h"
 #include "Timer.h"
 #include "IocpBase.h"
+#include "SectorManager.h"
 
 namespace mk
 {
@@ -138,6 +139,23 @@ namespace mk
 			return;
 		}
 
+		auto maxHP = GetMaxHP();
+		auto regen = maxHP / 10;
+
+		int currentHP = 0;
+		int newHP = 0;
+		{
+			WriteLockGuard guard = { ActorLock };
+			currentHP = GetCurrentHP();
+			newHP = std::clamp(currentHP + regen,
+				currentHP, maxHP);
+			SetCurrentHP(newHP);
+		}
+
+		if (currentHP != newHP)
+		{
+			SectorManager::SendStatChangeToViewList(this);
+		}
 	}
 
 	bool Session::AddToViewList(const int id, const bool bSendMove /*= false*/)
@@ -179,7 +197,7 @@ namespace mk
 			SendRemoveObjectPacket(id);
 			return true;
 		}
-		
+
 		return false;
 	}
 
@@ -300,7 +318,7 @@ namespace mk
 		packet.type = SC_CHAT;
 		packet.chat_type = chatType;
 		packet.id = senderID;
-		CopyMemory(packet.mess, chat.data(), chat.length());		
+		CopyMemory(packet.mess, chat.data(), chat.length());
 		sendPacket(&packet, packet.size);
 	}
 

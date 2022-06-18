@@ -63,6 +63,13 @@ namespace mk
 		sector->DoAttack(actor);
 	}
 
+	void SectorManager::SendStatChangeToViewList(Actor* actor)
+	{
+		auto [x, y] = actor->GetPos();
+		auto& sector = getSector(x, y);
+		sector->SendStatChangeToViewList(actor);
+	}
+
 	void SectorManager::ChangeSector(Actor* actor, const int prevSectorNum)
 	{
 		auto& prevSector = getSector(prevSectorNum);

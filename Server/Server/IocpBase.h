@@ -23,7 +23,9 @@ namespace mk
 	private:
 		void doWorker();
 
-		void doTick(const int numActors);
+		void doTick();
+
+		void doAI(const int lastIndex);
 
 		void disconnect(const int id);
 
@@ -36,5 +38,6 @@ namespace mk
 		std::vector<std::thread> mWorkerThreads;
 		std::thread mTimerThread;
 		std::thread mTickThread;
+		std::thread mAIThread;
 	};
 }

@@ -26,6 +26,8 @@ namespace mk
 
 		static void DoAttack(Actor* actor);
 
+		static void SendStatChangeToViewList(Actor* actor);
+
 		static void ChangeSector(Actor* actor, const int prevSectorNum);
 		
 	private:

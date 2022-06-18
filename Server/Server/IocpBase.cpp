@@ -18,7 +18,7 @@ namespace mk
 		return static_cast<Session*>(gClients[id]);
 	}
 
-	inline int GetNumValidActors()
+	inline int GetLastActorIndex()
 	{
 		for (int idx = 0; idx < MAX_USER + NUM_NPC; ++idx)
 		{
@@ -110,8 +110,10 @@ namespace mk
 		}
 
 		// Session과 NPC 생성이 선행되어야 함.
-		int numValids = GetNumValidActors();
-		mTickThread = std::thread{ [this, numValids]() { doTick(numValids); } };
+		mTickThread = std::thread{ [this]() { doTick(); } };
+
+		auto lastIndex = GetLastActorIndex();
+		mAIThread = std::thread{ [this, lastIndex] { doAI(lastIndex); } };
 
 		MK_SLOG("Server initialization success");
 		return true;
@@ -236,7 +238,7 @@ namespace mk
 		}
 	}
 
-	void IocpBase::doTick(const int numActors)
+	void IocpBase::doTick()
 	{
 		using namespace std::chrono;
 
@@ -244,7 +246,24 @@ namespace mk
 		{
 			auto start = system_clock::now();
 
-			for (auto idx = 0; idx < numActors; ++idx)
+			for (auto idx = 0; idx < MAX_USER; ++idx)
+			{
+				gClients[idx]->Tick();
+			}
+
+			std::this_thread::sleep_until(start + 5s);
+		}
+	}
+
+	void IocpBase::doAI(const int lastIndex)
+	{
+		using namespace std::chrono;
+
+		while (true)
+		{
+			auto start = system_clock::now();
+
+			for (auto idx = MAX_USER; idx < lastIndex; ++idx)
 			{
 				gClients[idx]->Tick();
 			}
@@ -277,7 +296,8 @@ namespace mk
 			session->SetPos(x, y);
 			session->SetLevel(1);
 			session->SetMaxHP((session->GetLevel() - 1) * 20 + 100);
-			session->SetCurrentHP(session->GetMaxHP());
+			//session->SetCurrentHP(session->GetMaxHP());
+			session->SetCurrentHP(1);
 			session->SetRace(Race::Player);
 			auto attackPower = session->GetLevel();
 			session->SetAttackPower(attackPower);
