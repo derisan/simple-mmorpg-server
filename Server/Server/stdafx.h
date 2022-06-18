@@ -15,9 +15,6 @@
 #include <spdlog/fmt/ostr.h>
 #pragma warning(pop)
 
-#include <DirectXTK12/SimpleMath.h>
-using namespace DirectX::SimpleMath;
-
 #include <Windows.h>
 #include <Winsock2.h>
 #include <WS2tcpip.h>
