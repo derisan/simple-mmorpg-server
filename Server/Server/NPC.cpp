@@ -25,6 +25,11 @@ namespace mk
 
 	bool NPC::AddToViewList(const id_t id, const bool bSendMove /*= false*/)
 	{
+		if (id > MAX_USER)
+		{
+			return false;
+		}
+
 		WriteLockGuard guard = { ViewLock };
 		auto [_, bInsert] = ViewList.insert(id);
 		return bInsert;

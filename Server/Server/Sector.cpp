@@ -153,8 +153,6 @@ namespace mk
 			ReadLockGuard guard = { mLock };
 			if (0 != mActorIds.count(targetID))
 			{
-				MK_SLOG("AddActor() : Actor[{0}] is already in sector[{1}]", targetID,
-					mSectorNum);
 				return;
 			}
 		}
@@ -167,16 +165,14 @@ namespace mk
 		std::unordered_set<id_t> actorIds;
 		{
 			WriteLockGuard guard = { mLock };
-			mActorIds.insert(targetID);
 			actorIds = mActorIds;
+			mActorIds.insert(targetID);
 		}
 
 		auto targetPos = target->GetPos();
 
 		for (auto actorID : actorIds)
 		{
-			if (actorID == targetID) continue;
-
 			auto actor = gClients[actorID];
 			auto actorPos = actor->GetPos();
 			bool bInView = isInView(targetPos, actorPos);
@@ -197,8 +193,6 @@ namespace mk
 			auto cnt = mActorIds.erase(targetID);
 			if (0 == cnt)
 			{
-				MK_SLOG("RemoveActor() : Actor[{0}] is not in sector[{1}]", targetID,
-					mSectorNum);
 				return;
 			}
 		}
@@ -230,8 +224,6 @@ namespace mk
 		if (0 == mActorIds.count(targetID))
 		{
 			mLock.ReadUnlock();
-			MK_SLOG("MoveActor : Actor[{0}]: is not in sector[{1}]", targetID,
-				mSectorNum);
 			AddActor(target);
 			return;
 		}
