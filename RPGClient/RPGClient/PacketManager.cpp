@@ -83,14 +83,14 @@ bool PacketManager::Connect()
 
 	const IPv4Address ip{ sIP };
 	sTCPContext.connect(ip, PORT_NUM);
-	if (not sTCPContext.isConnected())
-	{
-		std::this_thread::sleep_for(2s);
-	}
 
-	if (not sTCPContext.isConnected())
+	auto start = system_clock::now();
+	while (not sTCPContext.isConnected())
 	{
-		return false;
+		if (start + 2s < system_clock::now())
+		{
+			return false;
+		}
 	}
 
 	return true;
