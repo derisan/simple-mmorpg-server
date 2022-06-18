@@ -237,12 +237,15 @@ namespace mk
 			short x = 4;
 			short y = 4;
 			session->SetPos(x, y);
-			session->SetLevel(4);
-			session->SetMaxHP(session->GetLevel() * 20 + 100);
+			session->SetLevel(1);
+			session->SetMaxHP((session->GetLevel() - 1) * 20 + 100);
 			session->SetCurrentHP(session->GetMaxHP());
 			session->SetRace(Race::Player);
-			session->SetAttackPower(1);
+			auto attackPower = session->GetLevel();
+			session->SetAttackPower(attackPower);
 			session->SetExp(0);
+			auto requiredExp = session->GetLevel() * 10;
+			session->SetRequiredExp(requiredExp);
 			session->SendLoginInfoPacket();
 			SectorManager::AddActor(session);
 			break;

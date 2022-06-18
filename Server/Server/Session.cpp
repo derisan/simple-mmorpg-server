@@ -127,6 +127,7 @@ namespace mk
 		mSocket = INVALID_SOCKET;
 		mWritePos = 0;
 		mReadPos = 0;
+		mRequiredExp = INT_MAX;
 		Timer::AddEvent(TimerEventType::EV_BIND_ACCEPT, GetID(), system_clock::now() + 3s);
 	}
 
@@ -171,6 +172,30 @@ namespace mk
 		}
 		
 		return false;
+	}
+
+	bool Session::OnKillEnemy(const int incomingExp)
+	{
+		auto exp = GetExp() + incomingExp;
+
+		bool bLevelUp = false;
+
+		if (exp >= mRequiredExp)
+		{
+			auto level = GetLevel() + 1;
+			SetLevel(level);
+			exp -= mRequiredExp;
+			auto maxHP = GetMaxHP() + 20;
+			SetMaxHP(maxHP);
+			SetCurrentHP(maxHP);
+			SetAttackPower(level);
+			SetRequiredExp(level * 10);
+			bLevelUp = true;
+		}
+
+		SetExp(exp);
+
+		return bLevelUp;
 	}
 
 	OVERLAPPEDEX* Session::pop()

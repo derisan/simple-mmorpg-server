@@ -22,6 +22,10 @@ namespace mk
 
 		virtual bool AddToViewList(const int id, const bool bSendMove = false) override;
 		virtual bool RemoveFromViewList(const int id) override;
+		
+		bool OnKillEnemy(const int incomingExp);
+
+		void SetRequiredExp(const int value) { mRequiredExp = value; }
 
 	public:
 		void SendLoginInfoPacket();
@@ -48,5 +52,7 @@ namespace mk
 		char mRecvBuffer[RECV_BUFFER_SIZE] = {};
 		int mWritePos = 0;
 		int mReadPos = 0;
+
+		int mRequiredExp = INT_MAX;
 	};
 }

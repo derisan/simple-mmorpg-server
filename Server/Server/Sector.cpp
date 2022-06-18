@@ -364,14 +364,21 @@ namespace mk
 					static_cast<Session*>(hitter)->SendSystemChatExp(actorID);
 					
 					auto victimExp = victim->GetExp();
+					bool bLevelUp = false;
 					{
 						WriteLockGuard guard = { hitter->ActorLock };
-						auto currentExp = hitter->GetExp();
-						hitter->SetExp(currentExp + victimExp);
+						bLevelUp = static_cast<Session*>(hitter)->OnKillEnemy(victimExp);
 					}
-					
-					auto hitterID = hitter->GetID();
-					static_cast<Session*>(hitter)->SendStatChangePacket(hitterID);
+
+					if (bLevelUp)
+					{
+						SendStatChangeToViewList(hitter);
+					}
+					else
+					{
+						auto hitterID = hitter->GetID();
+						static_cast<Session*>(hitter)->SendStatChangePacket(hitterID);
+					}
 					
 					RemoveActor(victim);
 				}
