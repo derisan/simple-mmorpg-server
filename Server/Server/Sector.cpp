@@ -448,6 +448,8 @@ namespace mk
 
 	void Sector::SendNpcMoveToViewList(Actor* target)
 	{
+		MK_INFO("SendNpcMove: {0}", target->GetID());
+
 		std::unordered_set<id_t> viewList;
 		{
 			ReadLockGuard guard = { target->ViewLock };

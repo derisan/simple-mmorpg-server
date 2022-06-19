@@ -50,8 +50,11 @@ namespace mk
 		bool isOut = isOutOfArea(targetPos);
 		if (isOut)
 		{
-			// TODO : return to idle state
-			//Owner->ChangeState(...)
+			{
+				WriteLockGuard guard = { Owner->ActorLock };
+				Owner->SetActive(false);
+				Owner->SetTargetID(INVALID_VALUE);
+			}
 			return;
 		}
 

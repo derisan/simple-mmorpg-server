@@ -30,6 +30,7 @@ namespace mk
         virtual bool RemoveFromViewList(const id_t id) override;
 
         void OnHit(const id_t hitterID);
+        void PushState(AIState* newState);
         void ChangeState(AIState* newState);
         void BackToPreviousState();
 
@@ -42,12 +43,13 @@ namespace mk
         void SetHostile(const bool value) { mbHostile = value; }
         void SetBehaviorType(const NpcBehaviorType value) { mBehaviorType = value; }
         void SetMoveType(const NpcMoveType value) { mMoveType = value; }
+        void SetTargetID(const id_t value) { mTargetID = value; }
 
     private:
         bool mbHostile = false;
         NpcBehaviorType mBehaviorType = NpcBehaviorType::NONE;
         NpcMoveType mMoveType = NpcMoveType::NONE;
-        id_t mTargetID = 0;
+        id_t mTargetID = INVALID_VALUE;
 
         std::shared_ptr<AIState> mCurrentState = nullptr;
         std::shared_ptr<AIState> mPrevState = nullptr;

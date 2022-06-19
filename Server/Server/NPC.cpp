@@ -13,6 +13,9 @@ namespace mk
 		bool mbHostile = false;
 		NpcBehaviorType mBehaviorType = NpcBehaviorType::NONE;
 		NpcMoveType mMoveType = NpcMoveType::NONE;
+		mTargetID = INVALID_VALUE;
+		mCurrentState = nullptr;
+		mPrevState = nullptr;
 	}
 
 	void NPC::Tick()
@@ -48,7 +51,13 @@ namespace mk
 	{
 		SetActive(true);
 		mTargetID = hitterID;
-		mCurrentState = std::make_shared<ChaseState>(this);
+		PushState(new ChaseState{ this });
+	}
+
+	void NPC::PushState(AIState* newState)
+	{
+		mPrevState = mCurrentState;
+		mCurrentState.reset(newState);
 		mCurrentState->Enter();
 	}
 
