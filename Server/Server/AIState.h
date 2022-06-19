@@ -21,11 +21,11 @@ namespace mk
 		NPC* Owner = nullptr;
 	};
 	
-	class IdleState
+	class PeaceState
 		: public AIState
 	{
 	public:
-		IdleState(NPC* owner, bool bAggro);
+		PeaceState(NPC* owner, bool bAggro);
 
 		virtual void Tick() override;
 		
@@ -64,7 +64,6 @@ namespace mk
 		virtual void Tick() override;
 
 	private:
-		bool isOutOfArea(const vec2& targetPos);
 		void setVisit(const short row, const short col);
 		bool isVisited(const short row, const short col);
 		bool isArrived(const short x, const short y);
@@ -82,13 +81,13 @@ namespace mk
 		: public AIState
 	{
 	public:
-		RoamingState(NPC* owner);
+		RoamingState(NPC* owner, bool bAggro);
 
 		virtual void Enter() override;
-		virtual void Exit() override;
 		virtual void Tick() override;
 
 	private:
+		bool mbAggro = false;
 		vec2 mBorder = {};
 	};
 }

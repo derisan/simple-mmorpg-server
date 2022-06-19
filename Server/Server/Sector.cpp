@@ -73,7 +73,7 @@ namespace mk
 				* static_cast<int>(npc->GetBehaviorType())
 				* static_cast<int>(npc->GetMoveType());
 			npc->SetExp(exp);
-			npc->ChangeState(new IdleState{ npc, false });
+			npc->ChangeState(new PeaceState{ npc, false });
 			mActorIds.insert(freeID);
 		}
 
@@ -90,7 +90,7 @@ namespace mk
 			npc->SetRace(Race::Enemy2);
 			npc->SetHostile(true);
 			npc->SetBehaviorType(NpcBehaviorType::PEACE);
-			npc->SetMoveType(NpcMoveType::FIXED);
+			npc->SetMoveType(NpcMoveType::ROAMING);
 			auto [x, y] = getAvailablePos(1);
 			npc->SetPos(x, y);
 			npc->SetAttackPower(npc->GetLevel());
@@ -99,7 +99,7 @@ namespace mk
 				* static_cast<int>(npc->GetBehaviorType())
 				* static_cast<int>(npc->GetMoveType());
 			npc->SetExp(exp);
-			npc->ChangeState(new RoamingState{ npc });
+			npc->ChangeState(new RoamingState{ npc, false });
 			mActorIds.insert(freeID);
 		}
 
@@ -115,8 +115,8 @@ namespace mk
 			npc->SetCurrentHP(npc->GetMaxHP());
 			npc->SetRace(Race::Enemy3);
 			npc->SetHostile(true);
-			npc->SetBehaviorType(NpcBehaviorType::PEACE);
-			npc->SetMoveType(NpcMoveType::FIXED);
+			npc->SetBehaviorType(NpcBehaviorType::AGGRO);
+			npc->SetMoveType(NpcMoveType::ROAMING);
 			auto [x, y] = getAvailablePos(2);
 			npc->SetPos(x, y);
 			npc->SetAttackPower(npc->GetLevel());
@@ -125,6 +125,7 @@ namespace mk
 				* static_cast<int>(npc->GetBehaviorType())
 				* static_cast<int>(npc->GetMoveType());
 			npc->SetExp(exp);
+			npc->ChangeState(new RoamingState{ npc, true });
 			mActorIds.insert(freeID);
 		}
 
@@ -140,7 +141,7 @@ namespace mk
 			npc->SetCurrentHP(npc->GetMaxHP());
 			npc->SetRace(Race::Enemy4);
 			npc->SetHostile(true);
-			npc->SetBehaviorType(NpcBehaviorType::PEACE);
+			npc->SetBehaviorType(NpcBehaviorType::AGGRO);
 			npc->SetMoveType(NpcMoveType::FIXED);
 			auto [x, y] = getAvailablePos(3);
 			npc->SetPos(x, y);
@@ -150,7 +151,7 @@ namespace mk
 				* static_cast<int>(npc->GetBehaviorType())
 				* static_cast<int>(npc->GetMoveType());
 			npc->SetExp(exp);
-			npc->ChangeState(new IdleState{ npc, true });
+			npc->ChangeState(new PeaceState{ npc, true });
 			mActorIds.insert(freeID);
 		}
 	}

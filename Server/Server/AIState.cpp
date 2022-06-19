@@ -28,20 +28,37 @@ namespace mk
 		return true;
 	}
 
+	bool IsOutOfBorder(const vec2& a, const vec2& border)
+	{
+		if (a.x < border.x ||
+			a.x > border.x + 19)
+		{
+			return true;
+		}
+
+		if (a.y < border.y ||
+			a.y > border.y + 19)
+		{
+			return true;
+		}
+
+		return false;
+	}
+
 	AIState::AIState(NPC* owner)
 		: Owner{ owner }
 	{
 
 	}
 
-	IdleState::IdleState(NPC* owner, bool bAggro)
+	PeaceState::PeaceState(NPC* owner, bool bAggro)
 		: AIState{ owner }
 		, mbAggro{ bAggro }
 	{
 
 	}
 
-	void IdleState::Tick()
+	void PeaceState::Tick()
 	{
 		if (NOT mbAggro)
 		{
@@ -106,7 +123,7 @@ namespace mk
 			return;
 		}
 
-		bool isOut = isOutOfArea(targetPos);
+		bool isOut = IsOutOfBorder(targetPos, mBorder);
 		if (isOut)
 		{
 			Owner->BackToPreviousState();
@@ -156,7 +173,7 @@ namespace mk
 
 				if (NOT isVisited(newY, newX)
 					&& NOT TileMap::IsSolid(newY, newX)
-					&& NOT isOutOfArea(vec2(newX, newY)))
+					&& NOT IsOutOfBorder(vec2(newX, newY), mBorder))
 				{
 					setVisit(newY, newX);
 					Node newNode = {};
@@ -176,23 +193,6 @@ namespace mk
 		Owner->BackToPreviousState();
 	}
 
-	bool ChaseState::isOutOfArea(const vec2& targetPos)
-	{
-		if (targetPos.x < mBorder.x ||
-			targetPos.x > mBorder.x + 19)
-		{
-			return true;
-		}
-
-		if (targetPos.y < mBorder.y ||
-			targetPos.y > mBorder.y + 19)
-		{
-			return true;
-		}
-
-		return false;
-	}
-
 	void ChaseState::setVisit(const short row, const short col)
 	{
 		mVisited[row % 20][col % 20] = true;
@@ -208,8 +208,9 @@ namespace mk
 		return x == -1 && y == -1;
 	}
 
-	RoamingState::RoamingState(NPC* owner)
+	RoamingState::RoamingState(NPC* owner, bool bAggro)
 		: AIState{ owner }
+		, mbAggro{ bAggro }
 	{
 
 	}
@@ -221,24 +222,41 @@ namespace mk
 		mBorder.y = (ownerPos.y / 20) * 20;
 	}
 
-	void RoamingState::Exit()
-	{
-
-	}
-
 	void RoamingState::Tick()
 	{
 		Owner->ViewLock.ReadLock();
 		if (Owner->ViewList.empty())
 		{
 			Owner->ViewLock.ReadUnlock();
-
-			WriteLockGuard guard = { Owner->ActorLock };
 			Owner->SetActive(false);
+			return;
 		}
 		else
 		{
-			Owner->ViewLock.ReadUnlock();
+			if (mbAggro)
+			{
+				std::unordered_set<id_t> viewList = Owner->ViewList;
+				Owner->ViewLock.ReadUnlock();
+
+				const auto& ownerPos = Owner->GetPos();
+
+				for (auto actorID : viewList)
+				{
+					auto otherPos = gClients[actorID]->GetPos();
+
+					if (IsInRange(ownerPos, otherPos, 5)
+						&& NOT IsOutOfBorder(otherPos, mBorder))
+					{
+						Owner->SetTargetID(actorID);
+						Owner->ChangeState(new ChaseState{ Owner });
+						return;
+					}
+				}
+			}
+			else
+			{
+				Owner->ViewLock.ReadUnlock();
+			}
 		}
 
 		char direction = Random::RandInt(0, 3);
