@@ -51,22 +51,14 @@ namespace mk
 		bool bInRange = isInRange(targetPos);
 		if (NOT bInRange)
 		{
-			{
-				WriteLockGuard guard = { Owner->ActorLock };
-				Owner->SetActive(false);
-				Owner->SetTargetID(INVALID_VALUE);
-			}
+			setInactive();
 			return;
 		}
 
 		bool isOut = isOutOfArea(targetPos);
 		if (isOut)
 		{
-			{
-				WriteLockGuard guard = { Owner->ActorLock };
-				Owner->SetActive(false);
-				Owner->SetTargetID(INVALID_VALUE);
-			}
+			setInactive();
 			return;
 		}
 
@@ -101,7 +93,9 @@ namespace mk
 					Owner->SetPos(newX, newY);
 					SectorManager::SendNpcMoveToViewList(Owner);
 				}
-				break;
+
+				// 길을 찾은 경우 함수 리턴
+				return;
 			}
 
 			for (auto i = 0; i < 4; ++i)
@@ -127,7 +121,8 @@ namespace mk
 			}
 		}
 
-		// TODO : if cannot find path...
+		// 길을 못 찾았을 경우 실행되는 코드
+		setInactive();
 	}
 
 	bool ChaseState::isOutOfArea(const vec2& targetPos)
@@ -175,6 +170,13 @@ namespace mk
 	bool ChaseState::isArrived(const short x, const short y)
 	{
 		return x == -1 && y == -1;
+	}
+
+	void ChaseState::setInactive()
+	{
+		WriteLockGuard guard = { Owner->ActorLock };
+		Owner->SetActive(false);
+		Owner->SetTargetID(INVALID_VALUE);
 	}
 
 }
