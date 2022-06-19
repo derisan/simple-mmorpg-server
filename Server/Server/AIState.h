@@ -55,8 +55,11 @@ namespace mk
 		bool isOutOfArea(const vec2& targetPos);
 		void setVisit(const short row, const short col);
 		bool isVisited(const short row, const short col);
+		bool isInRange(const vec2& targetPos);
 
 	private:
+		constexpr static int ENEMY_ATTACK_RANGE = 5;
+
 		vec2 mBorder = {};
 		std::priority_queue<Node> mQueue;
 		bool mVisited[20][20] = {false, };

@@ -47,6 +47,17 @@ namespace mk
 
 		auto targetPos = mTarget->GetPos();
 
+		bool bInRange = isInRange(targetPos);
+		if (NOT bInRange)
+		{
+			{
+				WriteLockGuard guard = { Owner->ActorLock };
+				Owner->SetActive(false);
+				Owner->SetTargetID(INVALID_VALUE);
+			}
+			return;
+		}
+
 		bool isOut = isOutOfArea(targetPos);
 		if (isOut)
 		{
@@ -133,6 +144,21 @@ namespace mk
 	bool ChaseState::isVisited(const short row, const short col)
 	{
 		return mVisited[row % 20][col % 20];
+	}
+
+	bool ChaseState::isInRange(const vec2& targetPos)
+	{
+		auto ownerPos = Owner->GetPos();
+
+		if (targetPos.x < ownerPos.x - ENEMY_ATTACK_RANGE ||
+			targetPos.x > ownerPos.x + ENEMY_ATTACK_RANGE ||
+			targetPos.y < ownerPos.y - ENEMY_ATTACK_RANGE ||
+			targetPos.y > ownerPos.y + ENEMY_ATTACK_RANGE)
+		{
+			return false;
+		}
+
+		return true;
 	}
 
 }
