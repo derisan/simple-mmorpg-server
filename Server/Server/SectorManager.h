@@ -34,6 +34,8 @@ namespace mk
 
 		static void RegenEnemy(Actor* actor, const int sectorNum);
 
+		static void RegenUser(Actor* actor);
+
 		static std::pair<short, short> GetAvailablePos();
 		
 	private:

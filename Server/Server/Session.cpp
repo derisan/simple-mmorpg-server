@@ -245,9 +245,15 @@ namespace mk
 
 		if (currentHP <= 0)
 		{
+			auto currentExp = GetExp();
+			SetExp(currentExp / 2);
+			SetCurrentHP(GetMaxHP());
 			ActorLock.WriteUnlock();
-
-			// TODO : user dead...
+			
+			SectorManager::RegenUser(this);
+			SendSystemChatDie(hitterID);
+			SendStatChangePacket(GetID());
+			SendMovePacket(GetID(), 0);
 		}
 		else
 		{
@@ -353,6 +359,15 @@ namespace mk
 			0,
 			hitterName + "의 공격으로 " + std::to_string(hitterPower)
 			+ "의 데미지를 입었습니다.");
+	}
+
+	void Session::SendSystemChatDie(const id_t hitterID)
+	{
+		const auto& hitterName = gClients[hitterID]->GetName();
+
+		SendChatPacket(SYSTEM_CHAT_ID,
+			0,
+			hitterName + "의 공격으로 " + "사망했습니다.");
 	}
 
 	void Session::SendChatPacket(const id_t senderID, const char chatType, std::string_view chat)

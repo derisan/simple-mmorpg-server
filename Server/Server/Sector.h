@@ -29,6 +29,8 @@ namespace mk
 
 		void RegenEnemy(Actor* actor);
 
+		void RegenUser(Actor* actor);
+
 		void SendNpcMoveToViewList(Actor* target);
 
 		int GetNumSessions() const { return mNumSessions.load(); }

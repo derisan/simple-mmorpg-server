@@ -37,6 +37,12 @@ namespace mk
 		return id < MAX_USER;
 	}
 
+	vec2 GetUserRegenPos(const short x, const short y)
+	{
+		return vec2( (x / 40) * 40 + 4,
+			(y / 40) * 40 + 4 );
+	}
+
 	Sector::Sector(const std::vector<std::vector<Tile>>& tileMap, int sectorNum)
 		: mTileMap{ tileMap }
 		, mSectorNum{ sectorNum }
@@ -445,6 +451,21 @@ namespace mk
 			WriteLockGuard guard = { enemy->ActorLock };
 			enemy->SetPos(newPos);
 			enemy->SetCurrentHP(enemy->GetMaxHP());
+		}
+
+		AddActor(actor);
+	}
+
+	void Sector::RegenUser(Actor* actor)
+	{
+		RemoveActor(actor);
+
+		auto actorPos = actor->GetPos();
+		vec2 newPos = GetUserRegenPos(actorPos.x, actorPos.y);
+
+		{
+			WriteLockGuard guard = { actor->ActorLock };
+			actor->SetPos(newPos);
 		}
 
 		AddActor(actor);

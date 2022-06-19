@@ -95,6 +95,13 @@ namespace mk
 		sector->RegenEnemy(actor);
 	}
 
+	void SectorManager::RegenUser(Actor* actor)
+	{
+		auto [x, y] = actor->GetPos();
+		auto& sector = getSector(x, y);
+		sector->RegenUser(actor);
+	}
+
 	std::pair<short, short> SectorManager::GetAvailablePos()
 	{
 		for (const auto& row : sSectors)

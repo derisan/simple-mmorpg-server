@@ -3,6 +3,8 @@
 
 #include <fstream>
 
+#include "Protocol.h"
+
 namespace mk
 {
 	std::vector<std::vector<mk::Tile>> TileMap::sTileMap;
@@ -38,17 +40,17 @@ namespace mk
 
 	bool TileMap::IsSolid(const int row, const int col)
 	{
-		if(row < 0 || row >= sTileMap.size())
+		if(row < 0 || row >= W_HEIGHT)
 		{
 			return true;
 		}
 
-		if (col < 0 || col >= sTileMap.size())
+		if (col < 0 || col >= W_WIDTH)
 		{
 			return true;
 		}
 
-		return sTileMap[row][col].Solidity == 1;
+		return sTileMap[row % 40][col % 40].Solidity == 1;
 	}
 
 }
