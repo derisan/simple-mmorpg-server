@@ -229,30 +229,34 @@ namespace mk
 		}
 		mLock.ReadUnlock();
 
-		auto [x, y] = target->GetPos();
+		auto targetPos = target->GetPos();
 		switch (direction)
 		{
 		case UP:
-			if (y > 0 && NOT isSolid(y - 1, x)) y--;
+			if (targetPos.y > 0 && NOT isSolid(targetPos.y - 1, targetPos.x)) 
+				targetPos.y--;
 			break;
 		case DOWN:
-			if (y < W_HEIGHT - 1 && NOT isSolid(y + 1, x)) y++;
+			if (targetPos.y < W_HEIGHT - 1 && NOT isSolid(targetPos.y + 1, targetPos.x)) 
+				targetPos.y++;
 			break;
 		case LEFT:
-			if (x > 0 && NOT isSolid(y, x - 1)) x--;
+			if (targetPos.x > 0 && NOT isSolid(targetPos.y, targetPos.x - 1))
+				targetPos.x--;
 			break;
 		case RIGHT:
-			if (x < W_WIDTH - 1 && NOT isSolid(y, x + 1)) x++;
+			if (targetPos.x < W_WIDTH - 1 && NOT isSolid(targetPos.y, targetPos.x + 1)) 
+				targetPos.x++;
 			break;
 		default:
 			MK_ASSERT(false);
 			break;
 		}
 
-		target->SetPos(x, y);
+		target->SetPos(targetPos);
 		static_cast<Session*>(target)->SendMovePacket(targetID, clientTime);
 
-		bool bOut = isOutOfBound(x, y);
+		bool bOut = isOutOfBound(targetPos.x, targetPos.y);
 		if (bOut)
 		{
 			SectorManager::ChangeSector(target, mSectorNum);
@@ -277,7 +281,7 @@ namespace mk
 					continue;
 				}
 
-				bool bInRange = isInView({ x, y }, gClients[actorID]->GetPos());
+				bool bInRange = isInView(targetPos, gClients[actorID]->GetPos());
 
 				if (bInRange)
 				{
@@ -448,33 +452,51 @@ namespace mk
 
 	void Sector::SendNpcMoveToViewList(Actor* target)
 	{
-		MK_INFO("SendNpcMove: {0}", target->GetID());
-
-		std::unordered_set<id_t> viewList;
+		// 기존 ViewList 복사
+		std::unordered_set<id_t> oldList;
 		{
 			ReadLockGuard guard = { target->ViewLock };
-			viewList = target->ViewList;
+			oldList = target->ViewList;
 		}
 
 		auto targetID = target->GetID();
+		auto targetPos = target->GetPos();
 
-		for (auto actorID : viewList)
+		// NearList 생성
+		std::unordered_set<id_t> nearList;
 		{
-			(gClients[actorID]->ViewLock).ReadLock();
-			if (0 != gClients[actorID]->ViewList.count(targetID))
+			ReadLockGuard guard = { mLock };
+			for (auto actorID : mActorIds)
 			{
-				(gClients[actorID]->ViewLock).ReadUnlock();
-				static_cast<Session*>(gClients[actorID])->SendMovePacket(targetID, 0);
-			}
-			else
-			{
-				(gClients[actorID]->ViewLock).ReadUnlock();
+				if (actorID == targetID)
 				{
-					WriteLockGuard guard = { gClients[actorID]->ViewLock };
-					gClients[actorID]->ViewList.insert(targetID);
+					continue;
 				}
-				static_cast<Session*>(gClients[actorID])->SendAddObjectPacket(targetID);
+
+				bool bInRange = isInView(targetPos, gClients[actorID]->GetPos());
+
+				if (bInRange)
+				{
+					nearList.insert(actorID);
+				}
 			}
+		}
+
+		for (auto actorID : nearList)
+		{
+			target->AddToViewList(actorID);
+			gClients[actorID]->AddToViewList(targetID, true);
+		}
+
+		for (auto actorID : oldList)
+		{
+			if (0 != nearList.count(actorID))
+			{
+				continue;
+			}
+
+			target->RemoveFromViewList(actorID);
+			gClients[actorID]->RemoveFromViewList(targetID);
 		}
 	}
 
