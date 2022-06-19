@@ -15,10 +15,59 @@ namespace mk
 		return abs(a.x - b.x) + abs(a.y - b.y);
 	}
 
+	bool IsInRange(const vec2& a, const vec2& b, const int distance)
+	{
+		if (a.x < b.x - distance 
+			|| a.x > b.x + distance 
+			|| a.y < b.y - distance 
+			|| a.y > b.y + distance)
+		{
+			return false;
+		}
+
+		return true;
+	}
+
 	AIState::AIState(NPC* owner)
 		: Owner{ owner }
 	{
 
+	}
+
+	IdleState::IdleState(NPC* owner, bool bAggro)
+		: AIState{ owner }
+		, mbAggro{ bAggro }
+	{
+
+	}
+
+	void IdleState::Tick()
+	{
+		if (NOT mbAggro)
+		{
+			return;
+		}
+
+		std::unordered_set<id_t> viewList;
+		{
+			ReadLockGuard guard = { Owner->ViewLock };
+			viewList = Owner->ViewList;
+		}
+
+		const auto& ownerPos = Owner->GetPos();
+
+		for (auto actorID : viewList)
+		{
+			auto otherPos = gClients[actorID]->GetPos();
+			bool bInRange = IsInRange(ownerPos, otherPos, 5);
+
+			if (bInRange)
+			{
+				Owner->SetTargetID(actorID);
+				Owner->ChangeState(new ChaseState{ Owner });
+				break;
+			}
+		}
 	}
 
 	ChaseState::ChaseState(NPC* owner)
@@ -47,9 +96,10 @@ namespace mk
 		static short dx[] = { 1, -1, 0, 0 };
 		static short dy[] = { 0, 0, 1, -1 };
 
-		auto targetPos = mTarget->GetPos();
+		const auto& targetPos = mTarget->GetPos();
+		const auto& ownerPos = Owner->GetPos();
 
-		bool bInRange = isInRange(targetPos);
+		bool bInRange = IsInRange(ownerPos, targetPos, ENEMY_ATTACK_RANGE);
 		if (NOT bInRange)
 		{
 			Owner->BackToPreviousState();
@@ -153,21 +203,6 @@ namespace mk
 		return mVisited[row % 20][col % 20];
 	}
 
-	bool ChaseState::isInRange(const vec2& targetPos)
-	{
-		auto ownerPos = Owner->GetPos();
-
-		if (targetPos.x < ownerPos.x - ENEMY_ATTACK_RANGE ||
-			targetPos.x > ownerPos.x + ENEMY_ATTACK_RANGE ||
-			targetPos.y < ownerPos.y - ENEMY_ATTACK_RANGE ||
-			targetPos.y > ownerPos.y + ENEMY_ATTACK_RANGE)
-		{
-			return false;
-		}
-
-		return true;
-	}
-
 	bool ChaseState::isArrived(const short x, const short y)
 	{
 		return x == -1 && y == -1;
@@ -237,4 +272,7 @@ namespace mk
 		Owner->SetPos(ownerPos);
 		SectorManager::SendNpcMoveToViewList(Owner);
 	}
+
+
+
 }

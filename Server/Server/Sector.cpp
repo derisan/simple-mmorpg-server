@@ -73,6 +73,7 @@ namespace mk
 				* static_cast<int>(npc->GetBehaviorType())
 				* static_cast<int>(npc->GetMoveType());
 			npc->SetExp(exp);
+			npc->ChangeState(new IdleState{ npc, false });
 			mActorIds.insert(freeID);
 		}
 
@@ -149,6 +150,7 @@ namespace mk
 				* static_cast<int>(npc->GetBehaviorType())
 				* static_cast<int>(npc->GetMoveType());
 			npc->SetExp(exp);
+			npc->ChangeState(new IdleState{ npc, true });
 			mActorIds.insert(freeID);
 		}
 	}

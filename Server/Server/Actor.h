@@ -27,6 +27,7 @@ namespace mk
 		short GetX() const { return mPos.x; }
 		short GetY() const { return mPos.y; }
 		vec2 GetPos() const { return mPos; }
+		const vec2& GetPos() { return mPos; }
 		void SetX(const short value) { mPos.x = value; }
 		void SetY(const short value) { mPos.y = value; }
 		void SetPos(const vec2& value) { mPos = value; }

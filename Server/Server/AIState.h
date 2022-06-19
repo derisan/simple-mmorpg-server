@@ -20,30 +20,42 @@ namespace mk
 	protected:
 		NPC* Owner = nullptr;
 	};
-
-	struct Node
+	
+	class IdleState
+		: public AIState
 	{
-		short Row = 0;
-		short Col = 0;
-		int F = 0;
-		int Depth = 0;
-		short ParentRow = 0;
-		short ParentCol = 0;
+	public:
+		IdleState(NPC* owner, bool bAggro);
 
-		bool operator < (const Node& other) const
-		{
-			return F > other.F;
-		}
-
-		bool operator < (const Node& other)
-		{
-			return F > other.F;
-		}
+		virtual void Tick() override;
+		
+	private:
+		bool mbAggro = false;
 	};
 
 	class ChaseState
 		: public AIState
 	{
+		struct Node
+		{
+			short Row = 0;
+			short Col = 0;
+			int F = 0;
+			int Depth = 0;
+			short ParentRow = 0;
+			short ParentCol = 0;
+
+			bool operator < (const Node& other) const
+			{
+				return F > other.F;
+			}
+
+			bool operator < (const Node& other)
+			{
+				return F > other.F;
+			}
+		};
+
 	public:
 		ChaseState(NPC* owner);
 
@@ -55,7 +67,6 @@ namespace mk
 		bool isOutOfArea(const vec2& targetPos);
 		void setVisit(const short row, const short col);
 		bool isVisited(const short row, const short col);
-		bool isInRange(const vec2& targetPos);
 		bool isArrived(const short x, const short y);
 
 	private:
