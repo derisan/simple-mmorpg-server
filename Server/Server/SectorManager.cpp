@@ -15,7 +15,7 @@ namespace mk
 
 	void SectorManager::Init()
 	{
-		TileMap::LoadTileMap("../../Assets/WorldMap.txt");
+		TileMap::LoadTileMap("WorldMap.txt");
 		const auto& tileMap = TileMap::GetTileMap();
 
 		gSectorsPerLine = W_WIDTH / TILE_PER_SECTOR;
