@@ -2,6 +2,7 @@
 #include "LoginScene.h"
 
 #include "ActorManager.h"
+#include "ChatManager.h"
 #include "Game.h"
 #include "MainScene.h"
 #include "PacketManager.h"
@@ -13,7 +14,6 @@ void LoginScene::Enter()
 
 	PacketManager::RegisterPacketFunc(SC_LOGIN_OK, [this](char* p) {
 		SC_LOGIN_OK_PACKET* packet = reinterpret_cast<SC_LOGIN_OK_PACKET*>(p);
-		// TODO : 로그인 성공 여부 따져서 메인 씬으로 전환
 		auto& actor = ActorManager::RegisterActor(packet->id,
 			packet->race,
 			packet->x,
@@ -29,6 +29,17 @@ void LoginScene::Enter()
 
 		gGame->ChangeScene(mainScene);
 		});
+
+	PacketManager::RegisterPacketFunc(SC_LOGIN_FAIL, [](char* p) {
+		SC_LOGIN_FAIL_PACKET* packet = reinterpret_cast<SC_LOGIN_FAIL_PACKET*>(p);
+		switch (packet->reason)
+		{
+		case 0: ChatManager::AddChat(-1, "Login Failed: Invalid name!"); break;
+		case 1: ChatManager::AddChat(-1, "Login Failed: Name already playing!"); break;
+		case 2: ChatManager::AddChat(-1, "Login Failed: Server is full!"); break;
+		}
+		PacketManager::Disconnect();
+	});
 }
 
 void LoginScene::Exit()

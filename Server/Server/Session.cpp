@@ -290,6 +290,15 @@ namespace mk
 		sendPacket(&packet, packet.size);
 	}
 
+	void Session::SendLoginFailPacket(const int reason)
+	{
+		SC_LOGIN_FAIL_PACKET packet = {};
+		packet.size = sizeof(packet);
+		packet.type = SC_LOGIN_FAIL;
+		packet.reason = reason;
+		sendPacket(&packet, packet.size);
+	}
+
 	void Session::SendMovePacket(const id_t id, const unsigned int time)
 	{
 		SC_MOVE_OBJECT_PACKET packet = {};

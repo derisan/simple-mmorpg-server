@@ -96,6 +96,14 @@ bool PacketManager::Connect()
 	return true;
 }
 
+void PacketManager::Disconnect()
+{
+	if (sTCPContext.isConnected())
+	{
+		sTCPContext.disconnect();
+	}
+}
+
 void PacketManager::RegisterPacketFunc(char packetType, std::function<void(char*)> func)
 {
 	if (auto iter = sPacketFuncDict.find(packetType); iter == sPacketFuncDict.end())

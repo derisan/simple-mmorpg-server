@@ -31,6 +31,7 @@ namespace mk
 
 	public:
 		void SendLoginInfoPacket();
+		void SendLoginFailPacket(const int reason);
 		void SendMovePacket(const id_t id, const unsigned int time);
 		void SendAddObjectPacket(const id_t id);
 		void SendRemoveObjectPacket(const id_t id);

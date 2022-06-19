@@ -348,6 +348,19 @@ namespace mk
 			CS_LOGIN_PACKET* loginPacket = reinterpret_cast<CS_LOGIN_PACKET*>(packet);
 			auto session = GetSession(id);
 			session->SetName(loginPacket->name);
+
+			for (auto idx = 0; idx < MAX_USER; ++idx)
+			{
+				if (id == idx) continue;
+
+				const auto& name = gClients[idx]->GetName();
+				if (name == loginPacket->name)
+				{
+					session->SendLoginFailPacket(1);
+					return;
+				}
+			}
+			
 			DBConnection::PushJob(id, DBJobType::GetUserInfo);
 			break;
 		}

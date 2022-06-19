@@ -8,6 +8,7 @@ public:
 
 	static void Recv();
 	static bool Connect();
+	static void Disconnect();
 	static void RegisterPacketFunc(char packetType, std::function<void(char*)> func);
 	static void RemovePacketFunc(char packetType);
 
