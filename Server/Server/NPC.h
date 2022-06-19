@@ -24,6 +24,8 @@ namespace mk
         public Actor
     {
     public:
+        NPC();
+
         virtual void Shutdown() override;
         virtual void Tick() override;
         virtual bool AddToViewList(const id_t id, const bool bSendMove = false) override;

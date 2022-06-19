@@ -6,6 +6,13 @@
 
 namespace mk
 {
+
+	NPC::NPC()
+		: mCurrentState{ std::make_shared<AIState>(this) }
+	{
+
+	}
+
 	void NPC::Shutdown()
 	{
 		Actor::Shutdown();
@@ -35,6 +42,8 @@ namespace mk
 			return false;
 		}
 
+		SetActive(true);
+
 		WriteLockGuard guard = { ViewLock };
 		auto [_, bInsert] = ViewList.insert(id);
 		return bInsert;
@@ -44,6 +53,10 @@ namespace mk
 	{
 		WriteLockGuard guard = { ViewLock };
 		auto cnt = ViewList.erase(id);
+		if (ViewList.empty())
+		{
+			SetActive(false);
+		}
 		return cnt == 1;
 	}
 
@@ -51,14 +64,7 @@ namespace mk
 	{
 		SetActive(true);
 		mTargetID = hitterID;
-		PushState(new ChaseState{ this });
-	}
-
-	void NPC::PushState(AIState* newState)
-	{
-		mPrevState = mCurrentState;
-		mCurrentState.reset(newState);
-		mCurrentState->Enter();
+		ChangeState(new ChaseState{ this });
 	}
 
 	void NPC::ChangeState(AIState* newState)

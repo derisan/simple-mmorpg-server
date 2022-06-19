@@ -8,6 +8,7 @@
 #include "NPC.h"
 #include "Random.h"
 #include "Timer.h"
+#include "AIState.h"
 
 namespace mk
 {
@@ -97,6 +98,7 @@ namespace mk
 				* static_cast<int>(npc->GetBehaviorType())
 				* static_cast<int>(npc->GetMoveType());
 			npc->SetExp(exp);
+			npc->ChangeState(new RoamingState{ npc });
 			mActorIds.insert(freeID);
 		}
 

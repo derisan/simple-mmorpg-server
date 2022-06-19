@@ -57,15 +57,28 @@ namespace mk
 		bool isVisited(const short row, const short col);
 		bool isInRange(const vec2& targetPos);
 		bool isArrived(const short x, const short y);
-		void setInactive();
 
 	private:
 		constexpr static int ENEMY_ATTACK_RANGE = 5;
 
 		vec2 mBorder = {};
 		std::priority_queue<Node> mQueue;
-		bool mVisited[20][20] = {false, };
+		bool mVisited[20][20] = { false, };
 		Actor* mTarget = nullptr;
+	};
+
+	class RoamingState
+		: public AIState
+	{
+	public:
+		RoamingState(NPC* owner);
+
+		virtual void Enter() override;
+		virtual void Exit() override;
+		virtual void Tick() override;
+
+	private:
+		vec2 mBorder = {};
 	};
 }
 

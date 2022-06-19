@@ -6,6 +6,7 @@
 #include "IocpBase.h"
 #include "SectorManager.h"
 #include "Session.h"
+#include "Random.h"
 
 namespace mk
 {
@@ -51,14 +52,14 @@ namespace mk
 		bool bInRange = isInRange(targetPos);
 		if (NOT bInRange)
 		{
-			setInactive();
+			Owner->BackToPreviousState();
 			return;
 		}
 
 		bool isOut = isOutOfArea(targetPos);
 		if (isOut)
 		{
-			setInactive();
+			Owner->BackToPreviousState();
 			return;
 		}
 
@@ -102,7 +103,7 @@ namespace mk
 			{
 				auto newX = node.Col + dx[i];
 				auto newY = node.Row + dy[i];
-				
+
 				if (NOT isVisited(newY, newX)
 					&& NOT TileMap::IsSolid(newY, newX)
 					&& NOT isOutOfArea(vec2(newX, newY)))
@@ -122,7 +123,7 @@ namespace mk
 		}
 
 		// 길을 못 찾았을 경우 실행되는 코드
-		setInactive();
+		Owner->BackToPreviousState();
 	}
 
 	bool ChaseState::isOutOfArea(const vec2& targetPos)
@@ -172,11 +173,68 @@ namespace mk
 		return x == -1 && y == -1;
 	}
 
-	void ChaseState::setInactive()
+	RoamingState::RoamingState(NPC* owner)
+		: AIState{ owner }
 	{
-		WriteLockGuard guard = { Owner->ActorLock };
-		Owner->SetActive(false);
-		Owner->SetTargetID(INVALID_VALUE);
+
 	}
 
+	void RoamingState::Enter()
+	{
+		auto ownerPos = Owner->GetPos();
+		mBorder.x = (ownerPos.x / 20) * 20;
+		mBorder.y = (ownerPos.y / 20) * 20;
+	}
+
+	void RoamingState::Exit()
+	{
+
+	}
+
+	void RoamingState::Tick()
+	{
+		Owner->ViewLock.ReadLock();
+		if (Owner->ViewList.empty())
+		{
+			Owner->ViewLock.ReadUnlock();
+
+			WriteLockGuard guard = { Owner->ActorLock };
+			Owner->SetActive(false);
+		}
+		else
+		{
+			Owner->ViewLock.ReadUnlock();
+		}
+
+		char direction = Random::RandInt(0, 3);
+
+		auto ownerPos = Owner->GetPos();
+
+		switch (direction)
+		{
+		case 0:
+			if (ownerPos.y > mBorder.y
+				&& NOT TileMap::IsSolid(ownerPos.y - 1, ownerPos.x))
+				ownerPos.y--;
+			break;
+		case 1:
+			if (ownerPos.y < mBorder.y + 19
+				&& NOT TileMap::IsSolid(ownerPos.y + 1, ownerPos.x))
+				ownerPos.y++;
+			break;
+		case 2:
+			if (ownerPos.x > mBorder.x
+				&& NOT TileMap::IsSolid(ownerPos.y, ownerPos.x - 1))
+				ownerPos.x--;
+			break;
+		case 3:
+			if (ownerPos.x < mBorder.x + 19
+				&& NOT TileMap::IsSolid(ownerPos.y, ownerPos.x + 1))
+				ownerPos.x++;
+			break;
+		}
+
+		Owner->SetPos(ownerPos);
+		SectorManager::SendNpcMoveToViewList(Owner);
+	}
 }
