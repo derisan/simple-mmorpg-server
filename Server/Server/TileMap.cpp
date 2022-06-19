@@ -35,4 +35,20 @@ namespace mk
 			}
 		}
 	}
+
+	bool TileMap::IsSolid(const int row, const int col)
+	{
+		if(row < 0 || row >= sTileMap.size())
+		{
+			return true;
+		}
+
+		if (col < 0 || col >= sTileMap.size())
+		{
+			return true;
+		}
+
+		return sTileMap[row][col].Solidity == 1;
+	}
+
 }

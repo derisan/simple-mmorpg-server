@@ -18,6 +18,8 @@ namespace mk
         ROAMING,
     };
 
+    class AIState;
+
     class NPC :
         public Actor
     {
@@ -27,10 +29,15 @@ namespace mk
         virtual bool AddToViewList(const id_t id, const bool bSendMove = false) override;
         virtual bool RemoveFromViewList(const id_t id) override;
 
+        void OnHit(const id_t hitterID);
+        void ChangeState(AIState* newState);
+        void BackToPreviousState();
+
     public:
         bool IsHostile() const { return mbHostile; }
         NpcBehaviorType GetBehaviorType() const { return mBehaviorType; }
         NpcMoveType GetMoveType() const { return mMoveType; }
+        id_t GetTargetID() const { return mTargetID; }
 
         void SetHostile(const bool value) { mbHostile = value; }
         void SetBehaviorType(const NpcBehaviorType value) { mBehaviorType = value; }
@@ -40,6 +47,10 @@ namespace mk
         bool mbHostile = false;
         NpcBehaviorType mBehaviorType = NpcBehaviorType::NONE;
         NpcMoveType mMoveType = NpcMoveType::NONE;
+        id_t mTargetID = 0;
+
+        std::shared_ptr<AIState> mCurrentState = nullptr;
+        std::shared_ptr<AIState> mPrevState = nullptr;
     };
 }
 

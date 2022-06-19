@@ -147,6 +147,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Actor.cpp" />
+    <ClCompile Include="AIState.cpp" />
     <ClCompile Include="DBConnection.cpp" />
     <ClCompile Include="IocpBase.cpp" />
     <ClCompile Include="Lock.cpp" />
@@ -167,6 +168,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Actor.h" />
+    <ClInclude Include="AIState.h" />
     <ClInclude Include="DBConnection.h" />
     <ClInclude Include="IocpBase.h" />
     <ClInclude Include="Lock.h" />

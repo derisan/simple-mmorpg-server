@@ -72,6 +72,13 @@ namespace mk
 		sector->SendStatChangeToViewList(actor);
 	}
 
+	void SectorManager::SendNpcMoveToViewList(Actor* actor)
+	{
+		auto [x, y] = actor->GetPos();
+		auto& sector = getSector(x, y);
+		sector->SendNpcMoveToViewList(actor);
+	}
+
 	void SectorManager::ChangeSector(Actor* actor, const int prevSectorNum)
 	{
 		auto& prevSector = getSector(prevSectorNum);

@@ -15,6 +15,8 @@ namespace mk
 
 		static const std::vector<std::vector<Tile>>& GetTileMap() { return sTileMap; }
 
+		static bool IsSolid(const int row, const int col);
+
 	private:
 		static std::vector<std::vector<Tile>> sTileMap;
 	};

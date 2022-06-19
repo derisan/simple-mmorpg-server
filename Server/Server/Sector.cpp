@@ -391,6 +391,8 @@ namespace mk
 					{
 						WriteLockGuard guard = { victim->ActorLock };
 						victim->SetCurrentHP(victimHP);
+						auto hitterID = hitter->GetID();
+						static_cast<NPC*>(victim)->OnHit(hitterID);
 					}
 					SendStatChangeToViewList(victim);
 				}
@@ -442,6 +444,36 @@ namespace mk
 		}
 
 		AddActor(actor);
+	}
+
+	void Sector::SendNpcMoveToViewList(Actor* target)
+	{
+		std::unordered_set<id_t> viewList;
+		{
+			ReadLockGuard guard = { target->ViewLock };
+			viewList = target->ViewList;
+		}
+
+		auto targetID = target->GetID();
+
+		for (auto actorID : viewList)
+		{
+			(gClients[actorID]->ViewLock).ReadLock();
+			if (0 != gClients[actorID]->ViewList.count(targetID))
+			{
+				(gClients[actorID]->ViewLock).ReadUnlock();
+				static_cast<Session*>(gClients[actorID])->SendMovePacket(targetID, 0);
+			}
+			else
+			{
+				(gClients[actorID]->ViewLock).ReadUnlock();
+				{
+					WriteLockGuard guard = { gClients[actorID]->ViewLock };
+					gClients[actorID]->ViewList.insert(targetID);
+				}
+				static_cast<Session*>(gClients[actorID])->SendAddObjectPacket(targetID);
+			}
+		}
 	}
 
 	bool Sector::isSolid(const short row, const short col)

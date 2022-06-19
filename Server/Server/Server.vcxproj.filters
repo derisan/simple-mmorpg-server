@@ -11,6 +11,9 @@
     <Filter Include="Source Files\Core">
       <UniqueIdentifier>{017832e5-6c0c-4be7-8690-544c03c2bbdb}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\AI">
+      <UniqueIdentifier>{f1a5ec82-f888-4511-995c-6ce175784f59}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -58,6 +61,9 @@
     <ClCompile Include="DBConnection.cpp">
       <Filter>Source Files\Core</Filter>
     </ClCompile>
+    <ClCompile Include="AIState.cpp">
+      <Filter>Source Files\AI</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -104,6 +110,9 @@
     </ClInclude>
     <ClInclude Include="DBConnection.h">
       <Filter>Source Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="AIState.h">
+      <Filter>Source Files\AI</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
