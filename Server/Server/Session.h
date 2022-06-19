@@ -25,6 +25,7 @@ namespace mk
 		virtual bool RemoveFromViewList(const id_t id) override;
 		
 		void OnKillEnemy(const int incomingExp);
+		void OnHit(const id_t hitterID);
 
 		void SetRequiredExp(const int value) { mRequiredExp = value; }
 
@@ -35,6 +36,7 @@ namespace mk
 		void SendRemoveObjectPacket(const id_t id);
 		void SendSystemChatDamage(const id_t victimID);
 		void SendSystemChatExp(const id_t victimID);
+		void SendSystemChatTakeDamage(const id_t hitterID);
 		void SendChatPacket(const id_t senderID, const char chatType, std::string_view chat);
 		void SendStatChangePacket(const id_t id);
 

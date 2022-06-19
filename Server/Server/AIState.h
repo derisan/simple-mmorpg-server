@@ -56,6 +56,7 @@ namespace mk
 		void setVisit(const short row, const short col);
 		bool isVisited(const short row, const short col);
 		bool isInRange(const vec2& targetPos);
+		bool isArrived(const short x, const short y);
 
 	private:
 		constexpr static int ENEMY_ATTACK_RANGE = 5;

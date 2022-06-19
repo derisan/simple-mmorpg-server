@@ -5,6 +5,7 @@
 #include "TileMap.h"
 #include "IocpBase.h"
 #include "SectorManager.h"
+#include "Session.h"
 
 namespace mk
 {
@@ -37,7 +38,7 @@ namespace mk
 
 	void ChaseState::Exit()
 	{
-
+		mTarget = nullptr;
 	}
 
 	void ChaseState::Tick()
@@ -88,8 +89,18 @@ namespace mk
 			{
 				auto newX = node.ParentCol;
 				auto newY = node.ParentRow;
-				Owner->SetPos(newX, newY);
-				SectorManager::SendNpcMoveToViewList(Owner);
+
+				bool bArrived = isArrived(newX, newY);
+				if (bArrived)
+				{
+					auto ownerID = Owner->GetID();
+					static_cast<Session*>(mTarget)->OnHit(ownerID);
+				}
+				else
+				{
+					Owner->SetPos(newX, newY);
+					SectorManager::SendNpcMoveToViewList(Owner);
+				}
 				break;
 			}
 
@@ -159,6 +170,11 @@ namespace mk
 		}
 
 		return true;
+	}
+
+	bool ChaseState::isArrived(const short x, const short y)
+	{
+		return x == -1 && y == -1;
 	}
 
 }

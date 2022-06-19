@@ -237,6 +237,27 @@ namespace mk
 		}
 	}
 
+	void Session::OnHit(const id_t hitterID)
+	{
+		ActorLock.WriteLock();
+		auto currentHP = GetCurrentHP();
+		currentHP -= gClients[hitterID]->GetAttackPower();
+
+		if (currentHP <= 0)
+		{
+			ActorLock.WriteUnlock();
+
+			// TODO : user dead...
+		}
+		else
+		{
+			SetCurrentHP(currentHP);
+			ActorLock.WriteUnlock();
+			SendSystemChatTakeDamage(hitterID);
+			SectorManager::SendStatChangeToViewList(this);
+		}
+	}
+
 	OVERLAPPEDEX* Session::pop()
 	{
 		return mPool->Pop();
@@ -321,6 +342,17 @@ namespace mk
 			0,
 			victimName + "을(를) 무찔러 " + std::to_string(victimExp)
 			+ "의 경험치를 얻었습니다.");
+	}
+
+	void Session::SendSystemChatTakeDamage(const id_t hitterID)
+	{
+		const auto& hitterName = gClients[hitterID]->GetName();
+		const auto hitterPower = gClients[hitterID]->GetAttackPower();
+
+		SendChatPacket(SYSTEM_CHAT_ID,
+			0,
+			hitterName + "의 공격으로 " + std::to_string(hitterPower)
+			+ "의 데미지를 입었습니다.");
 	}
 
 	void Session::SendChatPacket(const id_t senderID, const char chatType, std::string_view chat)
