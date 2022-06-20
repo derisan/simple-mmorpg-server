@@ -12,7 +12,6 @@ namespace mk
 	{
 		EV_NONE,
 		EV_BIND_ACCEPT,
-		EV_RESET_ATTACK,
 		EV_REGEN_ENEMY,
 	};
 

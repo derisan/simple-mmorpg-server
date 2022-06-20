@@ -1,6 +1,7 @@
 #pragma once
 
 #define NOT !
+#define MK_TEST
 
 #pragma comment(lib, "spdlog")
 #pragma comment(lib, "fmt")

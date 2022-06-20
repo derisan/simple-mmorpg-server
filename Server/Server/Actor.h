@@ -40,8 +40,6 @@ namespace mk
 		void SetCurrentHP(const int value) { mCurrentHP = std::clamp(value, 0, mMaxHP); }
 		short GetRace() const { return mRace; }
 		void SetRace(const short race) { mRace = race; }
-		void SetAttack(const bool value) { mbAttack = value; }
-		bool CanAttack() const { return mbAttack; }
 		void SetAttackPower(const int value) { mAttackPower = value; }
 		int GetAttackPower() const { return mAttackPower; }
 		void SetExp(const int value) { mExp = value; }
@@ -62,7 +60,6 @@ namespace mk
 		int mMaxHP = INVALID_VALUE;
 		int mCurrentHP = INVALID_VALUE;
 		short mRace = Race::None;
-		bool mbAttack = true;
 		int mAttackPower = INVALID_VALUE;
 		int mExp = INVALID_VALUE;
 		bool mbActive = false;

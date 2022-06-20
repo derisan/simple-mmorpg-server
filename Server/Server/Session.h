@@ -29,6 +29,9 @@ namespace mk
 
 		void SetRequiredExp(const int value) { mRequiredExp = value; }
 
+		bool CanAttack();
+		bool CanMove();
+
 	public:
 		void SendLoginInfoPacket();
 		void SendLoginFailPacket(const int reason);
@@ -59,5 +62,7 @@ namespace mk
 		int mReadPos = 0;
 
 		int mRequiredExp = INT_MAX;
+		std::chrono::system_clock::time_point mLastAttackTime = {};
+		std::chrono::system_clock::time_point mLastMoveTime = {};
 	};
 }

@@ -64,15 +64,6 @@ namespace mk
 				break;
 			}
 
-			case TimerEventType::EV_RESET_ATTACK:
-			{
-				OVERLAPPEDEX* overEx = sPool->Pop();
-				ZeroMemory(overEx, sizeof(OVERLAPPEDEX));
-				overEx->OpType = OperationType::TIMER_RESET_ATTACK;
-				PostQueuedCompletionStatus(sIocp, 1, ev.ID, &overEx->Overlapped);
-				break;
-			}
-
 			case TimerEventType::EV_REGEN_ENEMY:
 			{
 				OVERLAPPEDEX* overEx = sPool->Pop();

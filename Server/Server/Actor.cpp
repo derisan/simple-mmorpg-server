@@ -14,7 +14,6 @@ namespace mk
 		mMaxHP = INVALID_VALUE;
 		mCurrentHP = INVALID_VALUE;
 		mRace = Race::None;
-		mbAttack = true;
 		mAttackPower = INVALID_VALUE;
 		mExp = INVALID_VALUE;
 	}

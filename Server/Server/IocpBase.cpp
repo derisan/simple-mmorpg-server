@@ -227,14 +227,6 @@ namespace mk
 				break;
 			}
 
-			case OperationType::TIMER_RESET_ATTACK:
-			{
-				auto session = GetSession(id);
-				session->SetAttack(true);
-				Timer::PushOverEx(overEx);
-				break;
-			}
-
 			case OperationType::TIMER_REGEN_ENEMY:
 			{
 				int sectorNum = 0;
@@ -360,7 +352,7 @@ namespace mk
 					return;
 				}
 			}
-			
+
 			DBConnection::PushJob(id, DBJobType::GetUserInfo);
 			break;
 		}
@@ -369,8 +361,17 @@ namespace mk
 		{
 			CS_MOVE_PACKET* movePacket = reinterpret_cast<CS_MOVE_PACKET*>(packet);
 			auto session = GetSession(id);
-			SectorManager::MoveActor(session, movePacket->direction,
-				movePacket->client_time);
+
+#ifdef MK_TEST
+			bool bMove = true;
+#else
+			bool bMove = session->CanMove();
+#endif
+			if (bMove)
+			{
+				SectorManager::MoveActor(session, movePacket->direction,
+					movePacket->client_time);
+			}
 			break;
 		}
 
@@ -378,12 +379,8 @@ namespace mk
 		{
 			CS_ATTACK_PACKET* attackPacket = reinterpret_cast<CS_ATTACK_PACKET*>(packet);
 			auto session = GetSession(id);
-			bool canAttack = false;
-			{
-				ReadLockGuard guard = { session->ActorLock };
-				canAttack = session->CanAttack();
-			}
-			if (canAttack)
+			bool bAttack = session->CanAttack();
+			if (bAttack)
 			{
 				SectorManager::DoAttack(session);
 			}

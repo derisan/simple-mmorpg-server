@@ -344,14 +344,6 @@ namespace mk
 	{
 		using namespace std::chrono;
 
-		Timer::AddEvent(TimerEventType::EV_RESET_ATTACK, hitter->GetID(),
-			system_clock::now() + 1s);
-
-		{
-			WriteLockGuard guard = { hitter->ActorLock };
-			hitter->SetAttack(false);
-		}
-
 		std::unordered_set<id_t> viewList;
 		{
 			ReadLockGuard guard = { hitter->ViewLock };

@@ -130,6 +130,8 @@ namespace mk
 		mWritePos = 0;
 		mReadPos = 0;
 		mRequiredExp = INT_MAX;
+		mLastAttackTime = {};
+		mLastMoveTime = {};
 		Timer::AddEvent(TimerEventType::EV_BIND_ACCEPT, GetID(), system_clock::now() + 3s);
 	}
 
@@ -272,6 +274,30 @@ namespace mk
 	void Session::Push(OVERLAPPEDEX* overEX)
 	{
 		mPool->Push(overEX);
+	}
+
+	bool Session::CanAttack()
+	{
+		auto now = system_clock::now();
+		if (now > mLastAttackTime + 1s)
+		{
+			mLastAttackTime = now;
+			return true;
+		}
+
+		return false;
+	}
+
+	bool Session::CanMove()
+	{
+		auto now = system_clock::now();
+		if (now > mLastMoveTime + 1s)
+		{
+			mLastMoveTime = now;
+			return true;
+		}
+
+		return false;
 	}
 
 	void Session::SendLoginInfoPacket()
