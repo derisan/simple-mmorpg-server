@@ -214,7 +214,7 @@ namespace mk
 
 		{
 			WriteLockGuard guard = { ActorLock };
-			if (exp >= mRequiredExp)
+			while (exp >= mRequiredExp)
 			{
 				auto level = GetLevel() + 1;
 				SetLevel(level);
@@ -231,6 +231,7 @@ namespace mk
 
 		if (bLevelUp)
 		{
+			SendSystemChatLevelUp(GetLevel());
 			SectorManager::SendStatChangeToViewList(this);
 		}
 		else
@@ -394,6 +395,14 @@ namespace mk
 			0,
 			hitterName + "의 공격으로 " + std::to_string(hitterPower)
 			+ "의 데미지를 입었습니다.");
+	}
+
+	void Session::SendSystemChatLevelUp(const int level)
+	{
+		SendChatPacket(SYSTEM_CHAT_ID,
+			0,
+			"축하드립니다! " + std::to_string(level)
+			+ "레벨로 올랐습니다");
 	}
 
 	void Session::SendSystemChatDie(const id_t hitterID)

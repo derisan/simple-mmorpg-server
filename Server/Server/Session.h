@@ -41,6 +41,7 @@ namespace mk
 		void SendSystemChatDamage(const id_t victimID);
 		void SendSystemChatExp(const id_t victimID);
 		void SendSystemChatTakeDamage(const id_t hitterID);
+		void SendSystemChatLevelUp(const int level);
 		void SendSystemChatDie(const id_t hitterID);
 		void SendChatPacket(const id_t senderID, const char chatType, std::string_view chat);
 		void SendStatChangePacket(const id_t id);
