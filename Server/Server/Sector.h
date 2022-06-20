@@ -46,7 +46,9 @@ namespace mk
 
 		bool isInAttackRange(const vec2& hitterPos, const vec2& victimPos);
 
-		vec2 getAvailablePos(const int area);
+		vec2 getAvailablePos(const int race);
+
+		void createEnemy(const int race, const int level);
 
 	private:
 		std::unordered_set<id_t> mActorIds;

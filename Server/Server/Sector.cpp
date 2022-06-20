@@ -40,8 +40,7 @@ namespace mk
 
 	vec2 GetUserRegenPos(const short x, const short y)
 	{
-		return vec2( (x / 40) * 40 + 4,
-			(y / 40) * 40 + 4 );
+		return vec2((x / 40) * 40 + 4, (y / 40) * 40 + 4);
 	}
 
 	Sector::Sector(const std::vector<std::vector<Tile>>& tileMap, int sectorNum)
@@ -53,106 +52,22 @@ namespace mk
 
 		for (int i = 0; i < quater; ++i)
 		{
-			auto npc = new NPC;
-			auto freeID = GetFreeNpcID();
-			gClients[freeID] = npc;
-			npc->SetID(freeID);
-			npc->SetName("»ÔÃæÀÌ");
-			npc->SetLevel(mSectorNum / gSectorsPerLine + 1);
-			npc->SetMaxHP(mSectorNum / gSectorsPerLine + 3);
-			npc->SetCurrentHP(npc->GetMaxHP());
-			npc->SetRace(Race::Enemy1);
-			npc->SetHostile(true);
-			npc->SetBehaviorType(NpcBehaviorType::PEACE);
-			npc->SetMoveType(NpcMoveType::FIXED);
-			auto [x, y] = getAvailablePos(0);
-			npc->SetPos(x, y);
-			npc->SetAttackPower(npc->GetLevel());
-			auto level = npc->GetLevel();
-			auto exp = level * level
-				* static_cast<int>(npc->GetBehaviorType())
-				* static_cast<int>(npc->GetMoveType());
-			npc->SetExp(exp);
-			npc->ChangeState(new PeaceState{ npc, false });
-			mActorIds.insert(freeID);
+			createEnemy(Race::Enemy1, mSectorNum + 1);
 		}
 
 		for (int i = quater; i < quater * 2; ++i)
 		{
-			auto npc = new NPC;
-			auto freeID = GetFreeNpcID();
-			gClients[freeID] = npc;
-			npc->SetID(freeID);
-			npc->SetName("ÆÒÅÒ");
-			npc->SetLevel(mSectorNum / gSectorsPerLine + 2);
-			npc->SetMaxHP(mSectorNum / gSectorsPerLine + 5);
-			npc->SetCurrentHP(npc->GetMaxHP());
-			npc->SetRace(Race::Enemy2);
-			npc->SetHostile(true);
-			npc->SetBehaviorType(NpcBehaviorType::PEACE);
-			npc->SetMoveType(NpcMoveType::ROAMING);
-			auto [x, y] = getAvailablePos(1);
-			npc->SetPos(x, y);
-			npc->SetAttackPower(npc->GetLevel());
-			auto level = npc->GetLevel();
-			auto exp = level * level
-				* static_cast<int>(npc->GetBehaviorType())
-				* static_cast<int>(npc->GetMoveType());
-			npc->SetExp(exp);
-			npc->ChangeState(new RoamingState{ npc, false });
-			mActorIds.insert(freeID);
+			createEnemy(Race::Enemy2, mSectorNum + 2);
 		}
 
 		for (int i = quater * 2; i < quater * 3; ++i)
 		{
-			auto npc = new NPC;
-			auto freeID = GetFreeNpcID();
-			gClients[freeID] = npc;
-			npc->SetID(freeID);
-			npc->SetName("±ÙÀ°¸ó");
-			npc->SetLevel(mSectorNum / gSectorsPerLine + 3);
-			npc->SetMaxHP(mSectorNum / gSectorsPerLine + 7);
-			npc->SetCurrentHP(npc->GetMaxHP());
-			npc->SetRace(Race::Enemy3);
-			npc->SetHostile(true);
-			npc->SetBehaviorType(NpcBehaviorType::AGGRO);
-			npc->SetMoveType(NpcMoveType::ROAMING);
-			auto [x, y] = getAvailablePos(2);
-			npc->SetPos(x, y);
-			npc->SetAttackPower(npc->GetLevel());
-			auto level = npc->GetLevel();
-			auto exp = level * level
-				* static_cast<int>(npc->GetBehaviorType())
-				* static_cast<int>(npc->GetMoveType());
-			npc->SetExp(exp);
-			npc->ChangeState(new RoamingState{ npc, true });
-			mActorIds.insert(freeID);
+			createEnemy(Race::Enemy3, mSectorNum + 3);
 		}
 
 		for (int i = quater * 3; i < quater * 3 + 1; ++i)
 		{
-			auto npc = new NPC;
-			auto freeID = GetFreeNpcID();
-			gClients[freeID] = npc;
-			npc->SetID(freeID);
-			npc->SetName("ÇÇÄ«Ãò");
-			npc->SetLevel(mSectorNum / gSectorsPerLine + 4);
-			npc->SetMaxHP(mSectorNum / gSectorsPerLine + 10);
-			npc->SetCurrentHP(npc->GetMaxHP());
-			npc->SetRace(Race::Enemy4);
-			npc->SetHostile(true);
-			npc->SetBehaviorType(NpcBehaviorType::AGGRO);
-			npc->SetMoveType(NpcMoveType::FIXED);
-			auto [x, y] = getAvailablePos(3);
-			npc->SetPos(x, y);
-			npc->SetAttackPower(npc->GetLevel());
-			auto level = npc->GetLevel();
-			auto exp = level * level
-				* static_cast<int>(npc->GetBehaviorType())
-				* static_cast<int>(npc->GetMoveType());
-			npc->SetExp(exp);
-			npc->ChangeState(new PeaceState{ npc, true });
-			mActorIds.insert(freeID);
+			createEnemy(Race::Enemy4, mSectorNum + 5);
 		}
 	}
 
@@ -244,11 +159,11 @@ namespace mk
 		switch (direction)
 		{
 		case UP:
-			if (targetPos.y > 0 && NOT isSolid(targetPos.y - 1, targetPos.x)) 
+			if (targetPos.y > 0 && NOT isSolid(targetPos.y - 1, targetPos.x))
 				targetPos.y--;
 			break;
 		case DOWN:
-			if (targetPos.y < W_HEIGHT - 1 && NOT isSolid(targetPos.y + 1, targetPos.x)) 
+			if (targetPos.y < W_HEIGHT - 1 && NOT isSolid(targetPos.y + 1, targetPos.x))
 				targetPos.y++;
 			break;
 		case LEFT:
@@ -256,7 +171,7 @@ namespace mk
 				targetPos.x--;
 			break;
 		case RIGHT:
-			if (targetPos.x < W_WIDTH - 1 && NOT isSolid(targetPos.y, targetPos.x + 1)) 
+			if (targetPos.x < W_WIDTH - 1 && NOT isSolid(targetPos.y, targetPos.x + 1))
 				targetPos.x++;
 			break;
 		default:
@@ -332,7 +247,7 @@ namespace mk
 
 		for (auto actorID : nearList)
 		{
-			if(IsUser(actorID))
+			if (IsUser(actorID))
 			{
 				static_cast<Session*>(gClients[actorID])->SendChatPacket(target->GetID(),
 					chatType, chat);
@@ -378,7 +293,7 @@ namespace mk
 					auto victimExp = victim->GetExp();
 					hitterSession->OnKillEnemy(victimExp);
 					hitterSession->SendSystemChatExp(actorID);
-					
+
 					RemoveActor(victim);
 
 					{
@@ -442,7 +357,7 @@ namespace mk
 	void Sector::RegenEnemy(Actor* actor)
 	{
 		NPC* enemy = static_cast<NPC*>(actor);
-		vec2 newPos = getAvailablePos(enemy->GetRace() - 3);
+		vec2 newPos = getAvailablePos(enemy->GetRace());
 
 		{
 			WriteLockGuard guard = { enemy->ActorLock };
@@ -599,20 +514,20 @@ namespace mk
 		return false;
 	}
 
-	vec2 Sector::getAvailablePos(const int area)
+	vec2 Sector::getAvailablePos(const int race)
 	{
 		const vec2 leftTop = vec2
 		{
 			static_cast<short>((mSectorNum % gSectorsPerLine) * TILE_PER_SECTOR),
-			static_cast<short>((mSectorNum / gSectorsPerLine) * TILE_PER_SECTOR) 
+			static_cast<short>((mSectorNum / gSectorsPerLine) * TILE_PER_SECTOR)
 		};
 
 		short x = 0;
 		short y = 0;
 
-		switch (area)
+		switch (race)
 		{
-		case 0: // 2»çºÐ¸é
+		case Race::Enemy1:
 		{
 			do
 			{
@@ -623,7 +538,7 @@ namespace mk
 			return { x, y };
 		}
 
-		case 1: // 1»çºÐ¸é
+		case Race::Enemy2:
 		{
 			do
 			{
@@ -634,7 +549,7 @@ namespace mk
 			return { x, y };
 		}
 
-		case 2: // 3»çºÐ¸é
+		case Race::Enemy3:
 		{
 			do
 			{
@@ -645,9 +560,9 @@ namespace mk
 			return { x, y };
 		}
 
-		case 3: // 4»çºÐ¸é
+		case Race::Enemy4:
 		{
-			return vec2{ static_cast<short>(leftTop.x + 30), 
+			return vec2{ static_cast<short>(leftTop.x + 30),
 				static_cast<short>(leftTop.y + 30) };
 		}
 
@@ -656,4 +571,71 @@ namespace mk
 			return { -1, -1 };
 		}
 	}
+
+	void Sector::createEnemy(const int race, const int level)
+	{
+		lua_getglobal(gLuaVM, "GetNpcInfo");
+		lua_pushnumber(gLuaVM, level);
+		lua_pcall(gLuaVM, 1, 2, 0);
+
+		int maxHP = static_cast<int>(lua_tonumber(gLuaVM, -2));
+		int attackPower = static_cast<int>(lua_tonumber(gLuaVM, -1));
+		lua_pop(gLuaVM, 2);
+
+		auto npc = new NPC;
+		auto freeID = GetFreeNpcID();
+		gClients[freeID] = npc;
+		npc->SetID(freeID);
+		npc->SetLevel(level);
+		npc->SetHostile(true);
+		npc->SetMaxHP(maxHP);
+		npc->SetCurrentHP(maxHP);
+		npc->SetAttackPower(attackPower);
+		npc->SetRace(race);
+		auto [x, y] = getAvailablePos(race);
+		npc->SetPos(x, y);
+		
+		switch (race)
+		{
+		case Race::Enemy1:
+			npc->SetName("»ÔÃæÀÌ");
+			npc->SetBehaviorType(NpcBehaviorType::PEACE);
+			npc->SetMoveType(NpcMoveType::FIXED);
+			npc->ChangeState(new PeaceState{ npc, false });
+			break;
+
+		case Race::Enemy2:
+			npc->SetName("ÆÒÅÒ");
+			npc->SetBehaviorType(NpcBehaviorType::PEACE);
+			npc->SetMoveType(NpcMoveType::ROAMING);
+			npc->ChangeState(new RoamingState{ npc, false });
+			break;
+
+		case Race::Enemy3:
+			npc->SetName("±ÙÀ°¸ó");
+			npc->SetBehaviorType(NpcBehaviorType::AGGRO);
+			npc->SetMoveType(NpcMoveType::ROAMING);
+			npc->ChangeState(new RoamingState{ npc, true });
+			break;
+
+		case Race::Enemy4:
+			npc->SetName("ÇÇÄ«Ãò");
+			npc->SetBehaviorType(NpcBehaviorType::AGGRO);
+			npc->SetMoveType(NpcMoveType::FIXED);
+			npc->ChangeState(new PeaceState{ npc, true });
+
+#ifdef MK_TEST
+			npc->SetAttackPower(100);
+#endif
+			break;
+		}
+
+		auto exp = level * level
+			* static_cast<int>(npc->GetBehaviorType())
+			* static_cast<int>(npc->GetMoveType());
+		npc->SetExp(exp);
+
+		mActorIds.insert(freeID);
+	}
+
 }

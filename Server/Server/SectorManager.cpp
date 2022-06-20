@@ -9,12 +9,18 @@
 namespace mk
 {
 	constexpr int MAX_SESSION_PER_SECTOR = 50;
+	lua_State* gLuaVM = nullptr;
 
 	std::vector<std::vector<std::unique_ptr<Sector>>> SectorManager::sSectors;
 	int gSectorsPerLine = 0;
 
 	void SectorManager::Init()
 	{
+		gLuaVM = luaL_newstate();
+		luaL_openlibs(gLuaVM);
+		luaL_loadfile(gLuaVM, "NPC.lua");
+		lua_pcall(gLuaVM, 0, 0, 0);
+
 		TileMap::LoadTileMap("WorldMap.txt");
 		const auto& tileMap = TileMap::GetTileMap();
 

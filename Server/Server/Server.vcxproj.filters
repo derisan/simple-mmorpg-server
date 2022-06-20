@@ -115,4 +115,9 @@
       <Filter>Source Files\AI</Filter>
     </ClInclude>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="NPC.lua">
+      <Filter>Source Files\AI</Filter>
+    </None>
+  </ItemGroup>
 </Project>

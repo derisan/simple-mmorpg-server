@@ -6,6 +6,7 @@ namespace mk
 {
 	constexpr int TILE_PER_SECTOR = 40;
 	extern int gSectorsPerLine;
+	extern lua_State* gLuaVM;
 
 	class Actor;
 	class Sector;
