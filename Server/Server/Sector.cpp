@@ -299,6 +299,7 @@ namespace mk
 					{
 						WriteLockGuard guard = { victim->ActorLock };
 						victim->SetActive(false);
+						static_cast<NPC*>(victim)->SetStateToInitial();
 					}
 
 					TimerEvent ev = {};

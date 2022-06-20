@@ -67,6 +67,33 @@ namespace mk
 		ChangeState(new ChaseState{ this });
 	}
 
+	void NPC::SetStateToInitial()
+	{
+		auto race = GetRace();
+		switch (race)
+		{
+		case Race::Enemy1:
+			ChangeState(new PeaceState{ this, false });
+			break;
+
+		case Race::Enemy2:
+			ChangeState(new RoamingState{ this, false });
+			break;
+
+		case Race::Enemy3:
+			ChangeState(new RoamingState{ this, true });
+			break;
+
+		case Race::Enemy4:
+			ChangeState(new PeaceState{ this, true });
+			break;
+
+		default:
+			ChangeState(new PeaceState{ this, false });
+			break;
+		}
+	}
+
 	void NPC::ChangeState(AIState* newState)
 	{
 		mCurrentState->Exit();

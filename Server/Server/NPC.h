@@ -32,7 +32,7 @@ namespace mk
         virtual bool RemoveFromViewList(const id_t id) override;
 
         void OnHit(const id_t hitterID);
-        void PushState(AIState* newState);
+        void SetStateToInitial();
         void ChangeState(AIState* newState);
         void BackToPreviousState();
 
