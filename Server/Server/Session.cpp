@@ -15,7 +15,7 @@ namespace mk
 
 	Session::Session()
 	{
-		mPool = std::make_unique<OverlappedPool>();
+		mPool = std::make_unique<OverlappedPool>(1000);
 	}
 
 	void Session::BindAccept(SOCKET listenSocket)

@@ -29,7 +29,7 @@ namespace mk
 
 	void DBConnection::Init(HANDLE iocpHandle)
 	{
-		sPool = std::make_unique<mk::OverlappedPool>(3000);
+		sPool = std::make_unique<mk::OverlappedPool>(10000);
 
 		sIocp = iocpHandle;
 
